@@ -89,7 +89,7 @@ class ProductController extends Controller
             if(!empty($fotos)){
                 foreach($fotos as $foto){
                     $productfoto = new ProductPhoto();
-                    $productfoto->comunidad_id=$product->id;
+                    $productfoto->product_id=$product->id;
                     $productfoto->save();
 
                     $filename ='foto-'.$productfoto->id.'.'.$foto->getClientOriginalExtension();
