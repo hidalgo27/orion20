@@ -19,7 +19,7 @@
         <div class="container">
             <div class="row justify-content-between ">
                 <div class="col">
-                    <small class="text-muted">Bienvenido, puede <a href="/login">Iniciar sesión</a> o <a href="/register">Create an account</a></small>
+                    <small class="text-muted">Bienvenido, puede <a href="/login">Iniciar sesión</a> o <a href="/register">Crear una cuenta</a></small>
                 </div>
                 <div class="col text-right">
                     <small class="text-muted">Llámanos al <a href="" class="font-weight-bold">00 123456789</a></small>
