@@ -243,11 +243,22 @@ Route::post('/admin/ordenes/report', [
     'uses' => 'OrdersController@lista_report_post',
     'as' => 'ordenes.lista.post.report',
 ]);
+// Route::get('/admin/ordenes/report/grafica/lineal/{anio}', [
+//     'uses' => 'OrdersController@lista_report_grafica',
+//     'as' => 'ordenes.lista.report.grafica',
+// ]);
 Route::get('/admin/ordenes/report/grafica/lineal/{anio}', [
-    'uses' => 'OrdersController@lista_report_grafica',
+    'uses' => 'OrdersController@lista_report_grafica_google',
     'as' => 'ordenes.lista.report.grafica',
 ]);
-
+Route::get('/admin/ordenes/report/grafica/lineal/{anio}/{mes}', [
+    'uses' => 'OrdersController@lista_report_grafica_google_',
+    'as' => 'ordenes.lista.report.grafica_',
+]);
+Route::post('/admin/ordenes/report/grafica/lineal', [
+    'uses' => 'OrdersController@lista_report_grafica_google_post',
+    'as' => 'ordenes.lista.report.grafica-post',
+]);
 
 
 

@@ -14,12 +14,12 @@ class adminController extends Controller
     public function index(Request $request)
     {
         $request->user()->authorizeRoles(['user', 'admin','asociacion']);
-        $departamentos =Departamento::get();
-        $provincias =Provincia::get();
-        $distritos =Distrito::get();
-        $comunidades = Comunidad::get();
+        // $departamentos =Departamento::get();
+        // $provincias =Provincia::get();
+        // $distritos =Distrito::get();
+        // $comunidades = Comunidad::get();
         // return view('admin.index');
-        return view('admin.index',compact('departamentos','provincias','distritos','comunidades'));
+        return view('admin.index');
 
     }
     public function crear_usuario(Request $request)
@@ -29,7 +29,7 @@ class adminController extends Controller
         return view('admin.crear-usuario');
 
     }
-    
+
 
     public function destroy(){
         // auth()->guard('admin')->logout();

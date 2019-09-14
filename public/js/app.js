@@ -42057,7 +42057,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/advlist/p
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.11 (2019-07-04)
+ * Version: 5.0.15 (2019-09-02)
  */
 (function () {
     'use strict';
@@ -42157,8 +42157,9 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/advlist/p
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -42400,7 +42401,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.11 (2019-07-04)
+ * Version: 5.0.15 (2019-09-02)
  */
 (function (domGlobals) {
     'use strict';
@@ -42478,8 +42479,9 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -42554,13 +42556,16 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
     };
 
     var typeOf = function (x) {
-      if (x === null)
+      if (x === null) {
         return 'null';
+      }
       var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array'))
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
         return 'array';
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String'))
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
         return 'string';
+      }
       return t;
     };
     var isType = function (type) {
@@ -42569,6 +42574,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       };
     };
     var isString = isType('string');
+    var isArray = isType('array');
     var isBoolean = isType('boolean');
     var isFunction = isType('function');
     var isNumber = isType('number');
@@ -42641,8 +42647,9 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
+        if (!isArray(xs[i])) {
           throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
+        }
         push.apply(r, xs[i]);
       }
       return r;
@@ -42666,80 +42673,14 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       return slice.call(x);
     };
 
-    var fromHtml = function (html, scope) {
-      var doc = scope || domGlobals.document;
-      var div = doc.createElement('div');
-      div.innerHTML = html;
-      if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        domGlobals.console.error('HTML does not have a single root node', html);
-        throw new Error('HTML must have a single root node');
-      }
-      return fromDom(div.childNodes[0]);
-    };
-    var fromTag = function (tag, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createElement(tag);
-      return fromDom(node);
-    };
-    var fromText = function (text, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createTextNode(text);
-      return fromDom(node);
-    };
-    var fromDom = function (node) {
-      if (node === null || node === undefined) {
-        throw new Error('Node cannot be null or undefined');
-      }
-      return { dom: constant(node) };
-    };
-    var fromPoint = function (docElm, x, y) {
-      var doc = docElm.dom();
-      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
-    };
-    var Element = {
-      fromHtml: fromHtml,
-      fromTag: fromTag,
-      fromText: fromText,
-      fromDom: fromDom,
-      fromPoint: fromPoint
-    };
-
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var path = function (parts, scope) {
-      var o = scope !== undefined && scope !== null ? scope : Global;
-      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i)
-        o = o[parts[i]];
-      return o;
-    };
-    var resolve = function (p, scope) {
-      var parts = p.split('.');
-      return path(parts, scope);
-    };
-
-    var unsafe = function (name, scope) {
-      return resolve(name, scope);
-    };
-    var getOrDie = function (name, scope) {
-      var actual = unsafe(name, scope);
-      if (actual === undefined || actual === null)
-        throw name + ' not available on this browser';
-      return actual;
-    };
-    var Global$1 = { getOrDie: getOrDie };
-
-    var node = function () {
-      var f = Global$1.getOrDie('Node');
-      return f;
-    };
     var compareDocumentPosition = function (a, b, match) {
       return (a.compareDocumentPosition(b) & match) !== 0;
     };
     var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_PRECEDING);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
     };
     var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_CONTAINED_BY);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
     };
     var Node = {
       documentPositionPreceding: documentPositionPreceding,
@@ -42765,18 +42706,20 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
     var firstMatch = function (regexes, s) {
       for (var i = 0; i < regexes.length; i++) {
         var x = regexes[i];
-        if (x.test(s))
+        if (x.test(s)) {
           return x;
+        }
       }
       return undefined;
     };
     var find$1 = function (regexes, agent) {
       var r = firstMatch(regexes, agent);
-      if (!r)
+      if (!r) {
         return {
           major: 0,
           minor: 0
         };
+      }
       var group = function (i) {
         return Number(agent.replace(r, '$' + i));
       };
@@ -42784,8 +42727,9 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
     };
     var detect = function (versionRegexes, agent) {
       var cleanedAgent = String(agent).toLowerCase();
-      if (versionRegexes.length === 0)
+      if (versionRegexes.length === 0) {
         return unknown();
+      }
       return find$1(versionRegexes, cleanedAgent);
     };
     var unknown = function () {
@@ -42955,8 +42899,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
         name: 'Edge',
         versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
         search: function (uastring) {
-          var monstrosity = contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
-          return monstrosity;
+          return contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
         }
       },
       {
@@ -43071,6 +43014,44 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
     });
     var PlatformDetection$1 = { detect: detect$3 };
 
+    var fromHtml = function (html, scope) {
+      var doc = scope || domGlobals.document;
+      var div = doc.createElement('div');
+      div.innerHTML = html;
+      if (!div.hasChildNodes() || div.childNodes.length > 1) {
+        domGlobals.console.error('HTML does not have a single root node', html);
+        throw new Error('HTML must have a single root node');
+      }
+      return fromDom(div.childNodes[0]);
+    };
+    var fromTag = function (tag, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createElement(tag);
+      return fromDom(node);
+    };
+    var fromText = function (text, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createTextNode(text);
+      return fromDom(node);
+    };
+    var fromDom = function (node) {
+      if (node === null || node === undefined) {
+        throw new Error('Node cannot be null or undefined');
+      }
+      return { dom: constant(node) };
+    };
+    var fromPoint = function (docElm, x, y) {
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
+    };
+    var Element = {
+      fromHtml: fromHtml,
+      fromTag: fromTag,
+      fromText: fromText,
+      fromDom: fromDom,
+      fromPoint: fromPoint
+    };
+
     var ATTRIBUTE = domGlobals.Node.ATTRIBUTE_NODE;
     var CDATA_SECTION = domGlobals.Node.CDATA_SECTION_NODE;
     var COMMENT = domGlobals.Node.COMMENT_NODE;
@@ -43086,19 +43067,22 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
 
     var ELEMENT$1 = ELEMENT;
     var is = function (element, selector) {
-      var elem = element.dom();
-      if (elem.nodeType !== ELEMENT$1) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT$1) {
         return false;
-      } else if (elem.matches !== undefined) {
-        return elem.matches(selector);
-      } else if (elem.msMatchesSelector !== undefined) {
-        return elem.msMatchesSelector(selector);
-      } else if (elem.webkitMatchesSelector !== undefined) {
-        return elem.webkitMatchesSelector(selector);
-      } else if (elem.mozMatchesSelector !== undefined) {
-        return elem.mozMatchesSelector(selector);
       } else {
-        throw new Error('Browser lacks native selectors');
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
       }
     };
 
@@ -43123,11 +43107,150 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.BookmarkManager');
+    var liftN = function (arr, f) {
+      var r = [];
+      for (var i = 0; i < arr.length; i++) {
+        var x = arr[i];
+        if (x.isSome()) {
+          r.push(x.getOrDie());
+        } else {
+          return Option.none();
+        }
+      }
+      return Option.some(f.apply(null, r));
+    };
+
+    var fromElements = function (elements, scope) {
+      var doc = scope || domGlobals.document;
+      var fragment = doc.createDocumentFragment();
+      each(elements, function (element) {
+        fragment.appendChild(element.dom());
+      });
+      return Element.fromDom(fragment);
+    };
+
+    var Immutable = function () {
+      var fields = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        fields[_i] = arguments[_i];
+      }
+      return function () {
+        var values = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          values[_i] = arguments[_i];
+        }
+        if (fields.length !== values.length) {
+          throw new Error('Wrong number of arguments to struct. Expected "[' + fields.length + ']", got ' + values.length + ' arguments');
+        }
+        var struct = {};
+        each(fields, function (name, i) {
+          struct[name] = constant(values[i]);
+        });
+        return struct;
+      };
+    };
+
+    var keys = Object.keys;
+    var each$1 = function (obj, f) {
+      var props = keys(obj);
+      for (var k = 0, len = props.length; k < len; k++) {
+        var i = props[k];
+        var x = obj[i];
+        f(x, i, obj);
+      }
+    };
+
+    var parent = function (element) {
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
+    };
+    var children = function (element) {
+      return map(element.dom().childNodes, Element.fromDom);
+    };
+    var child = function (element, index) {
+      var cs = element.dom().childNodes;
+      return Option.from(cs[index]).map(Element.fromDom);
+    };
+    var firstChild = function (element) {
+      return child(element, 0);
+    };
+    var lastChild = function (element) {
+      return child(element, element.dom().childNodes.length - 1);
+    };
+    var spot = Immutable('element', 'offset');
+
+    var before = function (marker, element) {
+      var parent$1 = parent(marker);
+      parent$1.each(function (v) {
+        v.dom().insertBefore(element.dom(), marker.dom());
+      });
+    };
+    var append = function (parent, element) {
+      parent.dom().appendChild(element.dom());
+    };
+
+    var before$1 = function (marker, elements) {
+      each(elements, function (x) {
+        before(marker, x);
+      });
+    };
+    var append$1 = function (parent, elements) {
+      each(elements, function (x) {
+        append(parent, x);
+      });
+    };
+
+    var remove = function (element) {
+      var dom = element.dom();
+      if (dom.parentNode !== null) {
+        dom.parentNode.removeChild(dom);
+      }
+    };
+
+    var fireListEvent = function (editor, action, element) {
+      return editor.fire('ListMutation', {
+        action: action,
+        element: element
+      });
+    };
+
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
+    var path = function (parts, scope) {
+      var o = scope !== undefined && scope !== null ? scope : Global;
+      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i) {
+        o = o[parts[i]];
+      }
+      return o;
+    };
+    var resolve = function (p, scope) {
+      var parts = p.split('.');
+      return path(parts, scope);
+    };
+
+    var unsafe = function (name, scope) {
+      return resolve(name, scope);
+    };
+    var getOrDie = function (name, scope) {
+      var actual = unsafe(name, scope);
+      if (actual === undefined || actual === null) {
+        throw new Error(name + ' not available on this browser');
+      }
+      return actual;
+    };
+    var Global$1 = { getOrDie: getOrDie };
+
+    var htmlElement = function (scope) {
+      return Global$1.getOrDie('HTMLElement', scope);
+    };
+    var isPrototypeOf = function (x) {
+      var scope = resolve('ownerDocument.defaultView', x);
+      return htmlElement(scope).prototype.isPrototypeOf(x);
+    };
+    var HTMLElement = { isPrototypeOf: isPrototypeOf };
+
+    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
 
     var global$5 = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var global$6 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
     var isTextNode = function (node) {
       return node && node.nodeType === 3;
@@ -43198,136 +43321,6 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       isChildOfBody: isChildOfBody
     };
 
-    var getNormalizedPoint = function (container, offset) {
-      if (NodeType.isTextNode(container)) {
-        return {
-          container: container,
-          offset: offset
-        };
-      }
-      var node = global$1.getNode(container, offset);
-      if (NodeType.isTextNode(node)) {
-        return {
-          container: node,
-          offset: offset >= container.childNodes.length ? node.data.length : 0
-        };
-      } else if (node.previousSibling && NodeType.isTextNode(node.previousSibling)) {
-        return {
-          container: node.previousSibling,
-          offset: node.previousSibling.data.length
-        };
-      } else if (node.nextSibling && NodeType.isTextNode(node.nextSibling)) {
-        return {
-          container: node.nextSibling,
-          offset: 0
-        };
-      }
-      return {
-        container: container,
-        offset: offset
-      };
-    };
-    var normalizeRange = function (rng) {
-      var outRng = rng.cloneRange();
-      var rangeStart = getNormalizedPoint(rng.startContainer, rng.startOffset);
-      outRng.setStart(rangeStart.container, rangeStart.offset);
-      var rangeEnd = getNormalizedPoint(rng.endContainer, rng.endOffset);
-      outRng.setEnd(rangeEnd.container, rangeEnd.offset);
-      return outRng;
-    };
-    var Range = {
-      getNormalizedPoint: getNormalizedPoint,
-      normalizeRange: normalizeRange
-    };
-
-    var DOM = global$6.DOM;
-    var createBookmark = function (rng) {
-      var bookmark = {};
-      var setupEndPoint = function (start) {
-        var offsetNode, container, offset;
-        container = rng[start ? 'startContainer' : 'endContainer'];
-        offset = rng[start ? 'startOffset' : 'endOffset'];
-        if (container.nodeType === 1) {
-          offsetNode = DOM.create('span', { 'data-mce-type': 'bookmark' });
-          if (container.hasChildNodes()) {
-            offset = Math.min(offset, container.childNodes.length - 1);
-            if (start) {
-              container.insertBefore(offsetNode, container.childNodes[offset]);
-            } else {
-              DOM.insertAfter(offsetNode, container.childNodes[offset]);
-            }
-          } else {
-            container.appendChild(offsetNode);
-          }
-          container = offsetNode;
-          offset = 0;
-        }
-        bookmark[start ? 'startContainer' : 'endContainer'] = container;
-        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
-      };
-      setupEndPoint(true);
-      if (!rng.collapsed) {
-        setupEndPoint();
-      }
-      return bookmark;
-    };
-    var resolveBookmark = function (bookmark) {
-      function restoreEndPoint(start) {
-        var container, offset, node;
-        var nodeIndex = function (container) {
-          var node = container.parentNode.firstChild, idx = 0;
-          while (node) {
-            if (node === container) {
-              return idx;
-            }
-            if (node.nodeType !== 1 || node.getAttribute('data-mce-type') !== 'bookmark') {
-              idx++;
-            }
-            node = node.nextSibling;
-          }
-          return -1;
-        };
-        container = node = bookmark[start ? 'startContainer' : 'endContainer'];
-        offset = bookmark[start ? 'startOffset' : 'endOffset'];
-        if (!container) {
-          return;
-        }
-        if (container.nodeType === 1) {
-          offset = nodeIndex(container);
-          container = container.parentNode;
-          DOM.remove(node);
-          if (!container.hasChildNodes() && DOM.isBlock(container)) {
-            container.appendChild(DOM.create('br'));
-          }
-        }
-        bookmark[start ? 'startContainer' : 'endContainer'] = container;
-        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
-      }
-      restoreEndPoint(true);
-      restoreEndPoint();
-      var rng = DOM.createRng();
-      rng.setStart(bookmark.startContainer, bookmark.startOffset);
-      if (bookmark.endContainer) {
-        rng.setEnd(bookmark.endContainer, bookmark.endOffset);
-      }
-      return Range.normalizeRange(rng);
-    };
-    var Bookmark = {
-      createBookmark: createBookmark,
-      resolveBookmark: resolveBookmark
-    };
-
-    var htmlElement = function (scope) {
-      return Global$1.getOrDie('HTMLElement', scope);
-    };
-    var isPrototypeOf = function (x) {
-      var scope = resolve('ownerDocument.defaultView', x);
-      return htmlElement(scope).prototype.isPrototypeOf(x);
-    };
-    var HTMLElement = { isPrototypeOf: isPrototypeOf };
-
-    var global$7 = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
-
     var getParentList = function (editor) {
       var selectionStart = editor.selection.getStart(true);
       return editor.dom.getParent(selectionStart, 'OL,UL,DL', getClosestListRootElm(editor, selectionStart));
@@ -43356,7 +43349,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
         var parentLi = editor.dom.getParent(elm, 'li,dd,dt', getClosestListRootElm(editor, elm));
         return parentLi ? parentLi : elm;
       });
-      return global$7.unique(listItemsElms);
+      return global$4.unique(listItemsElms);
     };
     var getSelectedListItems = function (editor) {
       var selectedBlocks = editor.selection.getSelectedBlocks();
@@ -43389,7 +43382,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       var listRoots = map(lists, function (list) {
         return findLastParentListNode(editor, list).getOr(list);
       });
-      return global$7.unique(listRoots);
+      return global$4.unique(listRoots);
     };
     var isList = function (editor) {
       var list = getParentList(editor);
@@ -43405,111 +43398,70 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       getSelectedListRoots: getSelectedListRoots
     };
 
-    var liftN = function (arr, f) {
-      var r = [];
-      for (var i = 0; i < arr.length; i++) {
-        var x = arr[i];
-        if (x.isSome()) {
-          r.push(x.getOrDie());
-        } else {
-          return Option.none();
+    var global$6 = tinymce.util.Tools.resolve('tinymce.Env');
+
+    var createTextBlock = function (editor, contentNode) {
+      var dom = editor.dom;
+      var blockElements = editor.schema.getBlockElements();
+      var fragment = dom.createFragment();
+      var node, textBlock, blockName, hasContentNode;
+      if (editor.settings.forced_root_block) {
+        blockName = editor.settings.forced_root_block;
+      }
+      if (blockName) {
+        textBlock = dom.create(blockName);
+        if (textBlock.tagName === editor.settings.forced_root_block) {
+          dom.setAttribs(textBlock, editor.settings.forced_root_block_attrs);
+        }
+        if (!NodeType.isBlock(contentNode.firstChild, blockElements)) {
+          fragment.appendChild(textBlock);
         }
       }
-      return Option.some(f.apply(null, r));
-    };
-
-    var fromElements = function (elements, scope) {
-      var doc = scope || domGlobals.document;
-      var fragment = doc.createDocumentFragment();
-      each(elements, function (element) {
-        fragment.appendChild(element.dom());
-      });
-      return Element.fromDom(fragment);
-    };
-
-    var Immutable = function () {
-      var fields = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        fields[_i] = arguments[_i];
-      }
-      return function () {
-        var values = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          values[_i] = arguments[_i];
+      if (contentNode) {
+        while (node = contentNode.firstChild) {
+          var nodeName = node.nodeName;
+          if (!hasContentNode && (nodeName !== 'SPAN' || node.getAttribute('data-mce-type') !== 'bookmark')) {
+            hasContentNode = true;
+          }
+          if (NodeType.isBlock(node, blockElements)) {
+            fragment.appendChild(node);
+            textBlock = null;
+          } else {
+            if (blockName) {
+              if (!textBlock) {
+                textBlock = dom.create(blockName);
+                fragment.appendChild(textBlock);
+              }
+              textBlock.appendChild(node);
+            } else {
+              fragment.appendChild(node);
+            }
+          }
         }
-        if (fields.length !== values.length) {
-          throw new Error('Wrong number of arguments to struct. Expected "[' + fields.length + ']", got ' + values.length + ' arguments');
+      }
+      if (!editor.settings.forced_root_block) {
+        fragment.appendChild(dom.create('br'));
+      } else {
+        if (!hasContentNode && (!global$6.ie || global$6.ie > 10)) {
+          textBlock.appendChild(dom.create('br', { 'data-mce-bogus': '1' }));
         }
-        var struct = {};
-        each(fields, function (name, i) {
-          struct[name] = constant(values[i]);
-        });
-        return struct;
-      };
-    };
-
-    var keys = Object.keys;
-    var each$1 = function (obj, f) {
-      var props = keys(obj);
-      for (var k = 0, len = props.length; k < len; k++) {
-        var i = props[k];
-        var x = obj[i];
-        f(x, i, obj);
       }
-    };
-
-    var parent = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.parentNode).map(Element.fromDom);
-    };
-    var children = function (element) {
-      var dom = element.dom();
-      return map(dom.childNodes, Element.fromDom);
-    };
-    var child = function (element, index) {
-      var cs = element.dom().childNodes;
-      return Option.from(cs[index]).map(Element.fromDom);
-    };
-    var firstChild = function (element) {
-      return child(element, 0);
-    };
-    var lastChild = function (element) {
-      return child(element, element.dom().childNodes.length - 1);
-    };
-    var spot = Immutable('element', 'offset');
-
-    var before = function (marker, element) {
-      var parent$1 = parent(marker);
-      parent$1.each(function (v) {
-        v.dom().insertBefore(element.dom(), marker.dom());
-      });
-    };
-    var append = function (parent, element) {
-      parent.dom().appendChild(element.dom());
-    };
-
-    var before$1 = function (marker, elements) {
-      each(elements, function (x) {
-        before(marker, x);
-      });
-    };
-    var append$1 = function (parent, elements) {
-      each(elements, function (x) {
-        append(parent, x);
-      });
-    };
-
-    var remove = function (element) {
-      var dom = element.dom();
-      if (dom.parentNode !== null) {
-        dom.parentNode.removeChild(dom);
-      }
+      return fragment;
     };
 
     var name = function (element) {
       var r = element.dom().nodeName;
       return r.toLowerCase();
     };
+    var type = function (element) {
+      return element.dom().nodeType;
+    };
+    var isType$1 = function (t) {
+      return function (element) {
+        return type(element) === t;
+      };
+    };
+    var isElement = isType$1(ELEMENT);
 
     var rawSet = function (dom, key, value) {
       if (isString(value) || isBoolean(value) || isNumber(value)) {
@@ -43673,7 +43625,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       return map(content, deep);
     };
     var createEntry = function (li, depth, isSelected) {
-      return parent(li).map(function (list) {
+      return parent(li).filter(isElement).map(function (list) {
         return {
           depth: depth,
           isSelected: isSelected,
@@ -43705,17 +43657,20 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
     var baseMerge = function (merger) {
       return function () {
         var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
+        for (var i = 0; i < objects.length; i++) {
           objects[i] = arguments[i];
-        if (objects.length === 0)
+        }
+        if (objects.length === 0) {
           throw new Error('Can\'t merge zero objects');
+        }
         var ret = {};
         for (var j = 0; j < objects.length; j++) {
           var curObject = objects[j];
-          for (var key in curObject)
+          for (var key in curObject) {
             if (hasOwnProperty.call(curObject, key)) {
               ret[key] = merger(ret[key], curObject[key]);
             }
+          }
         }
         return ret;
       };
@@ -43803,64 +43758,6 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       });
     };
 
-    var global$8 = tinymce.util.Tools.resolve('tinymce.Env');
-
-    var createTextBlock = function (editor, contentNode) {
-      var dom = editor.dom;
-      var blockElements = editor.schema.getBlockElements();
-      var fragment = dom.createFragment();
-      var node, textBlock, blockName, hasContentNode;
-      if (editor.settings.forced_root_block) {
-        blockName = editor.settings.forced_root_block;
-      }
-      if (blockName) {
-        textBlock = dom.create(blockName);
-        if (textBlock.tagName === editor.settings.forced_root_block) {
-          dom.setAttribs(textBlock, editor.settings.forced_root_block_attrs);
-        }
-        if (!NodeType.isBlock(contentNode.firstChild, blockElements)) {
-          fragment.appendChild(textBlock);
-        }
-      }
-      if (contentNode) {
-        while (node = contentNode.firstChild) {
-          var nodeName = node.nodeName;
-          if (!hasContentNode && (nodeName !== 'SPAN' || node.getAttribute('data-mce-type') !== 'bookmark')) {
-            hasContentNode = true;
-          }
-          if (NodeType.isBlock(node, blockElements)) {
-            fragment.appendChild(node);
-            textBlock = null;
-          } else {
-            if (blockName) {
-              if (!textBlock) {
-                textBlock = dom.create(blockName);
-                fragment.appendChild(textBlock);
-              }
-              textBlock.appendChild(node);
-            } else {
-              fragment.appendChild(node);
-            }
-          }
-        }
-      }
-      if (!editor.settings.forced_root_block) {
-        fragment.appendChild(dom.create('br'));
-      } else {
-        if (!hasContentNode && (!global$8.ie || global$8.ie > 10)) {
-          textBlock.appendChild(dom.create('br', { 'data-mce-bogus': '1' }));
-        }
-      }
-      return fragment;
-    };
-
-    var fireListEvent = function (editor, action, element) {
-      return editor.fire('ListMutation', {
-        action: action,
-        element: element
-      });
-    };
-
     var outdentedComposer = function (editor, entries) {
       return map(entries, function (entry) {
         var content = fromElements(entry.content);
@@ -43894,7 +43791,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
         };
       });
     };
-    var listsIndentation = function (editor, lists, indentation) {
+    var listIndentation = function (editor, lists, indentation) {
       var entrySets = parseLists(lists, getItemSelection(editor));
       each(entrySets, function (entrySet) {
         indentSelectedEntries(entrySet.entries, indentation);
@@ -43907,53 +43804,55 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       });
     };
 
-    var DOM$1 = global$6.DOM;
+    var global$7 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+
+    var DOM = global$7.DOM;
     var splitList = function (editor, ul, li) {
       var tmpRng, fragment, bookmarks, node, newBlock;
       var removeAndKeepBookmarks = function (targetNode) {
         global$5.each(bookmarks, function (node) {
           targetNode.parentNode.insertBefore(node, li.parentNode);
         });
-        DOM$1.remove(targetNode);
+        DOM.remove(targetNode);
       };
-      bookmarks = DOM$1.select('span[data-mce-type="bookmark"]', ul);
+      bookmarks = DOM.select('span[data-mce-type="bookmark"]', ul);
       newBlock = createTextBlock(editor, li);
-      tmpRng = DOM$1.createRng();
+      tmpRng = DOM.createRng();
       tmpRng.setStartAfter(li);
       tmpRng.setEndAfter(ul);
       fragment = tmpRng.extractContents();
       for (node = fragment.firstChild; node; node = node.firstChild) {
         if (node.nodeName === 'LI' && editor.dom.isEmpty(node)) {
-          DOM$1.remove(node);
+          DOM.remove(node);
           break;
         }
       }
       if (!editor.dom.isEmpty(fragment)) {
-        DOM$1.insertAfter(fragment, ul);
+        DOM.insertAfter(fragment, ul);
       }
-      DOM$1.insertAfter(newBlock, ul);
+      DOM.insertAfter(newBlock, ul);
       if (NodeType.isEmpty(editor.dom, li.parentNode)) {
         removeAndKeepBookmarks(li.parentNode);
       }
-      DOM$1.remove(li);
+      DOM.remove(li);
       if (NodeType.isEmpty(editor.dom, ul)) {
-        DOM$1.remove(ul);
+        DOM.remove(ul);
       }
     };
     var SplitList = { splitList: splitList };
 
     var outdentDlItem = function (editor, item) {
-      if (is$1(item, 'DD')) {
-        mutate(item, 'DT');
-      } else if (is$1(item, 'DT')) {
+      if (is$1(item, 'dd')) {
+        mutate(item, 'dt');
+      } else if (is$1(item, 'dt')) {
         parent(item).each(function (dl) {
           return SplitList.splitList(editor, dl.dom(), item.dom());
         });
       }
     };
     var indentDlItem = function (item) {
-      if (is$1(item, 'DT')) {
-        mutate(item, 'DD');
+      if (is$1(item, 'dt')) {
+        mutate(item, 'dd');
       }
     };
     var dlIndentation = function (editor, indentation, dlItems) {
@@ -43966,13 +43865,55 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       }
     };
 
+    var getNormalizedPoint = function (container, offset) {
+      if (NodeType.isTextNode(container)) {
+        return {
+          container: container,
+          offset: offset
+        };
+      }
+      var node = global$1.getNode(container, offset);
+      if (NodeType.isTextNode(node)) {
+        return {
+          container: node,
+          offset: offset >= container.childNodes.length ? node.data.length : 0
+        };
+      } else if (node.previousSibling && NodeType.isTextNode(node.previousSibling)) {
+        return {
+          container: node.previousSibling,
+          offset: node.previousSibling.data.length
+        };
+      } else if (node.nextSibling && NodeType.isTextNode(node.nextSibling)) {
+        return {
+          container: node.nextSibling,
+          offset: 0
+        };
+      }
+      return {
+        container: container,
+        offset: offset
+      };
+    };
+    var normalizeRange = function (rng) {
+      var outRng = rng.cloneRange();
+      var rangeStart = getNormalizedPoint(rng.startContainer, rng.startOffset);
+      outRng.setStart(rangeStart.container, rangeStart.offset);
+      var rangeEnd = getNormalizedPoint(rng.endContainer, rng.endOffset);
+      outRng.setEnd(rangeEnd.container, rangeEnd.offset);
+      return outRng;
+    };
+    var Range = {
+      getNormalizedPoint: getNormalizedPoint,
+      normalizeRange: normalizeRange
+    };
+
     var selectionIndentation = function (editor, indentation) {
       var lists = map(Selection.getSelectedListRoots(editor), Element.fromDom);
       var dlItems = map(Selection.getSelectedDlItems(editor), Element.fromDom);
       var isHandled = false;
       if (lists.length || dlItems.length) {
         var bookmark = editor.selection.getBookmark();
-        listsIndentation(editor, lists, indentation);
+        listIndentation(editor, lists, indentation);
         dlIndentation(editor, indentation, dlItems);
         editor.selection.moveToBookmark(bookmark);
         editor.selection.setRng(Range.normalizeRange(editor.selection.getRng()));
@@ -43989,6 +43930,85 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
     };
     var flattenListSelection = function (editor) {
       return selectionIndentation(editor, 'Flatten');
+    };
+
+    var global$8 = tinymce.util.Tools.resolve('tinymce.dom.BookmarkManager');
+
+    var DOM$1 = global$7.DOM;
+    var createBookmark = function (rng) {
+      var bookmark = {};
+      var setupEndPoint = function (start) {
+        var offsetNode, container, offset;
+        container = rng[start ? 'startContainer' : 'endContainer'];
+        offset = rng[start ? 'startOffset' : 'endOffset'];
+        if (container.nodeType === 1) {
+          offsetNode = DOM$1.create('span', { 'data-mce-type': 'bookmark' });
+          if (container.hasChildNodes()) {
+            offset = Math.min(offset, container.childNodes.length - 1);
+            if (start) {
+              container.insertBefore(offsetNode, container.childNodes[offset]);
+            } else {
+              DOM$1.insertAfter(offsetNode, container.childNodes[offset]);
+            }
+          } else {
+            container.appendChild(offsetNode);
+          }
+          container = offsetNode;
+          offset = 0;
+        }
+        bookmark[start ? 'startContainer' : 'endContainer'] = container;
+        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
+      };
+      setupEndPoint(true);
+      if (!rng.collapsed) {
+        setupEndPoint();
+      }
+      return bookmark;
+    };
+    var resolveBookmark = function (bookmark) {
+      function restoreEndPoint(start) {
+        var container, offset, node;
+        var nodeIndex = function (container) {
+          var node = container.parentNode.firstChild, idx = 0;
+          while (node) {
+            if (node === container) {
+              return idx;
+            }
+            if (node.nodeType !== 1 || node.getAttribute('data-mce-type') !== 'bookmark') {
+              idx++;
+            }
+            node = node.nextSibling;
+          }
+          return -1;
+        };
+        container = node = bookmark[start ? 'startContainer' : 'endContainer'];
+        offset = bookmark[start ? 'startOffset' : 'endOffset'];
+        if (!container) {
+          return;
+        }
+        if (container.nodeType === 1) {
+          offset = nodeIndex(container);
+          container = container.parentNode;
+          DOM$1.remove(node);
+          if (!container.hasChildNodes() && DOM$1.isBlock(container)) {
+            container.appendChild(DOM$1.create('br'));
+          }
+        }
+        bookmark[start ? 'startContainer' : 'endContainer'] = container;
+        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
+      }
+      restoreEndPoint(true);
+      restoreEndPoint();
+      var rng = DOM$1.createRng();
+      rng.setStart(bookmark.startContainer, bookmark.startOffset);
+      if (bookmark.endContainer) {
+        rng.setEnd(bookmark.endContainer, bookmark.endOffset);
+      }
+      return Range.normalizeRange(rng);
+    };
+    var Bookmark = {
+      createBookmark: createBookmark,
+      resolveBookmark: resolveBookmark
     };
 
     var isCustomList = function (list) {
@@ -44078,7 +44098,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
           return;
         }
         var nextSibling = node.nextSibling;
-        if (global$4.isBookmarkNode(node)) {
+        if (global$8.isBookmarkNode(node)) {
           if (NodeType.isTextBlock(editor, nextSibling) || !nextSibling && node.parentNode === root) {
             block = null;
             return;
@@ -44236,7 +44256,7 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
       mergeWithAdjacentLists: mergeWithAdjacentLists
     };
 
-    var DOM$2 = global$6.DOM;
+    var DOM$2 = global$7.DOM;
     var normalizeList = function (dom, ul) {
       var sibling;
       var parentNode = ul.parentNode;
@@ -44387,7 +44407,11 @@ __webpack_require__(/*! ./plugin.js */ "./node_modules/tinymce/plugins/lists/plu
             if (isForward) {
               mergeForward(editor, rng_1, otherLi_1, li);
             } else {
-              mergeBackward(editor, rng_1, li, otherLi_1);
+              if (NodeType.isFirstChild(li)) {
+                outdentListSelection(editor);
+              } else {
+                mergeBackward(editor, rng_1, li, otherLi_1);
+              }
             }
           });
           return true;
@@ -44623,15 +44647,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
   !*** ./node_modules/tinymce/themes/silver/theme.js ***!
   \*****************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-/**
+/* WEBPACK VAR INJECTION */(function(global) {/**
  * Copyright (c) Tiny Technologies, Inc. All rights reserved.
  * Licensed under the LGPL or a commercial license.
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.11 (2019-07-04)
+ * Version: 5.0.15 (2019-09-02)
  */
 (function (domGlobals) {
     'use strict';
@@ -44691,7 +44715,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var never = constant(false);
     var always = constant(true);
 
-    var global = tinymce.util.Tools.resolve('tinymce.ThemeManager');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.ThemeManager');
 
     var __assign = function () {
       __assign = Object.assign || function __assign(t) {
@@ -44772,8 +44796,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -44956,13 +44981,16 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var typeOf = function (x) {
-      if (x === null)
+      if (x === null) {
         return 'null';
+      }
       var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array'))
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
         return 'array';
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String'))
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
         return 'string';
+      }
       return t;
     };
     var isType = function (type) {
@@ -45110,8 +45138,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
+        if (!isArray(xs[i])) {
           throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
+        }
         push.apply(r, xs[i]);
       }
       return r;
@@ -45243,8 +45272,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
           }
           var args = new Array(argLength);
-          for (var i = 0; i < args.length; i++)
+          for (var i = 0; i < args.length; i++) {
             args[i] = arguments[i];
+          }
           var match = function (branches) {
             var branchKeys = keys(branches);
             if (constructors.length !== branchKeys.length) {
@@ -45253,8 +45283,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             var allReqd = forall(constructors, function (reqKey) {
               return contains(branchKeys, reqKey);
             });
-            if (!allReqd)
+            if (!allReqd) {
               throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
+            }
             return branches[key].apply(null, args);
           };
           return {
@@ -45291,17 +45322,20 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var baseMerge = function (merger) {
       return function () {
         var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
+        for (var i = 0; i < objects.length; i++) {
           objects[i] = arguments[i];
-        if (objects.length === 0)
+        }
+        if (objects.length === 0) {
           throw new Error('Can\'t merge zero objects');
+        }
         var ret = {};
         for (var j = 0; j < objects.length; j++) {
           var curObject = objects[j];
-          for (var key in curObject)
+          for (var key in curObject) {
             if (hasOwnProperty$1.call(curObject, key)) {
               ret[key] = merger(ret[key], curObject[key]);
             }
+          }
         }
         return ret;
       };
@@ -45447,7 +45481,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return values.length === 0 ? Result.value(base) : Result.value(deepMerge(base, merge.apply(undefined, values)));
     };
     var mergeErrors = function (errors) {
-      return compose(Result.error, flatten)(errors);
+      return Result.error(flatten(errors));
     };
     var consolidate = function (objs, base) {
       var partitions = partition$1(objs);
@@ -45599,46 +45633,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       { state: ['name'] }
     ]);
 
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var path = function (parts, scope) {
-      var o = scope !== undefined && scope !== null ? scope : Global;
-      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i)
-        o = o[parts[i]];
-      return o;
-    };
-    var resolve = function (p, scope) {
-      var parts = p.split('.');
-      return path(parts, scope);
-    };
-
-    var unsafe = function (name, scope) {
-      return resolve(name, scope);
-    };
-    var getOrDie = function (name, scope) {
-      var actual = unsafe(name, scope);
-      if (actual === undefined || actual === null)
-        throw name + ' not available on this browser';
-      return actual;
-    };
-    var Global$1 = { getOrDie: getOrDie };
-
-    var json = function () {
-      return Global$1.getOrDie('JSON');
-    };
-    var parse = function (text) {
-      return json().parse(text);
-    };
-    var stringify = function (obj, replacer, space) {
-      return json().stringify(obj, replacer, space);
-    };
-    var Json = {
-      parse: parse,
-      stringify: stringify
-    };
-
     var formatObj = function (input) {
-      return isObject(input) && keys(input).length > 100 ? ' removed due to size' : Json.stringify(input, null, 2);
+      return isObject(input) && keys(input).length > 100 ? ' removed due to size' : JSON.stringify(input, null, 2);
     };
     var formatErrors = function (errors) {
       var es = errors.length > 10 ? errors.slice(0, 10).concat([{
@@ -45767,6 +45763,22 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
       return ResultCombine.consolidateObj(results, {});
     };
+    var valueThunk = function (getDelegate) {
+      var extract = function (path, strength, val) {
+        return getDelegate().extract(path, strength, val);
+      };
+      var toString = function () {
+        return getDelegate().toString();
+      };
+      var toDsl = function () {
+        return getDelegate().toDsl();
+      };
+      return {
+        extract: extract,
+        toString: toString,
+        toDsl: toDsl
+      };
+    };
     var value$1 = function (validator) {
       var extract = function (path, strength, val) {
         return SimpleResult.bindError(validator(val, strength), function (err) {
@@ -45894,8 +45906,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var fields = readOptFrom$1(branches, ch);
       return fields.fold(function () {
         return missingBranch(path, branches, ch);
-      }, function (fs) {
-        return objOf(fs).extract(path.concat(['branch: ' + ch]), strength, input);
+      }, function (vp) {
+        return vp.extract(path.concat(['branch: ' + ch]), strength, input);
       });
     };
     var choose = function (key, branches) {
@@ -45927,6 +45939,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var arrOfVal = function () {
       return arrOf(_anyValue);
     };
+    var valueThunkOf = valueThunk;
     var valueOf = function (validator) {
       return value$1(function (v) {
         return validator(v).fold(SimpleResult.serror, SimpleResult.svalue);
@@ -45949,19 +45962,22 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var asRaw = function (label, prop, obj) {
       return SimpleResult.toResult(extract(label, prop, identity, obj));
     };
-    var getOrDie$1 = function (extraction) {
+    var getOrDie = function (extraction) {
       return extraction.fold(function (errInfo) {
         throw new Error(formatError(errInfo));
       }, identity);
     };
     var asRawOrDie = function (label, prop, obj) {
-      return getOrDie$1(asRaw(label, prop, obj));
+      return getOrDie(asRaw(label, prop, obj));
     };
     var formatError = function (errInfo) {
       return 'Errors: \n' + formatErrors(errInfo.errors) + '\n\nInput object: ' + formatObj(errInfo.input);
     };
-    var choose$1 = function (key, branches) {
+    var chooseProcessor = function (key, branches) {
       return choose(key, branches);
+    };
+    var choose$1 = function (key, branches) {
+      return choose(key, map$1(branches, objOf));
     };
     var anyValue$1 = constant(_anyValue);
     var typedValue = function (validator, expectedType) {
@@ -45974,6 +45990,48 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var string = typedValue(isString, 'string');
     var boolean = typedValue(isBoolean, 'boolean');
     var functionProcessor = typedValue(isFunction, 'function');
+    var isPostMessageable = function (val) {
+      var every = function (iter, callbackFn) {
+        var result = iter.next();
+        while (!result.done) {
+          if (!callbackFn(result.value)) {
+            return false;
+          }
+          result = iter.next();
+        }
+        return true;
+      };
+      if (Object(val) !== val) {
+        return true;
+      }
+      switch ({}.toString.call(val).slice(8, -1)) {
+      case 'Boolean':
+      case 'Number':
+      case 'String':
+      case 'Date':
+      case 'RegExp':
+      case 'Blob':
+      case 'FileList':
+      case 'ImageData':
+      case 'ImageBitmap':
+      case 'ArrayBuffer':
+        return true;
+      case 'Array':
+      case 'Object':
+        return Object.keys(val).every(function (prop) {
+          return isPostMessageable(val[prop]);
+        });
+      case 'Map':
+        return every(val.keys(), isPostMessageable) && every(val.values(), isPostMessageable);
+      case 'Set':
+        return every(val.keys(), isPostMessageable);
+      default:
+        return false;
+      }
+    };
+    var postMessageable = value$1(function (a) {
+      return isPostMessageable(a) ? SimpleResult.svalue(a) : SimpleResult.serror('Expected value to be acceptable for sending via postMessage');
+    });
 
     var validateEnum = function (values) {
       return valueOf(function (value) {
@@ -46060,6 +46118,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var defaultedFunction = function (key, fallback) {
       return defaultedOf(key, fallback, functionProcessor);
     };
+    var defaultedPostMsg = function (key, fallback) {
+      return defaultedOf(key, fallback, postMessageable);
+    };
     var defaultedObjOf = function (key, fallback, objSchema) {
       return defaultedOf(key, fallback, objOf(objSchema));
     };
@@ -46123,18 +46184,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       fromPoint: fromPoint
     };
 
-    var node = function () {
-      var f = Global$1.getOrDie('Node');
-      return f;
-    };
     var compareDocumentPosition = function (a, b, match) {
       return (a.compareDocumentPosition(b) & match) !== 0;
     };
     var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_PRECEDING);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
     };
     var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_CONTAINED_BY);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
     };
     var Node = {
       documentPositionPreceding: documentPositionPreceding,
@@ -46144,18 +46201,20 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var firstMatch = function (regexes, s) {
       for (var i = 0; i < regexes.length; i++) {
         var x = regexes[i];
-        if (x.test(s))
+        if (x.test(s)) {
           return x;
+        }
       }
       return undefined;
     };
     var find$2 = function (regexes, agent) {
       var r = firstMatch(regexes, agent);
-      if (!r)
+      if (!r) {
         return {
           major: 0,
           minor: 0
         };
+      }
       var group = function (i) {
         return Number(agent.replace(r, '$' + i));
       };
@@ -46163,8 +46222,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var detect = function (versionRegexes, agent) {
       var cleanedAgent = String(agent).toLowerCase();
-      if (versionRegexes.length === 0)
+      if (versionRegexes.length === 0) {
         return unknown();
+      }
       return find$2(versionRegexes, cleanedAgent);
     };
     var unknown = function () {
@@ -46320,10 +46380,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var checkRange = function (str, substr, start) {
-      if (substr === '')
+      if (substr === '') {
         return true;
-      if (str.length < substr.length)
+      }
+      if (str.length < substr.length) {
         return false;
+      }
       var x = str.substr(start, start + substr.length);
       return x === substr;
     };
@@ -46348,8 +46410,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         name: 'Edge',
         versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
         search: function (uastring) {
-          var monstrosity = contains$1(uastring, 'edge/') && contains$1(uastring, 'chrome') && contains$1(uastring, 'safari') && contains$1(uastring, 'applewebkit');
-          return monstrosity;
+          return contains$1(uastring, 'edge/') && contains$1(uastring, 'chrome') && contains$1(uastring, 'safari') && contains$1(uastring, 'applewebkit');
         }
       },
       {
@@ -46480,19 +46541,22 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var ELEMENT$1 = ELEMENT;
     var DOCUMENT$1 = DOCUMENT;
     var is = function (element, selector) {
-      var elem = element.dom();
-      if (elem.nodeType !== ELEMENT$1) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT$1) {
         return false;
-      } else if (elem.matches !== undefined) {
-        return elem.matches(selector);
-      } else if (elem.msMatchesSelector !== undefined) {
-        return elem.msMatchesSelector(selector);
-      } else if (elem.webkitMatchesSelector !== undefined) {
-        return elem.webkitMatchesSelector(selector);
-      } else if (elem.mozMatchesSelector !== undefined) {
-        return elem.mozMatchesSelector(selector);
       } else {
-        throw new Error('Browser lacks native selectors');
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
       }
     };
     var bypassSelector = function (dom) {
@@ -46527,7 +46591,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var nu$4 = function (parts) {
       if (!hasKey$1(parts, 'can') && !hasKey$1(parts, 'abort') && !hasKey$1(parts, 'run')) {
-        throw new Error('EventHandler defined by: ' + Json.stringify(parts, null, 2) + ' does not have can, abort, or run!');
+        throw new Error('EventHandler defined by: ' + JSON.stringify(parts, null, 2) + ' does not have can, abort, or run!');
       }
       return asRawOrDie('Extracting event.handler', objOfOnly([
         defaulted$1('can', constant(true)),
@@ -46654,6 +46718,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return is(scope, a) ? Option.some(scope) : isFunction(isRoot) && isRoot(scope) ? Option.none() : ancestor(scope, a, isRoot);
     }
 
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
     var name = function (element) {
       var r = element.dom().nodeName;
       return r.toLowerCase();
@@ -46668,7 +46734,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var isElement = isType$1(ELEMENT);
     var isText = isType$1(TEXT);
-    var isDocument = isType$1(DOCUMENT);
 
     var inBody = function (element) {
       var dom = isText(element) ? element.dom().parentNode : element.dom();
@@ -46700,16 +46765,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return Option.none();
     };
     var closest = function (scope, predicate, isRoot) {
-      var is = function (s) {
-        return predicate(s);
+      var is = function (s, test) {
+        return test(s);
       };
       return ClosestOrAncestor(is, ancestor, scope, predicate, isRoot);
     };
     var descendant = function (scope, predicate) {
       var descend = function (node) {
         for (var i = 0; i < node.childNodes.length; i++) {
-          if (predicate(Element.fromDom(node.childNodes[i]))) {
-            return Option.some(Element.fromDom(node.childNodes[i]));
+          var child_1 = Element.fromDom(node.childNodes[i]);
+          if (predicate(child_1)) {
+            return Option.some(child_1);
           }
           var res = descend(node.childNodes[i]);
           if (res.isSome()) {
@@ -46862,11 +46928,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       throw new Error('Unsupported keys for object: ' + sort$1(unsupported).join(', '));
     };
     var validateStrArr = function (label, array) {
-      if (!isArray(array))
+      if (!isArray(array)) {
         throw new Error('The ' + label + ' fields must be an array. Was: ' + array + '.');
+      }
       each(array, function (a) {
-        if (!isString(a))
+        if (!isString(a)) {
           throw new Error('The value ' + a + ' in the ' + label + ' fields was not a string.');
+        }
       });
     };
     var checkDupes = function (everything) {
@@ -46881,8 +46949,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var MixedBag = function (required, optional) {
       var everything = required.concat(optional);
-      if (everything.length === 0)
+      if (everything.length === 0) {
         throw new Error('You must specify at least one required or optional field.');
+      }
       validateStrArr('required', required);
       validateStrArr('optional', optional);
       checkDupes(everything);
@@ -46891,13 +46960,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         var allReqd = forall(required, function (req) {
           return contains(keys$1, req);
         });
-        if (!allReqd)
+        if (!allReqd) {
           reqMessage(required, keys$1);
+        }
         var unsupported = filter(keys$1, function (key) {
           return !contains(everything, key);
         });
-        if (unsupported.length > 0)
+        if (unsupported.length > 0) {
           unsuppMessage(unsupported);
+        }
         var r = {};
         each(required, function (req) {
           r[req] = constant(obj[req]);
@@ -46913,25 +46984,19 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return Element.fromDom(element.dom().ownerDocument);
     };
     var defaultView = function (element) {
-      var el = element.dom();
-      var defView = el.ownerDocument.defaultView;
-      return Element.fromDom(defView);
+      return Element.fromDom(element.dom().ownerDocument.defaultView);
     };
     var parent = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.parentNode).map(Element.fromDom);
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
     };
     var offsetParent = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.offsetParent).map(Element.fromDom);
+      return Option.from(element.dom().offsetParent).map(Element.fromDom);
     };
     var nextSibling = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.nextSibling).map(Element.fromDom);
+      return Option.from(element.dom().nextSibling).map(Element.fromDom);
     };
     var children = function (element) {
-      var dom = element.dom();
-      return map(dom.childNodes, Element.fromDom);
+      return map(element.dom().childNodes, Element.fromDom);
     };
     var child = function (element, index) {
       var cs = element.dom().childNodes;
@@ -47242,7 +47307,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         ]);
       });
       var validated = asRaw('component.behaviours', objOf(schema), spec.behaviours).fold(function (errInfo) {
-        throw new Error(formatError(errInfo) + '\nComplete spec:\n' + Json.stringify(spec, null, 2));
+        throw new Error(formatError(errInfo) + '\nComplete spec:\n' + JSON.stringify(spec, null, 2));
       }, function (v) {
         return v;
       });
@@ -47333,10 +47398,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           var aIndex = order.indexOf(aKey);
           var bIndex = order.indexOf(bKey);
           if (aIndex === -1) {
-            throw new Error('The ordering for ' + label + ' does not have an entry for ' + aKey + '.\nOrder specified: ' + Json.stringify(order, null, 2));
+            throw new Error('The ordering for ' + label + ' does not have an entry for ' + aKey + '.\nOrder specified: ' + JSON.stringify(order, null, 2));
           }
           if (bIndex === -1) {
-            throw new Error('The ordering for ' + label + ' does not have an entry for ' + bKey + '.\nOrder specified: ' + Json.stringify(order, null, 2));
+            throw new Error('The ordering for ' + label + ' does not have an entry for ' + bKey + '.\nOrder specified: ' + JSON.stringify(order, null, 2));
           }
           if (aIndex < bIndex) {
             return -1;
@@ -47411,7 +47476,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
     var missingOrderError = function (eventName, tuples) {
-      return Result.error(['The event (' + eventName + ') has more than one behaviour that listens to it.\nWhen this occurs, you must ' + 'specify an event ordering for the behaviours in your spec (e.g. [ "listing", "toggling" ]).\nThe behaviours that ' + 'can trigger it are: ' + Json.stringify(map(tuples, function (c) {
+      return Result.error(['The event (' + eventName + ') has more than one behaviour that listens to it.\nWhen this occurs, you must ' + 'specify an event ordering for the behaviours in your spec (e.g. [ "listing", "toggling" ]).\nThe behaviours that ' + 'can trigger it are: ' + JSON.stringify(map(tuples, function (c) {
           return c.name();
         }), null, 2)]);
     };
@@ -47433,8 +47498,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         var combined = tuples.length === 1 ? Result.value(tuples[0].handler()) : fuse$1(tuples, eventOrder, eventName);
         return combined.map(function (handler) {
           var assembled = assemble(handler);
-          var purpose = tuples.length > 1 ? filter(eventOrder, function (o) {
-            return contains(tuples, function (t) {
+          var purpose = tuples.length > 1 ? filter(eventOrder[eventName], function (o) {
+            return exists(tuples, function (t) {
               return t.name() === o;
             });
           }).join(' > ') : tuples[0].name();
@@ -47725,7 +47790,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return me;
       };
       var systemApi = Cell(singleton);
-      var info = getOrDie$1(toInfo(spec));
+      var info = getOrDie(toInfo(spec));
       var bBlob = generate$3(spec);
       var bList = getBehaviours(bBlob);
       var bData = getData(bBlob);
@@ -47753,7 +47818,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var config = function (behaviour) {
         var b = bData;
         var f = isFunction(b[behaviour.name()]) ? b[behaviour.name()] : function () {
-          throw new Error('Could not find ' + behaviour.name() + ' in ' + Json.stringify(spec, null, 2));
+          throw new Error('Could not find ' + behaviour.name() + ' in ' + JSON.stringify(spec, null, 2));
         };
         return f();
       };
@@ -48031,7 +48096,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return true;
       }
     };
-    var path$1 = [
+    var path = [
       'alloy/data/Fields',
       'alloy/debugging/Debugging'
     ];
@@ -48040,7 +48105,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       if (err.stack !== undefined) {
         var lines = err.stack.split('\n');
         return find(lines, function (line) {
-          return line.indexOf('alloy') > 0 && !exists(path$1, function (p) {
+          return line.indexOf('alloy') > 0 && !exists(path, function (p) {
             return line.indexOf(p) > -1;
           });
         }).getOr(unknown$3);
@@ -48290,18 +48355,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         exhibit: exhibit
     });
 
-    var attached = function (element, scope) {
-      var doc = scope || Element.fromDom(domGlobals.document.documentElement);
-      return ancestor(element, curry(eq, doc)).isSome();
-    };
-    var windowOf = function (element) {
-      var dom = element.dom();
-      if (dom === dom.window && element instanceof domGlobals.Window) {
-        return element;
-      }
-      return isDocument(element) ? dom.defaultView || dom.parentWindow : null;
-    };
-
     var r = function (left, top) {
       var translate = function (x, y) {
         return r(left + x, top + y);
@@ -48324,7 +48377,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var absolute = function (element) {
       var doc = element.dom().ownerDocument;
       var body = doc.body;
-      var win = windowOf(Element.fromDom(doc));
+      var win = doc.defaultView;
       var html = doc.documentElement;
       var scrollTop = firstDefinedOrZero(win.pageYOffset, html.scrollTop);
       var scrollLeft = firstDefinedOrZero(win.pageXOffset, html.scrollLeft);
@@ -48336,22 +48389,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var dom = element.dom();
       var doc = dom.ownerDocument;
       var body = doc.body;
-      var html = Element.fromDom(doc.documentElement);
       if (body === dom) {
         return Position(body.offsetLeft, body.offsetTop);
       }
-      if (!attached(element, html)) {
+      if (!inBody(element)) {
         return Position(0, 0);
       }
       return boxPosition(dom);
-    };
-
-    var isSafari = PlatformDetection$1.detect().browser.isSafari();
-    var get$6 = function (_DOC) {
-      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
-      var x = doc.body.scrollLeft || doc.documentElement.scrollLeft;
-      var y = doc.body.scrollTop || doc.documentElement.scrollTop;
-      return Position(x, y);
     };
 
     function Dimension (name, getOffset) {
@@ -48394,28 +48438,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     }
 
-    var api = Dimension('width', function (element) {
-      return element.dom().offsetWidth;
+    var api = Dimension('height', function (element) {
+      var dom = element.dom();
+      return inBody(element) ? dom.getBoundingClientRect().height : dom.offsetHeight;
     });
-    var set$4 = function (element, h) {
-      api.set(element, h);
-    };
-    var get$7 = function (element) {
+    var get$6 = function (element) {
       return api.get(element);
     };
     var getOuter$1 = function (element) {
       return api.getOuter(element);
-    };
-
-    var api$1 = Dimension('height', function (element) {
-      var dom = element.dom();
-      return inBody(element) ? dom.getBoundingClientRect().height : dom.offsetHeight;
-    });
-    var get$8 = function (element) {
-      return api$1.get(element);
-    };
-    var getOuter$2 = function (element) {
-      return api$1.getOuter(element);
     };
     var setMax = function (element, value) {
       var inclusions = [
@@ -48426,65 +48457,29 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         'border-bottom-width',
         'margin-bottom'
       ];
-      var absMax = api$1.max(element, value, inclusions);
+      var absMax = api.max(element, value, inclusions);
       set$2(element, 'max-height', absMax + 'px');
     };
 
-    var decision = MixedBag([
-      'x',
-      'y',
-      'width',
-      'height',
-      'maxHeight',
-      'direction',
-      'classes',
-      'label',
-      'candidateYforTest'
-    ], []);
-    var css = Immutable('position', 'left', 'top', 'right', 'bottom');
+    var api$1 = Dimension('width', function (element) {
+      return element.dom().offsetWidth;
+    });
+    var set$4 = function (element, h) {
+      api$1.set(element, h);
+    };
+    var get$7 = function (element) {
+      return api$1.get(element);
+    };
+    var getOuter$2 = function (element) {
+      return api$1.getOuter(element);
+    };
 
-    var adt$2 = Adt.generate([
-      { southeast: [] },
-      { southwest: [] },
-      { northeast: [] },
-      { northwest: [] },
-      { south: [] },
-      { north: [] },
-      { east: [] },
-      { west: [] }
-    ]);
-    var cata = function (subject, southeast, southwest, northeast, northwest, south, north, east, west) {
-      return subject.fold(southeast, southwest, northeast, northwest, south, north, east, west);
-    };
-    var cataVertical = function (subject, south, middle, north) {
-      return subject.fold(south, south, north, north, south, north, middle, middle);
-    };
-    var southeast = adt$2.southeast;
-    var southwest = adt$2.southwest;
-    var northeast = adt$2.northeast;
-    var northwest = adt$2.northwest;
-    var south = adt$2.south;
-    var north = adt$2.north;
-    var east = adt$2.east;
-    var west = adt$2.west;
-
-    var pointed = Immutable('point', 'width', 'height');
-    var rect = Immutable('x', 'y', 'width', 'height');
-    var bounds = function (x, y, width, height) {
-      return {
-        x: constant(x),
-        y: constant(y),
-        width: constant(width),
-        height: constant(height),
-        right: constant(x + width),
-        bottom: constant(y + height)
-      };
-    };
-    var box = function (element) {
-      var xy = absolute(element);
-      var w = getOuter$1(element);
-      var h = getOuter$2(element);
-      return bounds(xy.left(), xy.top(), w, h);
+    var isSafari = PlatformDetection$1.detect().browser.isSafari();
+    var get$8 = function (_DOC) {
+      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
+      var x = doc.body.scrollLeft || doc.documentElement.scrollLeft;
+      var y = doc.body.scrollTop || doc.documentElement.scrollTop;
+      return Position(x, y);
     };
 
     var walkUp = function (navigation, doc) {
@@ -48516,7 +48511,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var find$4 = function (element) {
       var doc = Element.fromDom(domGlobals.document);
-      var scroll = get$6(doc);
+      var scroll = get$8(doc);
       var path = pathTo(element, Navigation);
       return path.fold(curry(absolute, element), function (frames) {
         var offset = viewport(element);
@@ -48534,254 +48529,30 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     };
 
+    var pointed = Immutable('point', 'width', 'height');
+    var rect = Immutable('x', 'y', 'width', 'height');
+    var bounds = function (x, y, width, height) {
+      return {
+        x: constant(x),
+        y: constant(y),
+        width: constant(width),
+        height: constant(height),
+        right: constant(x + width),
+        bottom: constant(y + height)
+      };
+    };
+    var box = function (element) {
+      var xy = absolute(element);
+      var w = getOuter$2(element);
+      var h = getOuter$1(element);
+      return bounds(xy.left(), xy.top(), w, h);
+    };
     var win = function () {
       var width = domGlobals.window.innerWidth;
       var height = domGlobals.window.innerHeight;
       var doc = Element.fromDom(domGlobals.document);
-      var scroll = get$6(doc);
+      var scroll = get$8(doc);
       return bounds(scroll.left(), scroll.top(), width, height);
-    };
-
-    var adt$3 = Adt.generate([
-      { none: [] },
-      {
-        relative: [
-          'x',
-          'y',
-          'width',
-          'height'
-        ]
-      },
-      {
-        fixed: [
-          'x',
-          'y',
-          'width',
-          'height'
-        ]
-      }
-    ]);
-    var positionWithDirection = function (posName, decision, x, y, width, height) {
-      var decisionX = decision.x() - x;
-      var decisionY = decision.y() - y;
-      var decisionWidth = decision.width();
-      var decisionHeight = decision.height();
-      var decisionRight = width - (decisionX + decisionWidth);
-      var decisionBottom = height - (decisionY + decisionHeight);
-      var left = Option.some(decisionX);
-      var top = Option.some(decisionY);
-      var right = Option.some(decisionRight);
-      var bottom = Option.some(decisionBottom);
-      var none = Option.none();
-      return cata(decision.direction(), function () {
-        return css(posName, left, top, none, none);
-      }, function () {
-        return css(posName, none, top, right, none);
-      }, function () {
-        return css(posName, left, none, none, bottom);
-      }, function () {
-        return css(posName, none, none, right, bottom);
-      }, function () {
-        return css(posName, left, top, none, none);
-      }, function () {
-        return css(posName, left, none, none, bottom);
-      }, function () {
-        return css(posName, left, top, none, none);
-      }, function () {
-        return css(posName, none, top, right, none);
-      });
-    };
-    var reposition = function (origin, decision) {
-      return origin.fold(function () {
-        return css('absolute', Option.some(decision.x()), Option.some(decision.y()), Option.none(), Option.none());
-      }, function (x, y, width, height) {
-        return positionWithDirection('absolute', decision, x, y, width, height);
-      }, function (x, y, width, height) {
-        return positionWithDirection('fixed', decision, x, y, width, height);
-      });
-    };
-    var toBox = function (origin, element) {
-      var rel = curry(find$4, element);
-      var position = origin.fold(rel, rel, function () {
-        var scroll = get$6();
-        return find$4(element).translate(-scroll.left(), -scroll.top());
-      });
-      var width = getOuter$1(element);
-      var height = getOuter$2(element);
-      return bounds(position.left(), position.top(), width, height);
-    };
-    var viewport$1 = function (origin, getBounds) {
-      return getBounds.fold(function () {
-        return origin.fold(win, win, bounds);
-      }, function (b) {
-        return origin.fold(b, b, bounds);
-      });
-    };
-    var cata$1 = function (subject, onNone, onRelative, onFixed) {
-      return subject.fold(onNone, onRelative, onFixed);
-    };
-    var relative = adt$3.relative;
-    var fixed = adt$3.fixed;
-
-    var anchor = Immutable('anchorBox', 'origin');
-    var box$1 = function (anchorBox, origin) {
-      return anchor(anchorBox, origin);
-    };
-
-    var adt$4 = Adt.generate([
-      { fit: ['reposition'] },
-      {
-        nofit: [
-          'reposition',
-          'deltaW',
-          'deltaH'
-        ]
-      }
-    ]);
-    var attempt = function (candidate, width, height, bounds) {
-      var candidateX = candidate.x();
-      var candidateY = candidate.y();
-      var bubbleLeft = candidate.bubble().offset().left();
-      var bubbleTop = candidate.bubble().offset().top();
-      var boundsX = bounds.x();
-      var boundsY = bounds.y();
-      var boundsWidth = bounds.width();
-      var boundsHeight = bounds.height();
-      var newX = candidateX + bubbleLeft;
-      var newY = candidateY + bubbleTop;
-      var xInBounds = newX >= boundsX;
-      var yInBounds = newY >= boundsY;
-      var originInBounds = xInBounds && yInBounds;
-      var xFit = newX + width <= boundsX + boundsWidth;
-      var yFit = newY + height <= boundsY + boundsHeight;
-      var sizeInBounds = xFit && yFit;
-      var deltaW = xInBounds ? Math.min(width, boundsX + boundsWidth - newX) : Math.abs(boundsX - (newX + width));
-      var deltaH = yInBounds ? Math.min(height, boundsY + boundsHeight - newY) : Math.abs(boundsY - (newY + height));
-      var maxX = bounds.x() + bounds.width();
-      var minX = Math.max(bounds.x(), newX);
-      var limitX = Math.min(minX, maxX);
-      var limitY = yInBounds ? newY : newY + (height - deltaH);
-      var upAvailable = constant(limitY + deltaH - boundsY);
-      var downAvailable = constant(boundsY + boundsHeight - limitY);
-      var maxHeight = cataVertical(candidate.direction(), downAvailable, downAvailable, upAvailable);
-      var reposition = decision({
-        x: limitX,
-        y: limitY,
-        width: deltaW,
-        height: deltaH,
-        maxHeight: maxHeight,
-        direction: candidate.direction(),
-        classes: {
-          on: candidate.bubble().classesOn(),
-          off: candidate.bubble().classesOff()
-        },
-        label: candidate.label(),
-        candidateYforTest: newY
-      });
-      return originInBounds && sizeInBounds ? adt$4.fit(reposition) : adt$4.nofit(reposition, deltaW, deltaH);
-    };
-    var attempts = function (candidates, anchorBox, elementBox, bubbles, bounds) {
-      var panelWidth = elementBox.width();
-      var panelHeight = elementBox.height();
-      var attemptBestFit = function (layout, reposition, deltaW, deltaH) {
-        var next = layout(anchorBox, elementBox, bubbles);
-        var attemptLayout = attempt(next, panelWidth, panelHeight, bounds);
-        return attemptLayout.fold(adt$4.fit, function (newReposition, newDeltaW, newDeltaH) {
-          var improved = newDeltaH > deltaH || newDeltaW > deltaW;
-          return improved ? adt$4.nofit(newReposition, newDeltaW, newDeltaH) : adt$4.nofit(reposition, deltaW, deltaH);
-        });
-      };
-      var abc = foldl(candidates, function (b, a) {
-        var bestNext = curry(attemptBestFit, a);
-        return b.fold(adt$4.fit, bestNext);
-      }, adt$4.nofit(decision({
-        x: anchorBox.x(),
-        y: anchorBox.y(),
-        width: elementBox.width(),
-        height: elementBox.height(),
-        maxHeight: elementBox.height(),
-        direction: southeast(),
-        classes: [],
-        label: 'none',
-        candidateYforTest: anchorBox.y()
-      }), -1, -1));
-      return abc.fold(identity, identity);
-    };
-
-    var elementSize = function (p) {
-      return {
-        width: constant(getOuter$1(p)),
-        height: constant(getOuter$2(p))
-      };
-    };
-    var layout = function (anchorBox, element, bubbles, options) {
-      remove$6(element, 'max-height');
-      var elementBox = elementSize(element);
-      return attempts(options.preference(), anchorBox, elementBox, bubbles, options.bounds());
-    };
-    var setClasses = function (element, decision) {
-      var classInfo = decision.classes();
-      remove$5(element, classInfo.off);
-      add$3(element, classInfo.on);
-    };
-    var setHeight = function (element, decision, options) {
-      var maxHeightFunction = options.maxHeightFunction();
-      maxHeightFunction(element, decision.maxHeight());
-    };
-    var position = function (element, decision, options) {
-      var addPx = function (num) {
-        return num + 'px';
-      };
-      var newPosition = reposition(options.origin(), decision);
-      setOptions(element, {
-        position: Option.some(newPosition.position()),
-        left: newPosition.left().map(addPx),
-        top: newPosition.top().map(addPx),
-        right: newPosition.right().map(addPx),
-        bottom: newPosition.bottom().map(addPx)
-      });
-    };
-
-    var setMaxHeight = function (element, maxHeight) {
-      setMax(element, Math.floor(maxHeight));
-    };
-    var anchored = constant(function (element, available) {
-      setMaxHeight(element, available);
-      setAll$1(element, {
-        'overflow-x': 'hidden',
-        'overflow-y': 'auto'
-      });
-    });
-    var expandable = constant(function (element, available) {
-      setMaxHeight(element, available);
-    });
-
-    var reparteeOptions = MixedBag([
-      'bounds',
-      'origin',
-      'preference',
-      'maxHeightFunction'
-    ], []);
-    var defaultOr = function (options, key, dephault) {
-      return options[key] === undefined ? dephault : options[key];
-    };
-    var simple = function (anchor, element, bubble, layouts, getBounds, overrideOptions) {
-      var maxHeightFunction = defaultOr(overrideOptions, 'maxHeightFunction', anchored());
-      var anchorBox = anchor.anchorBox();
-      var origin = anchor.origin();
-      var options = reparteeOptions({
-        bounds: viewport$1(origin, getBounds),
-        origin: origin,
-        preference: layouts,
-        maxHeightFunction: maxHeightFunction
-      });
-      go(anchorBox, element, bubble, options);
-    };
-    var go = function (anchorBox, element, bubble, options) {
-      var decision = layout(anchorBox, element, bubble, options);
-      position(element, decision, options);
-      setClasses(element, decision);
-      setHeight(element, decision, options);
     };
 
     var allAlignments = [
@@ -48860,6 +48631,54 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             'valignCentre',
             'right'
           ]);
+        },
+        innerNorthwest: function () {
+          return make(-width, yoffset, [
+            'top',
+            'alignRight'
+          ]);
+        },
+        innerNortheast: function () {
+          return make(width, yoffset, [
+            'top',
+            'alignLeft'
+          ]);
+        },
+        innerNorth: function () {
+          return make(-width / 2, yoffset, [
+            'top',
+            'alignCentre'
+          ]);
+        },
+        innerSouthwest: function () {
+          return make(-width, -yoffset, [
+            'bottom',
+            'alignRight'
+          ]);
+        },
+        innerSoutheast: function () {
+          return make(width, -yoffset, [
+            'bottom',
+            'alignLeft'
+          ]);
+        },
+        innerSouth: function () {
+          return make(-width / 2, -yoffset, [
+            'bottom',
+            'alignCentre'
+          ]);
+        },
+        innerWest: function () {
+          return make(width, -yoffset / 2, [
+            'valignCentre',
+            'right'
+          ]);
+        },
+        innerEast: function () {
+          return make(-width, -yoffset / 2, [
+            'valignCentre',
+            'left'
+          ]);
         }
       };
     };
@@ -48868,6 +48687,31 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var nu$8 = Immutable('x', 'y', 'bubble', 'direction', 'label');
+
+    var adt$2 = Adt.generate([
+      { southeast: [] },
+      { southwest: [] },
+      { northeast: [] },
+      { northwest: [] },
+      { south: [] },
+      { north: [] },
+      { east: [] },
+      { west: [] }
+    ]);
+    var cata = function (subject, southeast, southwest, northeast, northwest, south, north, east, west) {
+      return subject.fold(southeast, southwest, northeast, northwest, south, north, east, west);
+    };
+    var cataVertical = function (subject, south, middle, north) {
+      return subject.fold(south, south, north, north, south, north, middle, middle);
+    };
+    var southeast = adt$2.southeast;
+    var southwest = adt$2.southwest;
+    var northeast = adt$2.northeast;
+    var northwest = adt$2.northwest;
+    var south = adt$2.south;
+    var north = adt$2.north;
+    var east = adt$2.east;
+    var west = adt$2.west;
 
     var eastX = function (anchor) {
       return anchor.x();
@@ -48941,6 +48785,100 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         west$1
       ];
     };
+
+    var decision = MixedBag([
+      'x',
+      'y',
+      'width',
+      'height',
+      'maxHeight',
+      'direction',
+      'classes',
+      'label',
+      'candidateYforTest'
+    ], []);
+    var css = Immutable('position', 'left', 'top', 'right', 'bottom');
+
+    var adt$3 = Adt.generate([
+      { none: [] },
+      {
+        relative: [
+          'x',
+          'y',
+          'width',
+          'height'
+        ]
+      },
+      {
+        fixed: [
+          'x',
+          'y',
+          'width',
+          'height'
+        ]
+      }
+    ]);
+    var positionWithDirection = function (posName, decision, x, y, width, height) {
+      var decisionX = decision.x() - x;
+      var decisionY = decision.y() - y;
+      var decisionWidth = decision.width();
+      var decisionHeight = decision.height();
+      var decisionRight = width - (decisionX + decisionWidth);
+      var decisionBottom = height - (decisionY + decisionHeight);
+      var left = Option.some(decisionX);
+      var top = Option.some(decisionY);
+      var right = Option.some(decisionRight);
+      var bottom = Option.some(decisionBottom);
+      var none = Option.none();
+      return cata(decision.direction(), function () {
+        return css(posName, left, top, none, none);
+      }, function () {
+        return css(posName, none, top, right, none);
+      }, function () {
+        return css(posName, left, none, none, bottom);
+      }, function () {
+        return css(posName, none, none, right, bottom);
+      }, function () {
+        return css(posName, left, top, none, none);
+      }, function () {
+        return css(posName, left, none, none, bottom);
+      }, function () {
+        return css(posName, left, top, none, none);
+      }, function () {
+        return css(posName, none, top, right, none);
+      });
+    };
+    var reposition = function (origin, decision) {
+      return origin.fold(function () {
+        return css('absolute', Option.some(decision.x()), Option.some(decision.y()), Option.none(), Option.none());
+      }, function (x, y, width, height) {
+        return positionWithDirection('absolute', decision, x, y, width, height);
+      }, function (x, y, width, height) {
+        return positionWithDirection('fixed', decision, x, y, width, height);
+      });
+    };
+    var toBox = function (origin, element) {
+      var rel = curry(find$4, element);
+      var position = origin.fold(rel, rel, function () {
+        var scroll = get$8();
+        return find$4(element).translate(-scroll.left(), -scroll.top());
+      });
+      var width = getOuter$2(element);
+      var height = getOuter$1(element);
+      return bounds(position.left(), position.top(), width, height);
+    };
+    var viewport$1 = function (origin, getBounds) {
+      return getBounds.fold(function () {
+        return origin.fold(win, win, bounds);
+      }, function (b) {
+        return origin.fold(b, b, bounds);
+      });
+    };
+    var cata$1 = function (subject, onNone, onRelative, onFixed) {
+      return subject.fold(onNone, onRelative, onFixed);
+    };
+    var relative = adt$3.relative;
+    var fixed = adt$3.fixed;
 
     var nu$9 = function (x) {
       return x;
@@ -49021,7 +48959,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var create$2 = Immutable('start', 'soffset', 'finish', 'foffset');
     var SimRange = { create: create$2 };
 
-    var adt$5 = Adt.generate([
+    var adt$4 = Adt.generate([
       { before: ['element'] },
       {
         on: [
@@ -49037,9 +48975,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var getStart = function (situ) {
       return situ.fold(identity, identity, identity);
     };
-    var before$2 = adt$5.before;
-    var on = adt$5.on;
-    var after$1 = adt$5.after;
+    var before$2 = adt$4.before;
+    var on = adt$4.on;
+    var after$1 = adt$4.after;
     var Situ = {
       before: before$2,
       on: on,
@@ -49048,7 +48986,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       getStart: getStart
     };
 
-    var adt$6 = Adt.generate([
+    var adt$5 = Adt.generate([
       { domRange: ['rng'] },
       {
         relative: [
@@ -49066,7 +49004,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     ]);
     var exactFromRange = function (simRange) {
-      return adt$6.exact(simRange.start(), simRange.soffset(), simRange.finish(), simRange.foffset());
+      return adt$5.exact(simRange.start(), simRange.soffset(), simRange.finish(), simRange.foffset());
     };
     var getStart$1 = function (selection) {
       return selection.match({
@@ -49081,9 +49019,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
       });
     };
-    var domRange = adt$6.domRange;
-    var relative$1 = adt$6.relative;
-    var exact = adt$6.exact;
+    var domRange = adt$5.domRange;
+    var relative$1 = adt$5.relative;
+    var exact = adt$5.exact;
     var getWin = function (selection) {
       var start = getStart$1(selection);
       return defaultView(start);
@@ -49144,7 +49082,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return rect.width > 0 || rect.height > 0 ? Option.some(rect).map(toRect) : Option.none();
     };
 
-    var adt$7 = Adt.generate([
+    var adt$6 = Adt.generate([
       {
         ltr: [
           'start',
@@ -49202,12 +49140,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           return rev.collapsed === false;
         });
         return reversed.map(function (rev) {
-          return adt$7.rtl(Element.fromDom(rev.endContainer), rev.endOffset, Element.fromDom(rev.startContainer), rev.startOffset);
+          return adt$6.rtl(Element.fromDom(rev.endContainer), rev.endOffset, Element.fromDom(rev.startContainer), rev.startOffset);
         }).getOrThunk(function () {
-          return fromRange(win, adt$7.ltr, rng);
+          return fromRange(win, adt$6.ltr, rng);
         });
       } else {
-        return fromRange(win, adt$7.ltr, rng);
+        return fromRange(win, adt$6.ltr, rng);
       }
     };
     var diagnose = function (win, selection) {
@@ -49263,18 +49201,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
         return getOption(element).getOr('');
       };
-      var getOptionIE10 = function (element) {
-        try {
-          return getOptionSafe(element);
-        } catch (e) {
-          return Option.none();
-        }
-      };
-      var getOptionSafe = function (element) {
+      var getOption = function (element) {
         return is(element) ? Option.from(element.dom().nodeValue) : Option.none();
       };
-      var browser = PlatformDetection$1.detect().browser;
-      var getOption = browser.isIE() && browser.version.major === 10 ? getOptionIE10 : getOptionSafe;
       var set = function (element, value) {
         if (!is(element)) {
           throw new Error('Can only set raw ' + name + ' value of a ' + name + ' node');
@@ -49332,8 +49261,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     };
     var locateNode = function (doc, node, x, y) {
-      var locator = isText(node) ? locate : searchInChildren;
-      return locator(doc, node, x, y);
+      return isText(node) ? locate(doc, node, x, y) : searchInChildren(doc, node, x, y);
     };
     var locate$1 = function (doc, node, x, y) {
       var r = doc.dom().createRange();
@@ -49508,7 +49436,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
 
-    var adt$8 = Adt.generate([
+    var adt$7 = Adt.generate([
       { screen: ['point'] },
       {
         absolute: [
@@ -49545,8 +49473,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var points = map(positions, toAbsolute);
       return sum(points);
     };
-    var screen = adt$8.screen;
-    var absolute$1 = adt$8.absolute;
+    var screen = adt$7.screen;
+    var absolute$1 = adt$7.absolute;
 
     var getOffset = function (component, origin, anchorInfo) {
       var win = defaultView(anchorInfo.root).dom();
@@ -49559,7 +49487,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var getRootPoint = function (component, origin, anchorInfo) {
       var doc = owner(component.element());
-      var outerScroll = get$6(doc);
+      var outerScroll = get$8(doc);
       var offset = getOffset(component, origin, anchorInfo).getOr(outerScroll);
       return absolute$1(offset, outerScroll.left(), outerScroll.top());
     };
@@ -49774,6 +49702,167 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       makeshift: MakeshiftAnchor
     });
 
+    var anchor = Immutable('anchorBox', 'origin');
+    var box$1 = function (anchorBox, origin) {
+      return anchor(anchorBox, origin);
+    };
+
+    var adt$8 = Adt.generate([
+      { fit: ['reposition'] },
+      {
+        nofit: [
+          'reposition',
+          'deltaW',
+          'deltaH'
+        ]
+      }
+    ]);
+    var attempt = function (candidate, width, height, bounds) {
+      var candidateX = candidate.x();
+      var candidateY = candidate.y();
+      var bubbleLeft = candidate.bubble().offset().left();
+      var bubbleTop = candidate.bubble().offset().top();
+      var boundsX = bounds.x();
+      var boundsY = bounds.y();
+      var boundsWidth = bounds.width();
+      var boundsHeight = bounds.height();
+      var newX = candidateX + bubbleLeft;
+      var newY = candidateY + bubbleTop;
+      var xInBounds = newX >= boundsX;
+      var yInBounds = newY >= boundsY;
+      var originInBounds = xInBounds && yInBounds;
+      var xFit = newX + width <= boundsX + boundsWidth;
+      var yFit = newY + height <= boundsY + boundsHeight;
+      var sizeInBounds = xFit && yFit;
+      var deltaW = xInBounds ? Math.min(width, boundsX + boundsWidth - newX) : Math.abs(boundsX - (newX + width));
+      var deltaH = yInBounds ? Math.min(height, boundsY + boundsHeight - newY) : Math.abs(boundsY - (newY + height));
+      var maxX = bounds.x() + bounds.width();
+      var minX = Math.max(bounds.x(), newX);
+      var limitX = Math.min(minX, maxX);
+      var limitY = yInBounds ? newY : newY + (height - deltaH);
+      var upAvailable = constant(limitY + deltaH - boundsY);
+      var downAvailable = constant(boundsY + boundsHeight - limitY);
+      var maxHeight = cataVertical(candidate.direction(), downAvailable, downAvailable, upAvailable);
+      var reposition = decision({
+        x: limitX,
+        y: limitY,
+        width: deltaW,
+        height: deltaH,
+        maxHeight: maxHeight,
+        direction: candidate.direction(),
+        classes: {
+          on: candidate.bubble().classesOn(),
+          off: candidate.bubble().classesOff()
+        },
+        label: candidate.label(),
+        candidateYforTest: newY
+      });
+      return originInBounds && sizeInBounds ? adt$8.fit(reposition) : adt$8.nofit(reposition, deltaW, deltaH);
+    };
+    var attempts = function (candidates, anchorBox, elementBox, bubbles, bounds) {
+      var panelWidth = elementBox.width();
+      var panelHeight = elementBox.height();
+      var attemptBestFit = function (layout, reposition, deltaW, deltaH) {
+        var next = layout(anchorBox, elementBox, bubbles);
+        var attemptLayout = attempt(next, panelWidth, panelHeight, bounds);
+        return attemptLayout.fold(adt$8.fit, function (newReposition, newDeltaW, newDeltaH) {
+          var improved = newDeltaH > deltaH || newDeltaW > deltaW;
+          return improved ? adt$8.nofit(newReposition, newDeltaW, newDeltaH) : adt$8.nofit(reposition, deltaW, deltaH);
+        });
+      };
+      var abc = foldl(candidates, function (b, a) {
+        var bestNext = curry(attemptBestFit, a);
+        return b.fold(adt$8.fit, bestNext);
+      }, adt$8.nofit(decision({
+        x: anchorBox.x(),
+        y: anchorBox.y(),
+        width: elementBox.width(),
+        height: elementBox.height(),
+        maxHeight: elementBox.height(),
+        direction: southeast(),
+        classes: [],
+        label: 'none',
+        candidateYforTest: anchorBox.y()
+      }), -1, -1));
+      return abc.fold(identity, identity);
+    };
+
+    var elementSize = function (p) {
+      return {
+        width: constant(getOuter$2(p)),
+        height: constant(getOuter$1(p))
+      };
+    };
+    var layout = function (anchorBox, element, bubbles, options) {
+      remove$6(element, 'max-height');
+      var elementBox = elementSize(element);
+      return attempts(options.preference(), anchorBox, elementBox, bubbles, options.bounds());
+    };
+    var setClasses = function (element, decision) {
+      var classInfo = decision.classes();
+      remove$5(element, classInfo.off);
+      add$3(element, classInfo.on);
+    };
+    var setHeight = function (element, decision, options) {
+      var maxHeightFunction = options.maxHeightFunction();
+      maxHeightFunction(element, decision.maxHeight());
+    };
+    var position = function (element, decision, options) {
+      var addPx = function (num) {
+        return num + 'px';
+      };
+      var newPosition = reposition(options.origin(), decision);
+      setOptions(element, {
+        position: Option.some(newPosition.position()),
+        left: newPosition.left().map(addPx),
+        top: newPosition.top().map(addPx),
+        right: newPosition.right().map(addPx),
+        bottom: newPosition.bottom().map(addPx)
+      });
+    };
+
+    var setMaxHeight = function (element, maxHeight) {
+      setMax(element, Math.floor(maxHeight));
+    };
+    var anchored = constant(function (element, available) {
+      setMaxHeight(element, available);
+      setAll$1(element, {
+        'overflow-x': 'hidden',
+        'overflow-y': 'auto'
+      });
+    });
+    var expandable = constant(function (element, available) {
+      setMaxHeight(element, available);
+    });
+
+    var reparteeOptions = MixedBag([
+      'bounds',
+      'origin',
+      'preference',
+      'maxHeightFunction'
+    ], []);
+    var defaultOr = function (options, key, dephault) {
+      return options[key] === undefined ? dephault : options[key];
+    };
+    var simple = function (anchor, element, bubble, layouts, getBounds, overrideOptions) {
+      var maxHeightFunction = defaultOr(overrideOptions, 'maxHeightFunction', anchored());
+      var anchorBox = anchor.anchorBox();
+      var origin = anchor.origin();
+      var options = reparteeOptions({
+        bounds: viewport$1(origin, getBounds),
+        origin: origin,
+        preference: layouts,
+        maxHeightFunction: maxHeightFunction
+      });
+      go(anchorBox, element, bubble, options);
+    };
+    var go = function (anchorBox, element, bubble, options) {
+      var decision = layout(anchorBox, element, bubble, options);
+      position(element, decision, options);
+      setClasses(element, decision);
+      setHeight(element, decision, options);
+    };
+
     var getFixedOrigin = function () {
       return fixed(0, 0, domGlobals.window.innerWidth, domGlobals.window.innerHeight);
     };
@@ -49791,17 +49880,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       positionWithin(component, posConfig, posState, anchor, placee, boxElement);
     };
     var positionWithin = function (component, posConfig, posState, anchor, placee, boxElement) {
+      var boundsBox = boxElement.map(box);
+      return positionWithinBounds(component, posConfig, posState, anchor, placee, boundsBox);
+    };
+    var positionWithinBounds = function (component, posConfig, posState, anchor, placee, bounds) {
       var anchorage = asRawOrDie('positioning anchor.info', AnchorSchema, anchor);
       set$2(placee.element(), 'position', 'fixed');
       var oldVisibility = getRaw(placee.element(), 'visibility');
       set$2(placee.element(), 'visibility', 'hidden');
       var origin = posConfig.useFixed ? getFixedOrigin() : getRelativeOrigin(component);
       var placer = anchorage.placement;
-      var getBounds = boxElement.map(function (boxElem) {
-        return function () {
-          return box(boxElem);
-        };
-      }).or(posConfig.getBounds);
+      var getBounds = bounds.map(constant).or(posConfig.getBounds);
       placer(component, anchorage, origin).each(function (anchoring) {
         var doPlace = anchoring.placer.getOr(place);
         doPlace(component, origin, anchoring, getBounds, placee);
@@ -49822,6 +49911,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var PositionApis = /*#__PURE__*/Object.freeze({
         position: position$1,
         positionWithin: positionWithin,
+        positionWithinBounds: positionWithinBounds,
         getMode: getMode
     });
 
@@ -50114,7 +50204,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return adt$9.single(true, constant(compSpec));
       }
       return readOptFrom$1(placeholders, compSpec.name).fold(function () {
-        throw new Error('Unknown placeholder component: ' + compSpec.name + '\nKnown: [' + keys(placeholders) + ']\nNamespace: ' + owner.getOr('none') + '\nSpec: ' + Json.stringify(compSpec, null, 2));
+        throw new Error('Unknown placeholder component: ' + compSpec.name + '\nKnown: [' + keys(placeholders) + ']\nNamespace: ' + owner.getOr('none') + '\nSpec: ' + JSON.stringify(compSpec, null, 2));
       }, function (newSpec) {
         return newSpec.replace();
       });
@@ -50179,7 +50269,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var outcome = substituteAll(owner, detail, components, ps);
       each$1(ps, function (p) {
         if (p.used() === false && p.required()) {
-          throw new Error('Placeholder: ' + p.name() + ' was not found in components list\nNamespace: ' + owner.getOr('none') + '\nComponents: ' + Json.stringify(detail.components, null, 2));
+          throw new Error('Placeholder: ' + p.name() + ' was not found in components list\nNamespace: ' + owner.getOr('none') + '\nComponents: ' + JSON.stringify(detail.components, null, 2));
         }
       });
       return outcome;
@@ -50365,9 +50455,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var uids = detail.partUids;
       var system = component.getSystem();
       each(partKeys, function (pk) {
-        r[pk] = system.getByUid(uids[pk]);
+        r[pk] = constant(system.getByUid(uids[pk]));
       });
-      return map$1(r, constant);
+      return r;
     };
     var getAllParts = function (component, detail) {
       var system = component.getSystem();
@@ -50383,9 +50473,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var uids = detail.partUids;
       var system = component.getSystem();
       each(partKeys, function (pk) {
-        r[pk] = system.getByUid(uids[pk]).getOrDie();
+        r[pk] = constant(system.getByUid(uids[pk]).getOrDie());
       });
-      return map$1(r, constant);
+      return r;
     };
     var defaultUids = function (baseUid, partTypes) {
       var partNames = names(partTypes);
@@ -50419,7 +50509,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         getPartsOrDie: getPartsOrDie
     });
 
-    var base = function (label, partSchemas, partUidsSchemas, spec) {
+    var base = function (partSchemas, partUidsSchemas) {
       var ps = partSchemas.length > 0 ? [strictObjOf('parts', partSchemas)] : [];
       return ps.concat([
         strict$1('uid'),
@@ -50430,7 +50520,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       ]).concat(partUidsSchemas);
     };
     var asRawOrDie$1 = function (label, schema, spec, partSchemas, partUidsSchemas) {
-      var baseS = base(label, partSchemas, partUidsSchemas);
+      var baseS = base(partSchemas, partUidsSchemas);
       return asRawOrDie(label + ' [SpecSchema]', objOfOnly(baseS.concat(schema)), spec);
     };
 
@@ -50771,8 +50861,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var doc = owner(element).dom();
       return element.dom() === doc.activeElement;
     };
-    var active = function (_DOC) {
-      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
+    var active = function (_doc) {
+      var doc = _doc !== undefined ? _doc.dom() : domGlobals.document;
       return Option.from(doc.activeElement).map(Element.fromDom);
     };
     var search$1 = function (element) {
@@ -50901,7 +50991,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var schema = [
         option('onEscape'),
         option('onEnter'),
-        defaulted$1('selector', '[data-alloy-tabstop="true"]'),
+        defaulted$1('selector', '[data-alloy-tabstop="true"]:not(:disabled)'),
         defaulted$1('firstTabstop', 0),
         defaulted$1('useTabstopAt', constant(true)),
         option('visibilitySelector')
@@ -50910,7 +51000,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         var target = tabbingConfig.visibilitySelector.bind(function (sel) {
           return closest$3(element, sel);
         }).getOr(element);
-        return get$8(target) > 0;
+        return get$6(target) > 0;
       };
       var findInitial = function (component, tabbingConfig) {
         var tabstops = descendants(component.element(), tabbingConfig.selector);
@@ -51127,9 +51217,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var locateVisible = function (container, current, selector) {
-      return locateIn(container, current, selector);
-    };
-    var locateIn = function (container, current, selector, filter$1) {
       var predicate = curry(eq, current);
       var candidates = descendants(container, selector);
       var visible = filter(candidates, isVisible);
@@ -51908,6 +51995,28 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       state: RepresentState
     });
 
+    var events$4 = function (name, eventHandlers) {
+      var events = derive(eventHandlers);
+      return create$1({
+        fields: [strict$1('enabled')],
+        name: name,
+        active: { events: constant(events) }
+      });
+    };
+    var config = function (name, eventHandlers) {
+      var me = events$4(name, eventHandlers);
+      return {
+        key: name,
+        value: {
+          config: {},
+          me: me,
+          configAsRaw: constant({}),
+          initialConfig: {},
+          state: NoState
+        }
+      };
+    };
+
     var focus$2 = function (component, focusConfig) {
       if (!focusConfig.ignore) {
         focus$1(component.element());
@@ -51933,7 +52042,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var mod = focusConfig.ignore ? {} : { attributes: { tabindex: '-1' } };
       return nu$6(mod);
     };
-    var events$4 = function (focusConfig) {
+    var events$5 = function (focusConfig) {
       return derive([run(focus(), function (component, simulatedEvent) {
           focus$2(component, focusConfig);
           simulatedEvent.stop();
@@ -51944,7 +52053,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var ActiveFocus = /*#__PURE__*/Object.freeze({
         exhibit: exhibit$1,
-        events: events$4
+        events: events$5
     });
 
     var FocusSchema = [
@@ -52009,7 +52118,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var exhibit$2 = function (base, toggleConfig, toggleState) {
       return nu$6({});
     };
-    var events$5 = function (toggleConfig, toggleState) {
+    var events$6 = function (toggleConfig, toggleState) {
       var execute = executeEvent(toggleConfig, toggleState, toggle);
       var load = loadEvent(toggleConfig, toggleState, onLoad$4);
       return derive(flatten([
@@ -52020,7 +52129,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var ActiveToggle = /*#__PURE__*/Object.freeze({
         exhibit: exhibit$2,
-        events: events$5
+        events: events$6
     });
 
     var SetupBehaviourCellState = function (initialState) {
@@ -52103,28 +52212,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var hover = constant(hoverEvent);
     var focus$3 = constant(focusEvent);
-
-    var events$6 = function (name, eventHandlers) {
-      var events = derive(eventHandlers);
-      return create$1({
-        fields: [strict$1('enabled')],
-        name: name,
-        active: { events: constant(events) }
-      });
-    };
-    var config = function (name, eventHandlers) {
-      var me = events$6(name, eventHandlers);
-      return {
-        key: name,
-        value: {
-          config: {},
-          me: me,
-          configAsRaw: constant({}),
-          initialConfig: {},
-          state: NoState
-        }
-      };
-    };
 
     var builder = function (detail) {
       return {
@@ -52945,6 +53032,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
         detail.onShow(sandbox);
       };
+      var showWithinBounds = function (sandbox, anchor, thing, bounds) {
+        var sink = detail.lazySink(sandbox).getOrDie();
+        Sandboxing.openWhileCloaked(sandbox, thing, function () {
+          return Positioning.positionWithinBounds(sink, anchor, sandbox, bounds);
+        });
+        detail.onShow(sandbox);
+      };
       var showMenuAt = function (sandbox, anchor, menuSpec) {
         var menu = makeMenu(detail, sandbox, anchor, menuSpec);
         Sandboxing.open(sandbox, menu);
@@ -52961,6 +53055,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         setContent: setContent,
         showAt: showAt,
         showWithin: showWithin,
+        showWithinBounds: showWithinBounds,
         showMenuAt: showMenuAt,
         hide: hide,
         getContent: getContent,
@@ -53008,6 +53103,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         },
         showWithin: function (apis, component, anchor, thing, boxElement) {
           apis.showWithin(component, anchor, thing, boxElement);
+        },
+        showWithinBounds: function (apis, component, anchor, thing, bounds) {
+          apis.showWithinBounds(component, anchor, thing, bounds);
         },
         showMenuAt: function (apis, component, anchor, menuSpec) {
           apis.showMenuAt(component, anchor, menuSpec);
@@ -53310,7 +53408,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     });
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
     function NotificationManagerImpl (editor, extras, uiMothership) {
       var backstage = extras.backstage;
@@ -53366,8 +53464,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           fireDismissalEventInstead: {}
         }));
         uiMothership.add(notificationWrapper);
-        if (settings.timeout) {
-          global$1.setTimeout(function () {
+        if (settings.timeout > 0) {
+          global$2.setTimeout(function () {
             close();
           }, settings.timeout);
         }
@@ -53423,8 +53521,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
-        if (timer !== null)
+        if (timer !== null) {
           domGlobals.clearTimeout(timer);
+        }
         timer = domGlobals.setTimeout(function () {
           fn.apply(null, args);
           timer = null;
@@ -53436,7 +53535,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
 
     var isText$1 = function (node) {
       return node.nodeType === domGlobals.Node.TEXT_NODE;
@@ -53475,7 +53574,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
     var repeatLeft = function (dom, node, offset, process, rootNode) {
-      var walker = new global$2(node, rootNode || dom.getRoot());
+      var walker = new global$3(node, rootNode || dom.getRoot());
       return repeat(dom, node, Option.some(offset), process, walker.prev, Option.none());
     };
 
@@ -53502,7 +53601,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return rng.collapsed && rng.startContainer.nodeType === 3;
     };
     var whiteSpace = /[\u00a0 \t\r\n]/;
-    var parse$1 = function (text, index, ch, minChars) {
+    var parse = function (text, index, ch, minChars) {
       var i;
       for (i = index - 1; i >= 0; i--) {
         var char = text.charAt(i);
@@ -53531,7 +53630,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
       var findTriggerCh = function (phase, element, text, optOffset) {
         var index = optOffset.getOr(text.length);
-        return parse$1(text, index, ch, 1).fold(function () {
+        return parse(text, index, ch, 1).fold(function () {
           return text.match(whiteSpace) ? phase.abort() : phase.kontinue();
         }, function (newText) {
           var range = initRange.cloneRange();
@@ -53614,7 +53713,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var AutocompleterEditorEvents = { setup: setup };
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
     var point$2 = function (element, offset) {
       return {
@@ -53670,7 +53769,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return lookupWithContext(editor, getDatabase, context);
       });
     };
-    var lookupWithContext = function (editor, getDatabase, context) {
+    var lookupWithContext = function (editor, getDatabase, context, fetchOptions) {
+      if (fetchOptions === void 0) {
+        fetchOptions = {};
+      }
       var database = getDatabase();
       var rng = editor.selection.getRng();
       var startText = rng.startContainer.nodeValue;
@@ -53682,8 +53784,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       if (autocompleters.length === 0) {
         return Option.none();
       }
-      var lookupData = global$3.all(map(autocompleters, function (ac) {
-        var fetchResult = ac.fetch(context.text, ac.maxResults);
+      var lookupData = global$4.all(map(autocompleters, function (ac) {
+        var fetchResult = ac.fetch(context.text, ac.maxResults, fetchOptions);
         return fetchResult.then(function (results) {
           return {
             matchText: context.text,
@@ -53697,6 +53799,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         lookupData: lookupData,
         context: context
       });
+    };
+
+    var separatorMenuItemSchema = objOf([
+      strictString('type'),
+      optionString('text')
+    ]);
+    var createSeparatorMenuItem = function (spec) {
+      return asRaw('separatormenuitem', separatorMenuItemSchema, spec);
     };
 
     var autocompleterItemSchema = objOf([
@@ -53724,6 +53834,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       strictFunction('fetch'),
       strictFunction('onAction')
     ]);
+    var createSeparatorItem = function (spec) {
+      return asRaw('Autocompleter.Separator', separatorMenuItemSchema, spec);
+    };
     var createAutocompleterItem = function (spec) {
       return asRaw('Autocompleter.Item', autocompleterItemSchema, spec);
     };
@@ -53817,14 +53930,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     ].concat(commonMenuItemFields));
     var createChoiceMenuItem = function (spec) {
       return asRaw('choicemenuitem', choiceMenuItemSchema, spec);
-    };
-
-    var separatorMenuItemSchema = objOf([
-      strictString('type'),
-      optionString('text')
-    ]);
-    var createSeparatorMenuItem = function (spec) {
-      return asRaw('separatormenuitem', separatorMenuItemSchema, spec);
     };
 
     var fancyTypes = [
@@ -54085,7 +54190,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }, contents);
     };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.util.I18n');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.util.I18n');
 
     var navClass = 'tox-menu-nav__js';
     var selectableClass = 'tox-collection__item';
@@ -54107,7 +54212,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return readOptFrom$1(presetClasses, presets).getOr(navClass);
     };
 
-    var global$5 = tinymce.util.Tools.resolve('tinymce.Env');
+    var global$6 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var convertText = function (source) {
       var mac = {
@@ -54121,13 +54226,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         meta: 'Ctrl',
         access: 'Shift+Alt'
       };
-      var replace = global$5.mac ? mac : other;
+      var replace = global$6.mac ? mac : other;
       var shortcut = source.split('+');
       var updated = map(shortcut, function (segment) {
         var search = segment.toLowerCase().trim();
         return has(replace, search) ? replace[search] : segment;
       });
-      return global$5.mac ? updated.join('') : updated.join('+');
+      return global$6.mac ? updated.join('') : updated.join('+');
     };
     var ConvertShortcut = { convertText: convertText };
 
@@ -54146,7 +54251,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           tag: 'div',
           classes: [textClass]
         },
-        components: [text(global$4.translate(text$1))]
+        components: [text(global$5.translate(text$1))]
       };
     };
     var renderHtml = function (html) {
@@ -54169,7 +54274,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               tag: style.tag,
               attributes: { style: style.styleAttr }
             },
-            components: [text(global$4.translate(text$1))]
+            components: [text(global$5.translate(text$1))]
           }]
       };
     };
@@ -54231,7 +54336,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return icon.or(Option.some('')).map(renderIcon);
       }) : Option.none();
       var domTitle = info.ariaLabel.map(function (label) {
-        return { attributes: { title: global$4.translate(label) } };
+        return { attributes: { title: global$5.translate(label) } };
       }).getOr({});
       var dom = merge({
         tag: 'div',
@@ -54275,10 +54380,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
       var getIconName = function (iconName) {
         return iconName.map(function (name) {
-          return global$4.isRtl() && contains(rtlIcon, name) ? name + '-rtl' : name;
+          return global$5.isRtl() && contains(rtlIcon, name) ? name + '-rtl' : name;
         });
       };
-      var needRtlClass = global$4.isRtl() && info.iconContent.exists(function (name) {
+      var needRtlClass = global$5.isRtl() && info.iconContent.exists(function (name) {
         return contains(rtlTransform, name);
       });
       var icon = getIconName(info.iconContent).map(function (iconName) {
@@ -54299,15 +54404,16 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var nativeDisabled = [
       'input',
       'button',
-      'textarea'
+      'textarea',
+      'select'
     ];
     var onLoad$5 = function (component, disableConfig, disableState) {
       if (disableConfig.disabled) {
         disable(component, disableConfig);
       }
     };
-    var hasNative = function (component) {
-      return contains(nativeDisabled, name(component.element()));
+    var hasNative = function (component, config) {
+      return config.useNative === true && contains(nativeDisabled, name(component.element()));
     };
     var nativeIsDisabled = function (component) {
       return has$1(component.element(), 'disabled');
@@ -54331,18 +54437,20 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       disableConfig.disableClass.each(function (disableClass) {
         add$2(component.element(), disableClass);
       });
-      var f = hasNative(component) ? nativeDisable : ariaDisable;
+      var f = hasNative(component, disableConfig) ? nativeDisable : ariaDisable;
       f(component);
+      disableConfig.onDisabled(component);
     };
     var enable = function (component, disableConfig, disableState) {
       disableConfig.disableClass.each(function (disableClass) {
         remove$4(component.element(), disableClass);
       });
-      var f = hasNative(component) ? nativeEnable : ariaEnable;
+      var f = hasNative(component, disableConfig) ? nativeEnable : ariaEnable;
       f(component);
+      disableConfig.onEnabled(component);
     };
-    var isDisabled = function (component) {
-      return hasNative(component) ? nativeIsDisabled(component) : ariaIsDisabled(component);
+    var isDisabled = function (component, disableConfig) {
+      return hasNative(component, disableConfig) ? nativeIsDisabled(component) : ariaIsDisabled(component);
     };
     var set$7 = function (component, disableConfig, disableState, disabled) {
       var f = disabled ? disable : enable;
@@ -54363,7 +54471,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var events$9 = function (disableConfig, disableState) {
       return derive([
         abort(execute(), function (component, simulatedEvent) {
-          return isDisabled(component);
+          return isDisabled(component, disableConfig);
         }),
         loadEvent(disableConfig, disableState, onLoad$5)
       ]);
@@ -54376,7 +54484,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var DisableSchema = [
       defaulted$1('disabled', false),
-      option('disableClass')
+      defaulted$1('useNative', true),
+      option('disableClass'),
+      onHandler('onDisabled'),
+      onHandler('onEnabled')
     ];
 
     var Disabling = create$1({
@@ -54401,10 +54512,18 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         disableClass: 'tox-tbtn--disabled'
       });
     };
+    var toolbarButton = function (disabled) {
+      return Disabling.config({
+        disabled: disabled,
+        disableClass: 'tox-tbtn--disabled',
+        useNative: false
+      });
+    };
     var DisablingConfigs = {
       item: item,
       button: button,
-      splitButton: splitButton
+      splitButton: splitButton,
+      toolbarButton: toolbarButton
     };
 
     var runWithApi = function (info, comp) {
@@ -54487,7 +54606,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var global$6 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+    var global$7 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
     var tooltipBehaviour = function (meta, sharedBackstage) {
       return get(meta, 'tooltipWorker').map(function (tooltipWorker) {
@@ -54518,10 +54637,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     };
     var encodeText = function (text) {
-      return global$6.DOM.encode(text);
+      return global$7.DOM.encode(text);
     };
     var replaceText = function (text, matchText) {
-      var translated = global$4.translate(text);
+      var translated = global$5.translate(text);
       var encoded = encodeText(translated);
       if (matchText.length > 0) {
         var escapedMatchRegex = new RegExp(escapeRegExp(matchText), 'gi');
@@ -54877,14 +54996,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var redColour = constant(rgbaColour(255, 0, 0, 1));
 
-    var global$7 = tinymce.util.Tools.resolve('tinymce.util.LocalStorage');
+    var global$8 = tinymce.util.Tools.resolve('tinymce.util.LocalStorage');
 
     var storageName = 'tinymce-custom-colors';
     function ColorCache (max) {
       if (max === void 0) {
         max = 10;
       }
-      var storageString = global$7.getItem(storageName);
+      var storageString = global$8.getItem(storageName);
       var localstorage = isString(storageString) ? JSON.parse(storageString) : [];
       var prune = function (list) {
         var diff = max - list.length;
@@ -54897,7 +55016,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         if (cache.length > max) {
           cache.pop();
         }
-        global$7.setItem(storageName, JSON.stringify(cache));
+        global$8.setItem(storageName, JSON.stringify(cache));
       };
       var remove = function (idx) {
         cache.splice(idx, 1);
@@ -55868,9 +55987,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var renderText = columns === 1;
       var renderIcons = !renderText || menuHasIcons$1(items);
       return cat(map(items, function (item) {
-        return createAutocompleterItem(item).fold(handleError, function (d) {
-          return Option.some(autocomplete(d, matchText, renderText, 'normal', onItemValueHandler, itemResponse, sharedBackstage, renderIcons));
-        });
+        if (item.type === 'separator') {
+          return createSeparatorItem(item).fold(handleError, function (d) {
+            return Option.some(separator(d));
+          });
+        } else {
+          return createAutocompleterItem(item).fold(handleError, function (d) {
+            return Option.some(autocomplete(d, matchText, renderText, 'normal', onItemValueHandler, itemResponse, sharedBackstage, renderIcons));
+          });
+        }
       }));
     };
     var createPartialMenu = function (value, items, itemResponse, backstage) {
@@ -55965,7 +56090,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               return domGlobals.console.error('Lost context. Cursor probably moved');
             }, function (_a) {
               var range = _a.range;
-              var autocompleterApi = { hide: cancelIfNecessary };
+              var autocompleterApi = {
+                hide: cancelIfNecessary,
+                reload: function (fetchOptions) {
+                  hideIfNecessary();
+                  load(fetchOptions);
+                }
+              };
               match.onAction(autocompleterApi, range, itemValue, itemMeta);
             });
           }, columns, ItemResponse$1.BUBBLE_TO_SANDBOX, sharedBackstage);
@@ -55993,20 +56124,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }, Menu.sketch(createMenuFrom(createPartialMenuWithAlloyItems('autocompleter-value', true, items, columns, 'normal'), columns, FocusMode.ContentFocus, 'normal')));
         InlineView.getContent(autocompleter).each(Highlighting.highlightFirst);
       };
-      var doLookup = function () {
+      var doLookup = function (fetchOptions) {
         return activeAutocompleter.get().map(function (ac) {
           return getContext(editor.dom, editor.selection.getRng(), ac.triggerChar).bind(function (newContext) {
-            return lookupWithContext(editor, getAutocompleters, newContext);
+            return lookupWithContext(editor, getAutocompleters, newContext, fetchOptions);
           });
         }).getOrThunk(function () {
           return lookup(editor, getAutocompleters);
         });
       };
-      var onKeypress = last$2(function (e) {
-        if (e.which === 27) {
-          return;
-        }
-        doLookup().fold(cancelIfNecessary, function (lookupInfo) {
+      var load = function (fetchOptions) {
+        doLookup(fetchOptions).fold(cancelIfNecessary, function (lookupInfo) {
           commenceIfNecessary(lookupInfo.context);
           lookupInfo.lookupData.then(function (lookupData) {
             activeAutocompleter.get().map(function (ac) {
@@ -56024,6 +56152,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             });
           });
         });
+      };
+      var onKeypress = last$2(function (e) {
+        if (e.which === 27) {
+          return;
+        }
+        load();
       }, 50);
       var autocompleterUiApi = {
         onKeypress: onKeypress,
@@ -56702,7 +56836,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var global$8 = tinymce.util.Tools.resolve('tinymce.EditorManager');
+    var global$9 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
     var getSkinUrl = function (editor) {
       var settings = editor.settings;
@@ -56713,7 +56847,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         if (skinUrl) {
           skinUrl = editor.documentBaseURI.toAbsolute(skinUrl);
         } else {
-          skinUrl = global$8.baseURL + '/skins/ui/' + skinName;
+          skinUrl = global$9.baseURL + '/skins/ui/' + skinName;
         }
       }
       return skinUrl;
@@ -56802,6 +56936,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var getUiContainer = function (editor) {
       var fixedContainer = fixedContainerElement(editor);
       return fixedContainer.getOr(body());
+    };
+    var isDraggableModal = function (editor) {
+      return editor.getParam('draggable_modal', false, 'boolean');
     };
 
     var formChangeEvent = generate$1('form-component-change');
@@ -56989,7 +57126,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var getOrCreate = function (component, coupleConfig, name) {
         var available = keys(coupleConfig.others);
         if (!available) {
-          throw new Error('Cannot find coupled component: ' + name + '. Known coupled components: ' + Json.stringify(available, null, 2));
+          throw new Error('Cannot find coupled component: ' + name + '. Known coupled components: ' + JSON.stringify(available, null, 2));
         } else {
           return readOptFrom$1(coupled, name).getOrThunk(function () {
             var builder = readOptFrom$1(coupleConfig.others, name).getOrDie('No information found for coupled component: ' + name);
@@ -57100,6 +57237,503 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       state: StreamingState
     });
 
+    var exports$1 = {}, module = { exports: exports$1 };
+    (function (define, exports, module, require) {
+      (function (f) {
+        if (typeof exports === 'object' && typeof module !== 'undefined') {
+          module.exports = f();
+        } else if (typeof define === 'function' && define.amd) {
+          define([], f);
+        } else {
+          var g;
+          if (typeof window !== 'undefined') {
+            g = window;
+          } else if (typeof global !== 'undefined') {
+            g = global;
+          } else if (typeof self !== 'undefined') {
+            g = self;
+          } else {
+            g = this;
+          }
+          g.EphoxContactWrapper = f();
+        }
+      }(function () {
+        return function () {
+          function r(e, n, t) {
+            function o(i, f) {
+              if (!n[i]) {
+                if (!e[i]) {
+                  var c = 'function' == typeof require && require;
+                  if (!f && c)
+                    return c(i, !0);
+                  if (u)
+                    return u(i, !0);
+                  var a = new Error('Cannot find module \'' + i + '\'');
+                  throw a.code = 'MODULE_NOT_FOUND', a;
+                }
+                var p = n[i] = { exports: {} };
+                e[i][0].call(p.exports, function (r) {
+                  var n = e[i][1][r];
+                  return o(n || r);
+                }, p, p.exports, r, e, n, t);
+              }
+              return n[i].exports;
+            }
+            for (var u = 'function' == typeof require && require, i = 0; i < t.length; i++)
+              o(t[i]);
+            return o;
+          }
+          return r;
+        }()({
+          1: [
+            function (require, module, exports) {
+              var process = module.exports = {};
+              var cachedSetTimeout;
+              var cachedClearTimeout;
+              function defaultSetTimout() {
+                throw new Error('setTimeout has not been defined');
+              }
+              function defaultClearTimeout() {
+                throw new Error('clearTimeout has not been defined');
+              }
+              (function () {
+                try {
+                  if (typeof setTimeout === 'function') {
+                    cachedSetTimeout = setTimeout;
+                  } else {
+                    cachedSetTimeout = defaultSetTimout;
+                  }
+                } catch (e) {
+                  cachedSetTimeout = defaultSetTimout;
+                }
+                try {
+                  if (typeof clearTimeout === 'function') {
+                    cachedClearTimeout = clearTimeout;
+                  } else {
+                    cachedClearTimeout = defaultClearTimeout;
+                  }
+                } catch (e) {
+                  cachedClearTimeout = defaultClearTimeout;
+                }
+              }());
+              function runTimeout(fun) {
+                if (cachedSetTimeout === setTimeout) {
+                  return setTimeout(fun, 0);
+                }
+                if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+                  cachedSetTimeout = setTimeout;
+                  return setTimeout(fun, 0);
+                }
+                try {
+                  return cachedSetTimeout(fun, 0);
+                } catch (e) {
+                  try {
+                    return cachedSetTimeout.call(null, fun, 0);
+                  } catch (e) {
+                    return cachedSetTimeout.call(this, fun, 0);
+                  }
+                }
+              }
+              function runClearTimeout(marker) {
+                if (cachedClearTimeout === clearTimeout) {
+                  return clearTimeout(marker);
+                }
+                if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+                  cachedClearTimeout = clearTimeout;
+                  return clearTimeout(marker);
+                }
+                try {
+                  return cachedClearTimeout(marker);
+                } catch (e) {
+                  try {
+                    return cachedClearTimeout.call(null, marker);
+                  } catch (e) {
+                    return cachedClearTimeout.call(this, marker);
+                  }
+                }
+              }
+              var queue = [];
+              var draining = false;
+              var currentQueue;
+              var queueIndex = -1;
+              function cleanUpNextTick() {
+                if (!draining || !currentQueue) {
+                  return;
+                }
+                draining = false;
+                if (currentQueue.length) {
+                  queue = currentQueue.concat(queue);
+                } else {
+                  queueIndex = -1;
+                }
+                if (queue.length) {
+                  drainQueue();
+                }
+              }
+              function drainQueue() {
+                if (draining) {
+                  return;
+                }
+                var timeout = runTimeout(cleanUpNextTick);
+                draining = true;
+                var len = queue.length;
+                while (len) {
+                  currentQueue = queue;
+                  queue = [];
+                  while (++queueIndex < len) {
+                    if (currentQueue) {
+                      currentQueue[queueIndex].run();
+                    }
+                  }
+                  queueIndex = -1;
+                  len = queue.length;
+                }
+                currentQueue = null;
+                draining = false;
+                runClearTimeout(timeout);
+              }
+              process.nextTick = function (fun) {
+                var args = new Array(arguments.length - 1);
+                if (arguments.length > 1) {
+                  for (var i = 1; i < arguments.length; i++) {
+                    args[i - 1] = arguments[i];
+                  }
+                }
+                queue.push(new Item(fun, args));
+                if (queue.length === 1 && !draining) {
+                  runTimeout(drainQueue);
+                }
+              };
+              function Item(fun, array) {
+                this.fun = fun;
+                this.array = array;
+              }
+              Item.prototype.run = function () {
+                this.fun.apply(null, this.array);
+              };
+              process.title = 'browser';
+              process.browser = true;
+              process.env = {};
+              process.argv = [];
+              process.version = '';
+              process.versions = {};
+              function noop() {
+              }
+              process.on = noop;
+              process.addListener = noop;
+              process.once = noop;
+              process.off = noop;
+              process.removeListener = noop;
+              process.removeAllListeners = noop;
+              process.emit = noop;
+              process.prependListener = noop;
+              process.prependOnceListener = noop;
+              process.listeners = function (name) {
+                return [];
+              };
+              process.binding = function (name) {
+                throw new Error('process.binding is not supported');
+              };
+              process.cwd = function () {
+                return '/';
+              };
+              process.chdir = function (dir) {
+                throw new Error('process.chdir is not supported');
+              };
+              process.umask = function () {
+                return 0;
+              };
+            },
+            {}
+          ],
+          2: [
+            function (require, module, exports) {
+              (function (setImmediate) {
+                (function (root) {
+                  var setTimeoutFunc = setTimeout;
+                  function noop() {
+                  }
+                  function bind(fn, thisArg) {
+                    return function () {
+                      fn.apply(thisArg, arguments);
+                    };
+                  }
+                  function Promise(fn) {
+                    if (typeof this !== 'object')
+                      throw new TypeError('Promises must be constructed via new');
+                    if (typeof fn !== 'function')
+                      throw new TypeError('not a function');
+                    this._state = 0;
+                    this._handled = false;
+                    this._value = undefined;
+                    this._deferreds = [];
+                    doResolve(fn, this);
+                  }
+                  function handle(self, deferred) {
+                    while (self._state === 3) {
+                      self = self._value;
+                    }
+                    if (self._state === 0) {
+                      self._deferreds.push(deferred);
+                      return;
+                    }
+                    self._handled = true;
+                    Promise._immediateFn(function () {
+                      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+                      if (cb === null) {
+                        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+                        return;
+                      }
+                      var ret;
+                      try {
+                        ret = cb(self._value);
+                      } catch (e) {
+                        reject(deferred.promise, e);
+                        return;
+                      }
+                      resolve(deferred.promise, ret);
+                    });
+                  }
+                  function resolve(self, newValue) {
+                    try {
+                      if (newValue === self)
+                        throw new TypeError('A promise cannot be resolved with itself.');
+                      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+                        var then = newValue.then;
+                        if (newValue instanceof Promise) {
+                          self._state = 3;
+                          self._value = newValue;
+                          finale(self);
+                          return;
+                        } else if (typeof then === 'function') {
+                          doResolve(bind(then, newValue), self);
+                          return;
+                        }
+                      }
+                      self._state = 1;
+                      self._value = newValue;
+                      finale(self);
+                    } catch (e) {
+                      reject(self, e);
+                    }
+                  }
+                  function reject(self, newValue) {
+                    self._state = 2;
+                    self._value = newValue;
+                    finale(self);
+                  }
+                  function finale(self) {
+                    if (self._state === 2 && self._deferreds.length === 0) {
+                      Promise._immediateFn(function () {
+                        if (!self._handled) {
+                          Promise._unhandledRejectionFn(self._value);
+                        }
+                      });
+                    }
+                    for (var i = 0, len = self._deferreds.length; i < len; i++) {
+                      handle(self, self._deferreds[i]);
+                    }
+                    self._deferreds = null;
+                  }
+                  function Handler(onFulfilled, onRejected, promise) {
+                    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+                    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+                    this.promise = promise;
+                  }
+                  function doResolve(fn, self) {
+                    var done = false;
+                    try {
+                      fn(function (value) {
+                        if (done)
+                          return;
+                        done = true;
+                        resolve(self, value);
+                      }, function (reason) {
+                        if (done)
+                          return;
+                        done = true;
+                        reject(self, reason);
+                      });
+                    } catch (ex) {
+                      if (done)
+                        return;
+                      done = true;
+                      reject(self, ex);
+                    }
+                  }
+                  Promise.prototype['catch'] = function (onRejected) {
+                    return this.then(null, onRejected);
+                  };
+                  Promise.prototype.then = function (onFulfilled, onRejected) {
+                    var prom = new this.constructor(noop);
+                    handle(this, new Handler(onFulfilled, onRejected, prom));
+                    return prom;
+                  };
+                  Promise.all = function (arr) {
+                    var args = Array.prototype.slice.call(arr);
+                    return new Promise(function (resolve, reject) {
+                      if (args.length === 0)
+                        return resolve([]);
+                      var remaining = args.length;
+                      function res(i, val) {
+                        try {
+                          if (val && (typeof val === 'object' || typeof val === 'function')) {
+                            var then = val.then;
+                            if (typeof then === 'function') {
+                              then.call(val, function (val) {
+                                res(i, val);
+                              }, reject);
+                              return;
+                            }
+                          }
+                          args[i] = val;
+                          if (--remaining === 0) {
+                            resolve(args);
+                          }
+                        } catch (ex) {
+                          reject(ex);
+                        }
+                      }
+                      for (var i = 0; i < args.length; i++) {
+                        res(i, args[i]);
+                      }
+                    });
+                  };
+                  Promise.resolve = function (value) {
+                    if (value && typeof value === 'object' && value.constructor === Promise) {
+                      return value;
+                    }
+                    return new Promise(function (resolve) {
+                      resolve(value);
+                    });
+                  };
+                  Promise.reject = function (value) {
+                    return new Promise(function (resolve, reject) {
+                      reject(value);
+                    });
+                  };
+                  Promise.race = function (values) {
+                    return new Promise(function (resolve, reject) {
+                      for (var i = 0, len = values.length; i < len; i++) {
+                        values[i].then(resolve, reject);
+                      }
+                    });
+                  };
+                  Promise._immediateFn = typeof setImmediate === 'function' ? function (fn) {
+                    setImmediate(fn);
+                  } : function (fn) {
+                    setTimeoutFunc(fn, 0);
+                  };
+                  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+                    if (typeof console !== 'undefined' && console) {
+                      console.warn('Possible Unhandled Promise Rejection:', err);
+                    }
+                  };
+                  Promise._setImmediateFn = function _setImmediateFn(fn) {
+                    Promise._immediateFn = fn;
+                  };
+                  Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
+                    Promise._unhandledRejectionFn = fn;
+                  };
+                  if (typeof module !== 'undefined' && module.exports) {
+                    module.exports = Promise;
+                  } else if (!root.Promise) {
+                    root.Promise = Promise;
+                  }
+                }(this));
+              }.call(this, require('timers').setImmediate));
+            },
+            { 'timers': 3 }
+          ],
+          3: [
+            function (require, module, exports) {
+              (function (setImmediate, clearImmediate) {
+                var nextTick = require('process/browser.js').nextTick;
+                var apply = Function.prototype.apply;
+                var slice = Array.prototype.slice;
+                var immediateIds = {};
+                var nextImmediateId = 0;
+                exports.setTimeout = function () {
+                  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+                };
+                exports.setInterval = function () {
+                  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+                };
+                exports.clearTimeout = exports.clearInterval = function (timeout) {
+                  timeout.close();
+                };
+                function Timeout(id, clearFn) {
+                  this._id = id;
+                  this._clearFn = clearFn;
+                }
+                Timeout.prototype.unref = Timeout.prototype.ref = function () {
+                };
+                Timeout.prototype.close = function () {
+                  this._clearFn.call(window, this._id);
+                };
+                exports.enroll = function (item, msecs) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = msecs;
+                };
+                exports.unenroll = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = -1;
+                };
+                exports._unrefActive = exports.active = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  var msecs = item._idleTimeout;
+                  if (msecs >= 0) {
+                    item._idleTimeoutId = setTimeout(function onTimeout() {
+                      if (item._onTimeout)
+                        item._onTimeout();
+                    }, msecs);
+                  }
+                };
+                exports.setImmediate = typeof setImmediate === 'function' ? setImmediate : function (fn) {
+                  var id = nextImmediateId++;
+                  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+                  immediateIds[id] = true;
+                  nextTick(function onNextTick() {
+                    if (immediateIds[id]) {
+                      if (args) {
+                        fn.apply(null, args);
+                      } else {
+                        fn.call(null);
+                      }
+                      exports.clearImmediate(id);
+                    }
+                  });
+                  return id;
+                };
+                exports.clearImmediate = typeof clearImmediate === 'function' ? clearImmediate : function (id) {
+                  delete immediateIds[id];
+                };
+              }.call(this, require('timers').setImmediate, require('timers').clearImmediate));
+            },
+            {
+              'process/browser.js': 1,
+              'timers': 3
+            }
+          ],
+          4: [
+            function (require, module, exports) {
+              var promisePolyfill = require('promise-polyfill');
+              var Global = function () {
+                if (typeof window !== 'undefined') {
+                  return window;
+                } else {
+                  return Function('return this;')();
+                }
+              }();
+              module.exports = { boltExport: Global.Promise || promisePolyfill };
+            },
+            { 'promise-polyfill': 2 }
+          ]
+        }, {}, [4])(4);
+      }));
+    }(undefined, exports$1, module, undefined));
+    var Promise = module.exports.boltExport;
+
     var nu$a = function (baseFn) {
       var data = Option.none();
       var callbacks = [];
@@ -57111,10 +57745,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
       };
       var get = function (nCallback) {
-        if (isReady())
+        if (isReady()) {
           call(nCallback);
-        else
+        } else {
           callbacks.push(nCallback);
+        }
       };
       var set = function (x) {
         data = Option.some(x);
@@ -57151,42 +57786,31 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       pure: pure$1
     };
 
-    var bounce = function (f) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        var me = this;
-        domGlobals.setTimeout(function () {
-          f.apply(me, args);
-        }, 0);
-      };
+    var errorReporter = function (err) {
+      domGlobals.setTimeout(function () {
+        throw err;
+      }, 0);
     };
-
-    var nu$b = function (baseFn) {
+    var make$3 = function (run) {
       var get = function (callback) {
-        baseFn(bounce(callback));
+        run().then(callback, errorReporter);
       };
       var map = function (fab) {
-        return nu$b(function (callback) {
-          get(function (a) {
-            var value = fab(a);
-            callback(value);
-          });
+        return make$3(function () {
+          return run().then(fab);
         });
       };
       var bind = function (aFutureB) {
-        return nu$b(function (callback) {
-          get(function (a) {
-            aFutureB(a).get(callback);
+        return make$3(function () {
+          return run().then(function (v) {
+            return aFutureB(v).toPromise();
           });
         });
       };
       var anonBind = function (futureB) {
-        return nu$b(function (callback) {
-          get(function (a) {
-            futureB.get(callback);
+        return make$3(function () {
+          return run().then(function () {
+            return futureB.toPromise();
           });
         });
       };
@@ -57195,25 +57819,32 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       var toCached = function () {
         var cache = null;
-        return nu$b(function (callback) {
+        return make$3(function () {
           if (cache === null) {
-            cache = toLazy();
+            cache = run();
           }
-          cache.get(callback);
+          return cache;
         });
       };
+      var toPromise = run;
       return {
         map: map,
         bind: bind,
         anonBind: anonBind,
         toLazy: toLazy,
         toCached: toCached,
+        toPromise: toPromise,
         get: get
       };
     };
+    var nu$b = function (baseFn) {
+      return make$3(function () {
+        return new Promise(baseFn);
+      });
+    };
     var pure$2 = function (a) {
-      return nu$b(function (callback) {
-        callback(a);
+      return make$3(function () {
+        return Promise.resolve(a);
       });
     };
     var Future = {
@@ -57495,7 +58126,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var itemExecute = constant('alloy.typeahead.itemexecute');
 
-    var make$3 = function (detail, components, spec, externals) {
+    var make$4 = function (detail, components, spec, externals) {
       var navigateList = function (comp, simulatedEvent, highlighter) {
         detail.previewing.set(false);
         var sandbox = Coupling.getCoupled(comp, 'sandbox');
@@ -57782,20 +58413,21 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       name: 'Typeahead',
       configFields: schema$f(),
       partFields: parts$4(),
-      factory: make$3
+      factory: make$4
     });
 
-    var renderFormFieldWith = function (pLabel, pField, extraClasses) {
-      var spec = renderFormFieldSpecWith(pLabel, pField, extraClasses);
+    var renderFormFieldWith = function (pLabel, pField, extraClasses, extraBehaviours) {
+      var spec = renderFormFieldSpecWith(pLabel, pField, extraClasses, extraBehaviours);
       return FormField.sketch(spec);
     };
     var renderFormField = function (pLabel, pField) {
-      return renderFormFieldWith(pLabel, pField, []);
+      return renderFormFieldWith(pLabel, pField, [], []);
     };
-    var renderFormFieldSpecWith = function (pLabel, pField, extraClasses) {
+    var renderFormFieldSpecWith = function (pLabel, pField, extraClasses, extraBehaviours) {
       return {
         dom: renderFormFieldDomWith(extraClasses),
-        components: pLabel.toArray().concat([pField])
+        components: pLabel.toArray().concat([pField]),
+        fieldBehaviours: derive$1(extraBehaviours)
       };
     };
     var renderFormFieldDom = function () {
@@ -57931,7 +58563,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return {
         dom: {
           tag: 'div',
-          classes: ['tox-bar']
+          classes: [
+            'tox-bar',
+            'tox-form__controls-h-stack'
+          ]
         },
         components: map(spec.items, backstage.interpreter)
       };
@@ -58416,6 +59051,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               memColorButton.getOpt(comp).each(function (colorButton) {
                 set$2(colorButton.element(), 'background-color', se.event().color());
               });
+              emitWith(comp, formChangeEvent, { name: spec.name });
             }),
             run(colorSwatchChangeEvent, function (comp, se) {
               FormField.getField(comp).each(function (field) {
@@ -58603,80 +59239,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
 
-    var reduceBy = function (value, min, max, step) {
-      if (value < min) {
-        return value;
-      } else if (value > max) {
-        return max;
-      } else if (value === min) {
-        return min - 1;
-      } else {
-        return Math.max(min, value - step);
-      }
-    };
-    var increaseBy = function (value, min, max, step) {
-      if (value > max) {
-        return value;
-      } else if (value < min) {
-        return min;
-      } else if (value === max) {
-        return max + 1;
-      } else {
-        return Math.min(max, value + step);
-      }
-    };
-    var capValue = function (value, min, max) {
-      return Math.max(min, Math.min(max, value));
-    };
-    var snapValueOf = function (value, min, max, step, snapStart) {
-      return snapStart.fold(function () {
-        var initValue = value - min;
-        var extraValue = Math.round(initValue / step) * step;
-        return capValue(min + extraValue, min - 1, max + 1);
-      }, function (start) {
-        var remainder = (value - start) % step;
-        var adjustment = Math.round(remainder / step);
-        var rawSteps = Math.floor((value - start) / step);
-        var maxSteps = Math.floor((max - start) / step);
-        var numSteps = Math.min(maxSteps, rawSteps + adjustment);
-        var r = start + numSteps * step;
-        return Math.max(start, r);
-      });
-    };
-    var findOffsetOf = function (value, min, max) {
-      return Math.min(max, Math.max(value, min)) - min;
-    };
-    var findValueOf = function (args) {
-      var min = args.min, max = args.max, range = args.range, value = args.value, step = args.step, snap = args.snap, snapStart = args.snapStart, rounded = args.rounded, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, minBound = args.minBound, maxBound = args.maxBound, screenRange = args.screenRange;
-      var capMin = hasMinEdge ? min - 1 : min;
-      var capMax = hasMaxEdge ? max + 1 : max;
-      if (value < minBound) {
-        return capMin;
-      } else if (value > maxBound) {
-        return capMax;
-      } else {
-        var offset = findOffsetOf(value, minBound, maxBound);
-        var newValue = capValue(offset / screenRange * range + min, capMin, capMax);
-        if (snap && newValue >= min && newValue <= max) {
-          return snapValueOf(newValue, min, max, step, snapStart);
-        } else if (rounded) {
-          return Math.round(newValue);
-        } else {
-          return newValue;
-        }
-      }
-    };
-    var findOffsetOfValue = function (args) {
-      var min = args.min, max = args.max, range = args.range, value = args.value, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, maxBound = args.maxBound, maxOffset = args.maxOffset, centerMinEdge = args.centerMinEdge, centerMaxEdge = args.centerMaxEdge;
-      if (value < min) {
-        return hasMinEdge ? 0 : centerMinEdge;
-      } else if (value > max) {
-        return hasMaxEdge ? maxBound : centerMaxEdge;
-      } else {
-        return (value - min) / range * maxOffset;
-      }
-    };
-
     var t = 'top', r$1 = 'right', b = 'bottom', l = 'left';
     var minX = function (detail) {
       return detail.model.minX;
@@ -58798,6 +59360,80 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var setToLEdgeXY = function (edge, detail) {
       fireSliderChange(edge, xyValue(min1X(detail), halfY(detail)));
+    };
+
+    var reduceBy = function (value, min, max, step) {
+      if (value < min) {
+        return value;
+      } else if (value > max) {
+        return max;
+      } else if (value === min) {
+        return min - 1;
+      } else {
+        return Math.max(min, value - step);
+      }
+    };
+    var increaseBy = function (value, min, max, step) {
+      if (value > max) {
+        return value;
+      } else if (value < min) {
+        return min;
+      } else if (value === max) {
+        return max + 1;
+      } else {
+        return Math.min(max, value + step);
+      }
+    };
+    var capValue = function (value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    };
+    var snapValueOf = function (value, min, max, step, snapStart) {
+      return snapStart.fold(function () {
+        var initValue = value - min;
+        var extraValue = Math.round(initValue / step) * step;
+        return capValue(min + extraValue, min - 1, max + 1);
+      }, function (start) {
+        var remainder = (value - start) % step;
+        var adjustment = Math.round(remainder / step);
+        var rawSteps = Math.floor((value - start) / step);
+        var maxSteps = Math.floor((max - start) / step);
+        var numSteps = Math.min(maxSteps, rawSteps + adjustment);
+        var r = start + numSteps * step;
+        return Math.max(start, r);
+      });
+    };
+    var findOffsetOf = function (value, min, max) {
+      return Math.min(max, Math.max(value, min)) - min;
+    };
+    var findValueOf = function (args) {
+      var min = args.min, max = args.max, range = args.range, value = args.value, step = args.step, snap = args.snap, snapStart = args.snapStart, rounded = args.rounded, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, minBound = args.minBound, maxBound = args.maxBound, screenRange = args.screenRange;
+      var capMin = hasMinEdge ? min - 1 : min;
+      var capMax = hasMaxEdge ? max + 1 : max;
+      if (value < minBound) {
+        return capMin;
+      } else if (value > maxBound) {
+        return capMax;
+      } else {
+        var offset = findOffsetOf(value, minBound, maxBound);
+        var newValue = capValue(offset / screenRange * range + min, capMin, capMax);
+        if (snap && newValue >= min && newValue <= max) {
+          return snapValueOf(newValue, min, max, step, snapStart);
+        } else if (rounded) {
+          return Math.round(newValue);
+        } else {
+          return newValue;
+        }
+      }
+    };
+    var findOffsetOfValue = function (args) {
+      var min = args.min, max = args.max, range = args.range, value = args.value, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, maxBound = args.maxBound, maxOffset = args.maxOffset, centerMinEdge = args.centerMinEdge, centerMaxEdge = args.centerMaxEdge;
+      if (value < min) {
+        return hasMinEdge ? 0 : centerMinEdge;
+      } else if (value > max) {
+        return hasMaxEdge ? maxBound : centerMaxEdge;
+      } else {
+        return (value - min) / range * maxOffset;
+      }
     };
 
     var top = 'top', right = 'right', bottom = 'bottom', left = 'left', width = 'width', height = 'height';
@@ -59062,7 +59698,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var setPositionFromValue$1 = function (slider, thumb, detail, edges) {
       var value = currentValue(detail);
       var pos = findPositionOfValue$1(slider, edges.getSpectrum(slider), value.y(), edges.getTopEdge(slider), edges.getBottomEdge(slider), detail);
-      var thumbRadius = get$8(thumb.element()) / 2;
+      var thumbRadius = get$6(thumb.element()) / 2;
       set$2(thumb.element(), 'top', pos - thumbRadius + 'px');
     };
     var onLeft$1 = Option.none;
@@ -59143,7 +59779,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var xPos = findPositionOfValue(slider, edges.getSpectrum(slider), value.x(), edges.getLeftEdge(slider), edges.getRightEdge(slider), detail);
       var yPos = findPositionOfValue$1(slider, edges.getSpectrum(slider), value.y(), edges.getTopEdge(slider), edges.getBottomEdge(slider), detail);
       var thumbXRadius = get$7(thumb.element()) / 2;
-      var thumbYRadius = get$8(thumb.element()) / 2;
+      var thumbYRadius = get$6(thumb.element()) / 2;
       set$2(thumb.element(), 'left', xPos - thumbXRadius + 'px');
       set$2(thumb.element(), 'top', yPos - thumbYRadius + 'px');
     };
@@ -59435,19 +60071,19 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           pname: getPartName(n)
         });
       });
-      return composite(owner$3, schema$h, fieldParts, make$4, spec);
+      return composite(owner$3, schema$h, fieldParts, make$5, spec);
     };
     var toResult$1 = function (o, e) {
       return o.fold(function () {
         return Result.error(e);
       }, Result.value);
     };
-    var make$4 = function (detail, components, spec) {
+    var make$5 = function (detail, components, spec) {
       return {
-        'uid': detail.uid,
-        'dom': detail.dom,
-        'components': components,
-        'behaviours': augment(detail.formBehaviours, [Representing.config({
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: augment(detail.formBehaviours, [Representing.config({
             store: {
               mode: 'manual',
               getValue: function (form) {
@@ -59470,7 +60106,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               }
             }
           })]),
-        'apis': {
+        apis: {
           getField: function (form, key) {
             return getPart(form, detail, key).bind(Composing.getCurrent);
           }
@@ -59891,7 +60527,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var ColourPicker = { makeFactory: makeFactory };
 
-    var self = function () {
+    var self$1 = function () {
       return Composing.config({ find: Option.some });
     };
     var memento = function (mem) {
@@ -59907,7 +60543,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     };
     var ComposingConfigs = {
-      self: self,
+      self: self$1,
       memento: memento,
       childAt: childAt
     };
@@ -60005,6 +60641,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
+    var global$a = tinymce.util.Tools.resolve('tinymce.Resource');
+
+    var isOldCustomEditor = function (spec) {
+      return Object.prototype.hasOwnProperty.call(spec, 'init');
+    };
     var renderCustomEditor = function (spec) {
       var editorApi = Cell(Option.none());
       var memReplaced = record({ dom: { tag: spec.tag } });
@@ -60017,7 +60658,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         behaviours: derive$1([
           config('editor-foo-events', [runOnAttached(function (component) {
               memReplaced.getOpt(component).each(function (ta) {
-                spec.init(ta.element().dom()).then(function (ea) {
+                (isOldCustomEditor(spec) ? spec.init(ta.element().dom()) : global$a.load(spec.scriptId, spec.scriptUrl).then(function (init) {
+                  return init(ta.element().dom(), spec.settings);
+                })).then(function (ea) {
                   initialValue.get().each(function (cvalue) {
                     ea.setValue(cvalue);
                   });
@@ -60227,7 +60870,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return renderLabel(label, providersBackstage);
       });
       var pField = FormField.parts().field({ factory: { sketch: renderField } });
-      return renderFormFieldWith(pLabel, pField, ['tox-form__group--stretched']);
+      return renderFormFieldWith(pLabel, pField, ['tox-form__group--stretched'], []);
     };
 
     var renderGrid = function (spec, backstage) {
@@ -60350,7 +60993,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
       };
       var pField = FormField.parts().field({ factory: { sketch: factory } });
-      return renderFormFieldWith(pLabel, pField, ['tox-form__group--stretched']);
+      return renderFormFieldWith(pLabel, pField, ['tox-form__group--stretched'], []);
     };
 
     function create$5(width, height) {
@@ -60370,34 +61013,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       canvas.height = height;
       return canvas;
     }
-
-    function SandBlob (parts, properties) {
-      var f = Global$1.getOrDie('Blob');
-      return new f(parts, properties);
-    }
-
-    function FileReader () {
-      var f = Global$1.getOrDie('FileReader');
-      return new f();
-    }
-
-    function Uint8Array (arr) {
-      var f = Global$1.getOrDie('Uint8Array');
-      return new f(arr);
-    }
-
-    var requestAnimationFrame = function (callback) {
-      var f = Global$1.getOrDie('requestAnimationFrame');
-      f(callback);
-    };
-    var atob = function (base64) {
-      var f = Global$1.getOrDie('atob');
-      return f(base64);
-    };
-    var Window = {
-      atob: atob,
-      requestAnimationFrame: requestAnimationFrame
-    };
 
     function getWidth(image) {
       return image.naturalWidth || image.width;
@@ -60580,10 +61195,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       return Promise;
     };
-    var Promise = window.Promise ? window.Promise : promise();
+    var Promise$1 = window.Promise ? window.Promise : promise();
 
     function blobToImage(blob) {
-      return new Promise(function (resolve, reject) {
+      return new Promise$1(function (resolve, reject) {
         var blobUrl = domGlobals.URL.createObjectURL(blob);
         var image = new domGlobals.Image();
         var removeListeners = function () {
@@ -60615,7 +61230,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var mimetype = matches[1];
       var base64 = data[1];
       var sliceSize = 1024;
-      var byteCharacters = Window.atob(base64);
+      var byteCharacters = domGlobals.atob(base64);
       var bytesLength = byteCharacters.length;
       var slicesCount = Math.ceil(bytesLength / sliceSize);
       var byteArrays = new Array(slicesCount);
@@ -60626,12 +61241,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
           bytes[i] = byteCharacters[offset].charCodeAt(0);
         }
-        byteArrays[sliceIndex] = Uint8Array(bytes);
+        byteArrays[sliceIndex] = new Uint8Array(bytes);
       }
-      return Option.some(SandBlob(byteArrays, { type: mimetype }));
+      return Option.some(new domGlobals.Blob(byteArrays, { type: mimetype }));
     }
     function dataUriToBlob(uri) {
-      return new Promise(function (resolve, reject) {
+      return new Promise$1(function (resolve, reject) {
         dataUriToBlobSync(uri).fold(function () {
           reject('uri is not base64: ' + uri);
         }, resolve);
@@ -60640,7 +61255,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     function canvasToBlob(canvas, type, quality) {
       type = type || 'image/png';
       if (domGlobals.HTMLCanvasElement.prototype.toBlob) {
-        return new Promise(function (resolve, reject) {
+        return new Promise$1(function (resolve, reject) {
           canvas.toBlob(function (blob) {
             if (blob) {
               resolve(blob);
@@ -60667,8 +61282,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     }
     function blobToDataUri(blob) {
-      return new Promise(function (resolve) {
-        var reader = FileReader();
+      return new Promise$1(function (resolve) {
+        var reader = new domGlobals.FileReader();
         reader.onloadend = function () {
           resolve(reader.result);
         };
@@ -60683,7 +61298,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var initialType = blob.type;
       var getType = constant(initialType);
       function toBlob() {
-        return Promise.resolve(blob);
+        return Promise$1.resolve(blob);
       }
       function toDataURL() {
         return uri;
@@ -60727,7 +61342,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     }
     function fromCanvas(canvas, type) {
       return canvasToBlob(canvas, type).then(function (blob) {
-        return create$6(Promise.resolve(canvas), blob, canvas.toDataURL());
+        return create$6(Promise$1.resolve(canvas), blob, canvas.toDataURL());
       });
     }
 
@@ -61186,7 +61801,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     }
     function _scale(image, wRatio, hRatio) {
-      return new Promise(function (resolve) {
+      return new Promise$1(function (resolve) {
         var sW = getWidth(image);
         var sH = getHeight(image);
         var dW = Math.floor(sW * wRatio);
@@ -61319,6 +61934,174 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
+    var internalToolbarButtonExecute = generate$1('toolbar.button.execute');
+    var onToolbarButtonExecute = function (info) {
+      return runOnExecute(function (comp, simulatedEvent) {
+        runWithApi(info, comp)(function (itemApi) {
+          emitWith(comp, internalToolbarButtonExecute, { buttonApi: itemApi });
+          info.onAction(itemApi);
+        });
+      });
+    };
+    var toolbarButtonEventOrder = {
+      'alloy.execute': [
+        'disabling',
+        'alloy.base.behaviour',
+        'toggling',
+        'toolbar-button-events'
+      ]
+    };
+
+    var updateMenuText = generate$1('update-menu-text');
+    var updateMenuIcon = generate$1('update-menu-icon');
+    var renderCommonDropdown = function (spec, prefix, sharedBackstage) {
+      var editorOffCell = Cell(noop);
+      var optMemDisplayText = spec.text.map(function (text) {
+        return record(renderLabel$1(text, prefix, sharedBackstage.providers));
+      });
+      var optMemDisplayIcon = spec.icon.map(function (iconName) {
+        return record(renderReplacableIconFromPack(iconName, sharedBackstage.providers.icons));
+      });
+      var onLeftOrRightInMenu = function (comp, se) {
+        var dropdown = Representing.getValue(comp);
+        Focusing.focus(dropdown);
+        emitWith(dropdown, 'keydown', { raw: se.event().raw() });
+        Dropdown.close(dropdown);
+        return Option.some(true);
+      };
+      var role = spec.role.fold(function () {
+        return {};
+      }, function (role) {
+        return { role: role };
+      });
+      var tooltipAttributes = spec.tooltip.fold(function () {
+        return {};
+      }, function (tooltip) {
+        var translatedTooltip = sharedBackstage.providers.translate(tooltip);
+        return {
+          'title': translatedTooltip,
+          'aria-label': translatedTooltip
+        };
+      });
+      var memDropdown = record(Dropdown.sketch(__assign({}, role, {
+        dom: {
+          tag: 'button',
+          classes: [
+            prefix,
+            prefix + '--select'
+          ].concat(map(spec.classes, function (c) {
+            return prefix + '--' + c;
+          })),
+          attributes: __assign({}, tooltipAttributes)
+        },
+        components: componentRenderPipeline([
+          optMemDisplayIcon.map(function (mem) {
+            return mem.asSpec();
+          }),
+          optMemDisplayText.map(function (mem) {
+            return mem.asSpec();
+          }),
+          Option.some({
+            dom: {
+              tag: 'div',
+              classes: [prefix + '__select-chevron'],
+              innerHtml: get$c('chevron-down', sharedBackstage.providers.icons)
+            }
+          })
+        ]),
+        matchWidth: true,
+        useMinWidth: true,
+        dropdownBehaviours: derive$1(spec.dropdownBehaviours.concat([
+          DisablingConfigs.button(spec.disabled),
+          Unselecting.config({}),
+          Replacing.config({}),
+          config('dropdown-events', [
+            onControlAttached(spec, editorOffCell),
+            onControlDetached(spec, editorOffCell)
+          ]),
+          config('menubutton-update-display-text', [
+            run(updateMenuText, function (comp, se) {
+              optMemDisplayText.bind(function (mem) {
+                return mem.getOpt(comp);
+              }).each(function (displayText) {
+                Replacing.set(displayText, [text(sharedBackstage.providers.translate(se.event().text()))]);
+              });
+            }),
+            run(updateMenuIcon, function (comp, se) {
+              optMemDisplayIcon.bind(function (mem) {
+                return mem.getOpt(comp);
+              }).each(function (displayIcon) {
+                Replacing.set(displayIcon, [renderReplacableIconFromPack(se.event().icon(), sharedBackstage.providers.icons)]);
+              });
+            })
+          ])
+        ])),
+        eventOrder: deepMerge(toolbarButtonEventOrder, {
+          mousedown: [
+            'focusing',
+            'alloy.base.behaviour',
+            'item-type-events',
+            'normal-dropdown-events'
+          ]
+        }),
+        sandboxBehaviours: derive$1([Keying.config({
+            mode: 'special',
+            onLeft: onLeftOrRightInMenu,
+            onRight: onLeftOrRightInMenu
+          })]),
+        lazySink: sharedBackstage.getSink,
+        toggleClass: prefix + '--active',
+        parts: { menu: part(false, spec.columns, spec.presets) },
+        fetch: function () {
+          return Future.nu(spec.fetch);
+        }
+      })));
+      return memDropdown.asSpec();
+    };
+
+    var getMenuButtonApi = function (component) {
+      return {
+        isDisabled: function () {
+          return Disabling.isDisabled(component);
+        },
+        setDisabled: function (state) {
+          return Disabling.set(component, state);
+        },
+        setActive: function (state) {
+          var elm = component.element();
+          if (state) {
+            add$2(elm, 'tox-tbtn--enabled');
+            set$1(elm, 'aria-pressed', true);
+          } else {
+            remove$4(elm, 'tox-tbtn--enabled');
+            remove$1(elm, 'aria-pressed');
+          }
+        },
+        isActive: function () {
+          return has$2(component.element(), 'tox-tbtn--enabled');
+        }
+      };
+    };
+    var renderMenuButton = function (spec, prefix, backstage, role) {
+      return renderCommonDropdown({
+        text: spec.text,
+        icon: spec.icon,
+        tooltip: spec.tooltip,
+        role: role,
+        fetch: function (callback) {
+          spec.fetch(function (items) {
+            callback(build$2(items, ItemResponse$1.CLOSE_ON_EXECUTE, backstage));
+          });
+        },
+        onSetup: spec.onSetup,
+        getApi: getMenuButtonApi,
+        columns: 1,
+        presets: 'normal',
+        classes: [],
+        dropdownBehaviours: [Tabstopping.config({})]
+      }, prefix, backstage.shared);
+    };
+
     var renderCommonSpec = function (spec, actionOpt, extraBehaviours, dom, components) {
       if (extraBehaviours === void 0) {
         extraBehaviours = [];
@@ -61351,13 +62134,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var domFinal = deepMerge(common, { dom: dom });
       return deepMerge(domFinal, { components: components });
     };
-    var renderCommon = function (spec, action, extraBehaviours, dom, components) {
-      if (extraBehaviours === void 0) {
-        extraBehaviours = [];
-      }
-      var specFinal = renderCommonSpec(spec, Option.some(action), extraBehaviours, dom, components);
-      return Button.sketch(specFinal);
-    };
     var renderIconButtonSpec = function (spec, action, providersBackstage, extraBehaviours) {
       if (extraBehaviours === void 0) {
         extraBehaviours = [];
@@ -61386,9 +62162,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var iconButtonSpec = renderIconButtonSpec(spec, Option.some(action), providersBackstage, extraBehaviours);
       return Button.sketch(iconButtonSpec);
     };
-    var renderButton = function (spec, action, providersBackstage, extraBehaviours) {
+    var renderButtonSpec = function (spec, action, providersBackstage, extraBehaviours, extraClasses) {
       if (extraBehaviours === void 0) {
         extraBehaviours = [];
+      }
+      if (extraClasses === void 0) {
+        extraClasses = [];
       }
       var translatedText = providersBackstage.translate(spec.text);
       var icon = spec.icon ? spec.icon.map(function (iconName) {
@@ -61396,15 +62175,25 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }) : Option.none();
       var components = icon.isSome() ? componentRenderPipeline([icon]) : [];
       var innerHtml = icon.isSome() ? {} : { innerHtml: translatedText };
-      var classes = (spec.primary ? ['tox-button'] : [
+      var classes = (!spec.primary && !spec.borderless ? [
         'tox-button',
         'tox-button--secondary'
-      ]).concat(icon.isSome() ? ['tox-button--icon'] : []);
+      ] : ['tox-button']).concat(icon.isSome() ? ['tox-button--icon'] : [], spec.borderless ? ['tox-button--naked'] : [], extraClasses);
       var dom = __assign({
         tag: 'button',
         classes: classes
       }, innerHtml, { attributes: { title: translatedText } });
-      return renderCommon(spec, action, extraBehaviours, dom, components);
+      return renderCommonSpec(spec, action, extraBehaviours, dom, components);
+    };
+    var renderButton = function (spec, action, providersBackstage, extraBehaviours, extraClasses) {
+      if (extraBehaviours === void 0) {
+        extraBehaviours = [];
+      }
+      if (extraClasses === void 0) {
+        extraClasses = [];
+      }
+      var buttonSpec = renderButtonSpec(spec, Option.some(action), providersBackstage, extraBehaviours, extraClasses);
+      return Button.sketch(buttonSpec);
     };
     var getAction = function (name, buttonType) {
       return function (comp) {
@@ -61422,16 +62211,29 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
       };
     };
-    var renderFooterButton = function (spec, buttonType, providersBackstage) {
-      var action = getAction(spec.name, buttonType);
-      return renderButton(spec, action, providersBackstage, []);
+    var isMenuFooterButtonSpec = function (spec, buttonType) {
+      return buttonType === 'menu';
+    };
+    var isNormalFooterButtonSpec = function (spec, buttonType) {
+      return buttonType === 'custom' || buttonType === 'cancel' || buttonType === 'submit';
+    };
+    var renderFooterButton = function (spec, buttonType, backstage) {
+      if (isMenuFooterButtonSpec(spec, buttonType)) {
+        return renderMenuButton(spec, 'tox-tbtn', backstage, Option.none());
+      } else if (isNormalFooterButtonSpec(spec, buttonType)) {
+        var action = getAction(spec.name, buttonType);
+        var buttonSpec = __assign({}, spec, { borderless: false });
+        return renderButton(buttonSpec, action, backstage.shared.providers, []);
+      } else {
+        domGlobals.console.error('Unknown footer button type: ', buttonType);
+      }
     };
     var renderDialogButton = function (spec, providersBackstage) {
       var action = getAction(spec.name, 'custom');
-      return renderButton(spec, action, providersBackstage, [
+      return renderFormField(Option.none(), FormField.parts().field(__assign({ factory: Button }, renderButtonSpec(spec, Option.some(action), providersBackstage, [
         RepresentingConfigs.memory(''),
         ComposingConfigs.self()
-      ]);
+      ]))));
     };
 
     var schema$i = constant([
@@ -61677,7 +62479,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             }
           }
         ],
-        buttonBehaviours: derive$1([Tabstopping.config({})])
+        buttonBehaviours: derive$1([
+          DisablingConfigs.button(spec.disabled),
+          Tabstopping.config({})
+        ])
       });
       var formGroup = function (components) {
         return {
@@ -61693,6 +62498,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           factory: Input,
           inputClasses: ['tox-textfield'],
           inputBehaviours: derive$1([
+            Disabling.config({ disabled: spec.disabled }),
             Tabstopping.config({}),
             config('size-input-events', [
               run(focusin(), function (component, simulatedEvent) {
@@ -61754,7 +62560,19 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           });
         },
         coupledFieldBehaviours: derive$1([
-          Disabling.config({}),
+          Disabling.config({
+            disabled: spec.disabled,
+            onDisabled: function (comp) {
+              FormCoupledInputs.getField1(comp).bind(FormField.getField).each(Disabling.disable);
+              FormCoupledInputs.getField2(comp).bind(FormField.getField).each(Disabling.disable);
+              FormCoupledInputs.getLock(comp).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormCoupledInputs.getField1(comp).bind(FormField.getField).each(Disabling.enable);
+              FormCoupledInputs.getField2(comp).bind(FormField.getField).each(Disabling.enable);
+              FormCoupledInputs.getLock(comp).each(Disabling.enable);
+            }
+          }),
           config('size-input-events2', [run(ratioEvent, function (component, simulatedEvent) {
               var isField1 = simulatedEvent.event().isField1();
               var optCurrent = isField1 ? FormCoupledInputs.getField1(component) : FormCoupledInputs.getField2(component);
@@ -61804,7 +62622,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           text: text,
           disabled: disabled,
           primary: primary,
-          icon: Option.none()
+          icon: Option.none(),
+          borderless: false
         }, action, providersBackstage));
       };
       var createIconButton = function (icon, tooltip, action, disabled) {
@@ -61813,7 +62632,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           icon: Option.some(icon),
           tooltip: Option.some(tooltip),
           disabled: disabled,
-          primary: false
+          primary: false,
+          borderless: false
         }, action, providersBackstage));
       };
       var disableAllComponents = function (comps, eventcomp) {
@@ -61926,7 +62746,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var memSize = record(renderSizeInput({
         name: 'size',
         label: none,
-        constrain: true
+        constrain: true,
+        disabled: false
       }, providersBackstage));
       var makeResizeTransform = function (width, height) {
         return function (ir) {
@@ -62199,15 +63020,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var global$9 = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
+    var global$b = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
 
-    var global$a = tinymce.util.Tools.resolve('tinymce.geom.Rect');
+    var global$c = tinymce.util.Tools.resolve('tinymce.geom.Rect');
 
-    var global$b = tinymce.util.Tools.resolve('tinymce.util.Observable');
+    var global$d = tinymce.util.Tools.resolve('tinymce.util.Observable');
 
-    var global$c = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$e = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var global$d = tinymce.util.Tools.resolve('tinymce.util.VK');
+    var global$f = tinymce.util.Tools.resolve('tinymce.util.VK');
 
     function getDocumentSize(doc) {
       var documentElement, body, scrollWidth, clientWidth;
@@ -62256,7 +63077,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         } else {
           cursor = handleElm.runtimeStyle.cursor;
         }
-        $eventOverlay = global$9('<div></div>').css({
+        $eventOverlay = global$b('<div></div>').css({
           position: 'absolute',
           top: 0,
           left: 0,
@@ -62266,7 +63087,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           opacity: 0.0001,
           cursor: cursor
         }).appendTo(doc.body);
-        global$9(doc).on('mousemove touchmove', drag).on('mouseup touchend', stop);
+        global$b(doc).on('mousemove touchmove', drag).on('mouseup touchend', stop);
         settings.start(e);
       };
       drag = function (e) {
@@ -62281,16 +63102,16 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       stop = function (e) {
         updateWithTouchData(e);
-        global$9(doc).off('mousemove touchmove', drag).off('mouseup touchend', stop);
+        global$b(doc).off('mousemove touchmove', drag).off('mouseup touchend', stop);
         $eventOverlay.remove();
         if (settings.stop) {
           settings.stop(e);
         }
       };
       this.destroy = function () {
-        global$9(handleElement).off();
+        global$b(handleElement).off();
       };
-      global$9(handleElement).on('mousedown touchstart', start);
+      global$b(handleElement).on('mousedown touchstart', start);
     }
 
     var count = 0;
@@ -62394,7 +63215,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         if (h < 20) {
           h = 20;
         }
-        rect = currentRect = global$a.clamp({
+        rect = currentRect = global$c.clamp({
           x: x,
           y: y,
           w: w,
@@ -62418,21 +63239,21 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             }
           });
         }
-        global$9('<div id="' + id + '" class="' + prefix + 'croprect-container"' + ' role="grid" aria-dropeffect="execute">').appendTo(containerElm);
-        global$c.each(blockers, function (blocker) {
-          global$9('#' + id, containerElm).append('<div id="' + id + '-' + blocker + '"class="' + prefix + 'croprect-block" style="display: none" data-mce-bogus="all">');
+        global$b('<div id="' + id + '" class="' + prefix + 'croprect-container"' + ' role="grid" aria-dropeffect="execute">').appendTo(containerElm);
+        global$e.each(blockers, function (blocker) {
+          global$b('#' + id, containerElm).append('<div id="' + id + '-' + blocker + '"class="' + prefix + 'croprect-block" style="display: none" data-mce-bogus="all">');
         });
-        global$c.each(handles, function (handle) {
-          global$9('#' + id, containerElm).append('<div id="' + id + '-' + handle.name + '" class="' + prefix + 'croprect-handle ' + prefix + 'croprect-handle-' + handle.name + '"' + 'style="display: none" data-mce-bogus="all" role="gridcell" tabindex="-1"' + ' aria-label="' + handle.label + '" aria-grabbed="false" title="' + handle.label + '">');
+        global$e.each(handles, function (handle) {
+          global$b('#' + id, containerElm).append('<div id="' + id + '-' + handle.name + '" class="' + prefix + 'croprect-handle ' + prefix + 'croprect-handle-' + handle.name + '"' + 'style="display: none" data-mce-bogus="all" role="gridcell" tabindex="-1"' + ' aria-label="' + handle.label + '" aria-grabbed="false" title="' + handle.label + '">');
         });
-        dragHelpers = global$c.map(handles, createDragHelper);
+        dragHelpers = global$e.map(handles, createDragHelper);
         repaint(currentRect);
-        global$9(containerElm).on('focusin focusout', function (e) {
-          global$9(e.target).attr('aria-grabbed', e.type === 'focus' ? 'true' : 'false');
+        global$b(containerElm).on('focusin focusout', function (e) {
+          global$b(e.target).attr('aria-grabbed', e.type === 'focus' ? 'true' : 'false');
         });
-        global$9(containerElm).on('keydown', function (e) {
+        global$b(containerElm).on('keydown', function (e) {
           var activeHandle;
-          global$c.each(handles, function (handle) {
+          global$e.each(handles, function (handle) {
             if (e.target.id === id + '-' + handle.name) {
               activeHandle = handle;
               return false;
@@ -62444,20 +63265,20 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             moveRect(activeHandle, startRect, deltaX, deltaY);
           }
           switch (e.keyCode) {
-          case global$d.LEFT:
+          case global$f.LEFT:
             moveAndBlock(e, activeHandle, currentRect, -10, 0);
             break;
-          case global$d.RIGHT:
+          case global$f.RIGHT:
             moveAndBlock(e, activeHandle, currentRect, 10, 0);
             break;
-          case global$d.UP:
+          case global$f.UP:
             moveAndBlock(e, activeHandle, currentRect, 0, -10);
             break;
-          case global$d.DOWN:
+          case global$f.DOWN:
             moveAndBlock(e, activeHandle, currentRect, 0, 10);
             break;
-          case global$d.ENTER:
-          case global$d.SPACEBAR:
+          case global$f.ENTER:
+          case global$f.SPACEBAR:
             e.preventDefault();
             action();
             break;
@@ -62466,15 +63287,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
       function toggleVisibility(state) {
         var selectors;
-        selectors = global$c.map(handles, function (handle) {
+        selectors = global$e.map(handles, function (handle) {
           return '#' + id + '-' + handle.name;
-        }).concat(global$c.map(blockers, function (blocker) {
+        }).concat(global$e.map(blockers, function (blocker) {
           return '#' + id + '-' + blocker;
         })).join(',');
         if (state) {
-          global$9(selectors, containerElm).show();
+          global$b(selectors, containerElm).show();
         } else {
-          global$9(selectors, containerElm).hide();
+          global$b(selectors, containerElm).hide();
         }
       }
       function repaint(rect) {
@@ -62485,15 +63306,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           if (rect.w < 0) {
             rect.w = 0;
           }
-          global$9('#' + id + '-' + name, containerElm).css({
+          global$b('#' + id + '-' + name, containerElm).css({
             left: rect.x,
             top: rect.y,
             width: rect.w,
             height: rect.h
           });
         }
-        global$c.each(handles, function (handle) {
-          global$9('#' + id + '-' + handle.name, containerElm).css({
+        global$e.each(handles, function (handle) {
+          global$b('#' + id + '-' + handle.name, containerElm).css({
             left: rect.w * handle.xMul + rect.x,
             top: rect.h * handle.yMul + rect.y
           });
@@ -62540,13 +63361,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         repaint(currentRect);
       }
       function destroy() {
-        global$c.each(dragHelpers, function (helper) {
+        global$e.each(dragHelpers, function (helper) {
           helper.destroy();
         });
         dragHelpers = [];
       }
       render();
-      instance = global$c.extend({
+      instance = global$e.extend({
         toggleVisibility: toggleVisibility,
         setClampRect: setClampRect,
         setRect: setRect,
@@ -62554,12 +63375,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         setInnerRect: setInnerRect,
         setViewPortRect: setViewPortRect,
         destroy: destroy
-      }, global$b);
+      }, global$d);
       return instance;
     }
 
     var loadImage = function (image) {
-      return new global$3(function (resolve) {
+      return new global$4(function (resolve) {
         var loaded = function () {
           image.removeEventListener('load', loaded);
           resolve(image);
@@ -62597,7 +63418,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         memContainer.getOpt(anyInSystem).each(function (panel) {
           var zoom = zoomState.get();
           var panelW = get$7(panel.element());
-          var panelH = get$8(panel.element());
+          var panelH = get$6(panel.element());
           var width = img.dom().naturalWidth * zoom;
           var height = img.dom().naturalHeight * zoom;
           var left = Math.max(0, panelW / 2 - width / 2);
@@ -62639,7 +63460,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var zoomFit = function (anyInSystem, img) {
         memContainer.getOpt(anyInSystem).each(function (panel) {
           var panelW = get$7(panel.element());
-          var panelH = get$8(panel.element());
+          var panelH = get$6(panel.element());
           var width = img.dom().naturalWidth;
           var height = img.dom().naturalHeight;
           var zoom = Math.min(panelW / width, panelH / height);
@@ -62665,7 +63486,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               h: img.dom().naturalHeight
             };
             viewRectState.set(viewRect);
-            var rect = global$a.inflate(viewRect, -20, -20);
+            var rect = global$c.inflate(viewRect, -20, -20);
             rectState.set(rect);
             if (lastViewRect.w !== viewRect.w || lastViewRect.h !== viewRect.h) {
               zoomFit(panel, img);
@@ -62781,7 +63602,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         icon: Option.some(icon),
         disabled: disabled,
         tooltip: Option.some(innerHtml),
-        primary: false
+        primary: false,
+        borderless: false
       }, action, providersBackstage);
     };
     var setButtonEnabled = function (button, enabled) {
@@ -62829,20 +63651,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         container: container,
         updateButtonUndoStates: updateButtonUndoStates
       };
-    };
-
-    var url = function () {
-      return Global$1.getOrDie('URL');
-    };
-    var createObjectURL = function (blob) {
-      return url().createObjectURL(blob);
-    };
-    var revokeObjectURL = function (u) {
-      url().revokeObjectURL(u);
-    };
-    var URL = {
-      createObjectURL: createObjectURL,
-      revokeObjectURL: revokeObjectURL
     };
 
     function UndoStack () {
@@ -62910,14 +63718,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var createState = function (blob) {
         return {
           blob: blob,
-          url: URL.createObjectURL(blob)
+          url: domGlobals.URL.createObjectURL(blob)
         };
       };
       var destroyState = function (state) {
-        URL.revokeObjectURL(state.url);
+        domGlobals.URL.revokeObjectURL(state.url);
       };
       var destroyStates = function (states) {
-        global$c.each(states, destroyState);
+        global$e.each(states, destroyState);
       };
       var destroyTempState = function () {
         tempState.get().each(destroyState);
@@ -63222,6 +64030,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         options: translatedOptions,
         factory: HtmlSelect,
         selectBehaviours: derive$1([
+          Disabling.config({ disabled: spec.disabled }),
           Tabstopping.config({}),
           config('selectbox-change', [run(change(), function (component, _) {
               emitWith(component, formChangeEvent, { name: spec.name });
@@ -63253,7 +64062,16 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         components: flatten([
           pLabel.toArray(),
           [selectWrap]
-        ])
+        ]),
+        fieldBehaviours: derive$1([Disabling.config({
+            disabled: spec.disabled,
+            onDisabled: function (comp) {
+              FormField.getField(comp).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormField.getField(comp).each(Disabling.enable);
+            }
+          })])
       });
     };
 
@@ -63262,6 +64080,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return renderLabel(label, providersBackstage);
       });
       var baseInputBehaviours = [
+        Disabling.config({ disabled: spec.disabled }),
         Keying.config({
           mode: 'execution',
           useEnter: spec.multiline !== true,
@@ -63312,7 +64131,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         factory: Input
       });
       var extraClasses = spec.flex ? ['tox-form__group--stretched'] : [];
-      return renderFormFieldWith(pLabel, pField, extraClasses);
+      var extraClasses2 = extraClasses.concat(spec.maximized ? ['tox-form-group--maximize'] : []);
+      var extraBehaviours = [Disabling.config({
+          disabled: spec.disabled,
+          onDisabled: function (comp) {
+            FormField.getField(comp).each(Disabling.disable);
+          },
+          onEnabled: function (comp) {
+            FormField.getField(comp).each(Disabling.enable);
+          }
+        })];
+      return renderFormFieldWith(pLabel, pField, extraClasses2, extraBehaviours);
     };
     var renderInput = function (spec, providersBackstage) {
       return renderTextField({
@@ -63321,8 +64150,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         label: spec.label,
         placeholder: spec.placeholder,
         flex: false,
+        disabled: spec.disabled,
         classname: 'tox-textfield',
-        validation: Option.none()
+        validation: Option.none(),
+        maximized: spec.maximized
       }, providersBackstage);
     };
     var renderTextarea = function (spec, providersBackstage) {
@@ -63332,8 +64163,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         label: spec.label,
         placeholder: spec.placeholder,
         flex: true,
+        disabled: spec.disabled,
         classname: 'tox-textarea',
-        validation: Option.none()
+        validation: Option.none(),
+        maximized: spec.maximized
       }, providersBackstage);
     };
 
@@ -63516,23 +64349,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         ]) : history;
       });
     };
-    var renderInputButton = function (label, eventName, className, iconName, providersBackstage) {
-      return Button.sketch({
-        dom: {
-          tag: 'button',
-          classes: [
-            'tox-tbtn',
-            className
-          ],
-          innerHtml: get$c(iconName, providersBackstage.icons),
-          attributes: { title: providersBackstage.translate(label.getOr('')) }
-        },
-        buttonBehaviours: derive$1([Tabstopping.config({})]),
-        action: function (component) {
-          emit(component, eventName);
-        }
-      });
-    };
     var errorId = generate$1('aria-invalid');
     var renderUrlInput = function (spec, backstage, urlBackstage) {
       var _a;
@@ -63593,6 +64409,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             });
           }).toArray(),
           [
+            Disabling.config({ disabled: spec.disabled }),
             Tabstopping.config({}),
             config('urlinput-events', flatten([
               spec.filetype === 'file' ? [run(input(), function (comp) {
@@ -63681,8 +64498,19 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         components: [
           pField,
           memStatus.asSpec()
-        ]
+        ],
+        behaviours: derive$1([Disabling.config({ disabled: spec.disabled })])
       });
+      var memUrlPickerButton = record(renderButton({
+        name: spec.name,
+        icon: Option.some('browse'),
+        text: spec.label.getOr(''),
+        disabled: spec.disabled,
+        primary: false,
+        borderless: true
+      }, function (component) {
+        return emit(component, browseUrlEvent);
+      }, providersBackstage, [], ['tox-browse-url']));
       var controlHWrapper = function () {
         return {
           dom: {
@@ -63692,7 +64520,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           components: flatten([
             [memUrlBox.asSpec()],
             optUrlPicker.map(function () {
-              return renderInputButton(spec.label, browseUrlEvent, 'tox-browse-url', 'browse', providersBackstage);
+              return memUrlPickerButton.asSpec();
             }).toArray()
           ])
         };
@@ -63711,7 +64539,20 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return FormField.sketch({
         dom: renderFormFieldDom(),
         components: pLabel.toArray().concat([controlHWrapper()]),
-        fieldBehaviours: derive$1([config('url-input-events', [run(browseUrlEvent, openUrlPicker)])])
+        fieldBehaviours: derive$1([
+          Disabling.config({
+            disabled: spec.disabled,
+            onDisabled: function (comp) {
+              FormField.getField(comp).each(Disabling.disable);
+              memUrlPickerButton.getOpt(comp).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormField.getField(comp).each(Disabling.enable);
+              memUrlPickerButton.getOpt(comp).each(Disabling.enable);
+            }
+          }),
+          config('url-input-events', [run(browseUrlEvent, openUrlPicker)])
+        ])
       });
     };
 
@@ -63742,6 +64583,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         },
         behaviours: derive$1([
           ComposingConfigs.self(),
+          Disabling.config({ disabled: spec.disabled }),
           Tabstopping.config({}),
           Focusing.config({}),
           repBehaviour,
@@ -63796,7 +64638,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           pField,
           memIcons.asSpec(),
           pLabel
-        ]
+        ],
+        fieldBehaviours: derive$1([Disabling.config({
+            disabled: spec.disabled,
+            disableClass: 'tox-checkbox--disabled',
+            onDisabled: function (comp) {
+              FormField.getField(comp).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormField.getField(comp).each(Disabling.enable);
+            }
+          })])
       });
     };
 
@@ -63880,7 +64732,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       var setContents = function (comp, items) {
         var htmlLines = map(items, function (item) {
-          var itemText = global$4.translate(item.text);
+          var itemText = global$5.translate(item.text);
           var textContent = spec.columns === 1 ? '<div class="tox-collection__item-label">' + itemText + '</div>' : '';
           var iconContent = '<div class="tox-collection__item-icon">' + item.icon + '</div>';
           var mapItemName = {
@@ -63958,7 +64810,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         ])
       });
       var extraClasses = ['tox-form__group--collection'];
-      return renderFormFieldWith(pLabel, pField, extraClasses);
+      return renderFormFieldWith(pLabel, pField, extraClasses, []);
     };
 
     var renderTable = function (spec, providersBackstage) {
@@ -64015,7 +64867,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var make$5 = function (render) {
+    var renderPanel = function (spec, backstage) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: spec.classes
+        },
+        components: map(spec.items, backstage.shared.interpreter)
+      };
+    };
+
+    var make$6 = function (render) {
       return function (parts, spec, backstage) {
         return readOptFrom$1(spec, 'name').fold(function () {
           return render(spec, backstage);
@@ -64027,70 +64889,73 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var makeIframe = function (render) {
       return function (parts, spec, backstage) {
         var iframeSpec = deepMerge(spec, { source: 'dynamic' });
-        return make$5(render)(parts, iframeSpec, backstage);
+        return make$6(render)(parts, iframeSpec, backstage);
       };
     };
     var factories = {
-      bar: make$5(function (spec, backstage) {
+      bar: make$6(function (spec, backstage) {
         return renderBar(spec, backstage.shared);
       }),
-      collection: make$5(function (spec, backstage) {
+      collection: make$6(function (spec, backstage) {
         return renderCollection(spec, backstage.shared.providers);
       }),
-      alloy: make$5(identity),
-      alertbanner: make$5(function (spec, backstage) {
+      alloy: make$6(identity),
+      alertbanner: make$6(function (spec, backstage) {
         return renderAlertBanner(spec, backstage.shared.providers);
       }),
-      input: make$5(function (spec, backstage) {
+      input: make$6(function (spec, backstage) {
         return renderInput(spec, backstage.shared.providers);
       }),
-      textarea: make$5(function (spec, backstage) {
+      textarea: make$6(function (spec, backstage) {
         return renderTextarea(spec, backstage.shared.providers);
       }),
-      listbox: make$5(function (spec, backstage) {
+      listbox: make$6(function (spec, backstage) {
         return renderListbox(spec, backstage.shared.providers);
       }),
-      label: make$5(function (spec, backstage) {
+      label: make$6(function (spec, backstage) {
         return renderLabel$2(spec, backstage.shared);
       }),
       iframe: makeIframe(function (spec, backstage) {
         return renderIFrame(spec, backstage.shared.providers);
       }),
-      autocomplete: make$5(function (spec, backstage) {
+      autocomplete: make$6(function (spec, backstage) {
         return renderAutocomplete(spec, backstage);
       }),
-      button: make$5(function (spec, backstage) {
+      button: make$6(function (spec, backstage) {
         return renderDialogButton(spec, backstage.shared.providers);
       }),
-      checkbox: make$5(function (spec, backstage) {
+      checkbox: make$6(function (spec, backstage) {
         return renderCheckbox(spec, backstage.shared.providers);
       }),
-      colorinput: make$5(function (spec, backstage) {
+      colorinput: make$6(function (spec, backstage) {
         return renderColorInput(spec, backstage.shared, backstage.colorinput);
       }),
-      colorpicker: make$5(renderColorPicker),
-      dropzone: make$5(function (spec, backstage) {
+      colorpicker: make$6(renderColorPicker),
+      dropzone: make$6(function (spec, backstage) {
         return renderDropZone(spec, backstage.shared.providers);
       }),
-      grid: make$5(function (spec, backstage) {
+      grid: make$6(function (spec, backstage) {
         return renderGrid(spec, backstage.shared);
       }),
-      selectbox: make$5(function (spec, backstage) {
+      selectbox: make$6(function (spec, backstage) {
         return renderSelectBox(spec, backstage.shared.providers);
       }),
-      sizeinput: make$5(function (spec, backstage) {
+      sizeinput: make$6(function (spec, backstage) {
         return renderSizeInput(spec, backstage.shared.providers);
       }),
-      urlinput: make$5(function (spec, backstage) {
+      urlinput: make$6(function (spec, backstage) {
         return renderUrlInput(spec, backstage, backstage.urlinput);
       }),
-      customeditor: make$5(renderCustomEditor),
-      htmlpanel: make$5(renderHtmlPanel),
-      imagetools: make$5(function (spec, backstage) {
+      customeditor: make$6(renderCustomEditor),
+      htmlpanel: make$6(renderHtmlPanel),
+      imagetools: make$6(function (spec, backstage) {
         return renderImageTools(spec, backstage.shared.providers);
       }),
-      table: make$5(function (spec, backstage) {
+      table: make$6(function (spec, backstage) {
         return renderTable(spec, backstage.shared.providers);
+      }),
+      panel: make$6(function (spec, backstage) {
+        return renderPanel(spec, backstage);
       })
     };
     var noFormParts = {
@@ -64133,14 +64998,26 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var northY$2 = function (anchor) {
       return anchor.y();
     };
+    var southY$2 = function (anchor, element) {
+      return anchor.y() + anchor.height() - element.height();
+    };
+    var southeast$3 = function (anchor, element, bubbles) {
+      return nu$8(westEdgeX$1(anchor), southY$2(anchor, element), bubbles.innerSoutheast(), southeast(), 'layout-se');
+    };
+    var southwest$3 = function (anchor, element, bubbles) {
+      return nu$8(eastEdgeX$1(anchor, element), southY$2(anchor, element), bubbles.innerSouthwest(), southwest(), 'layout-sw');
+    };
     var northeast$3 = function (anchor, element, bubbles) {
-      return nu$8(westEdgeX$1(anchor), northY$2(anchor), bubbles.northeast(), northeast(), 'layout-ne');
+      return nu$8(westEdgeX$1(anchor), northY$2(anchor), bubbles.innerNortheast(), northeast(), 'layout-ne');
     };
     var northwest$3 = function (anchor, element, bubbles) {
-      return nu$8(eastEdgeX$1(anchor, element), northY$2(anchor), bubbles.northwest(), northwest(), 'layout-nw');
+      return nu$8(eastEdgeX$1(anchor, element), northY$2(anchor), bubbles.innerNorthwest(), northwest(), 'layout-nw');
     };
     var north$3 = function (anchor, element, bubbles) {
-      return nu$8(middleX$1(anchor, element), northY$2(anchor), bubbles.north(), north(), 'layout-n');
+      return nu$8(middleX$1(anchor, element), northY$2(anchor), bubbles.innerNorth(), north(), 'layout-n');
+    };
+    var south$3 = function (anchor, element, bubbles) {
+      return nu$8(middleX$1(anchor, element), southY$2(anchor, element), bubbles.innerSouth(), south(), 'layout-s');
     };
 
     var bubbleAlignments = {
@@ -64595,7 +65472,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var trim$1 = global$c.trim;
+    var trim$1 = global$e.trim;
     var hasContentEditableState = function (value) {
       return function (node) {
         if (node && node.nodeType === 1) {
@@ -64751,7 +65628,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return !!value;
     };
     var makeMap = function (value) {
-      return map$1(global$c.makeMap(value, /[, ]/), isTruthy);
+      return map$1(global$e.makeMap(value, /[, ]/), isTruthy);
     };
     var getOpt = function (obj, key) {
       return hasOwnProperty$2.call(obj, key) ? Option.some(obj[key]) : Option.none();
@@ -64802,7 +65679,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               };
               completer(r);
             };
-            var meta = global$c.extend({ filetype: filetype }, Option.from(entry.meta).getOr({}));
+            var meta = global$e.extend({ filetype: filetype }, Option.from(entry.meta).getOr({}));
             picker.call(editor, handler, entry.value, meta);
           });
         };
@@ -64819,8 +65696,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     };
     var getValidationHandler = function (editor) {
-      var validatorHandler = editor.settings.filepicker_validator_handler;
-      return isFunction(validatorHandler) ? Option.some(validatorHandler) : Option.none();
+      var optValidator = Option.from(editor.settings.file_picker_validator_handler).filter(isFunction);
+      return optValidator.orThunk(function () {
+        return Option.from(editor.settings.filepicker_validator_handler).filter(isFunction);
+      });
     };
     var UrlInputBackstage = function (editor) {
       return {
@@ -64838,6 +65717,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
+    var isDraggableModal$1 = function (editor) {
+      return function () {
+        return isDraggableModal(editor);
+      };
+    };
+    var DialogBackstage = function (editor) {
+      return { isDraggableModal: isDraggableModal$1(editor) };
+    };
+
     var init$8 = function (sink, editor, lazyAnchorbar, lazyMoreButton) {
       var backstage = {
         shared: {
@@ -64848,7 +65736,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             menuItems: function () {
               return editor.ui.registry.getAll().menuItems;
             },
-            translate: global$4.translate
+            translate: global$5.translate
           },
           interpreter: function (s) {
             return interpretWithoutForm(s, backstage);
@@ -64860,7 +65748,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         },
         urlinput: UrlInputBackstage(editor),
         styleselect: init$7(editor),
-        colorinput: ColorInputBackstage(editor)
+        colorinput: ColorInputBackstage(editor),
+        dialog: DialogBackstage(editor)
       };
       return backstage;
     };
@@ -65060,10 +65949,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var factory$a = function (detail, components, spec, _externals) {
       return {
-        'uid': detail.uid,
-        'dom': detail.dom,
-        'components': components,
-        'behaviours': augment(detail.tgroupBehaviours, [Keying.config({
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: augment(detail.tgroupBehaviours, [Keying.config({
             mode: 'flow',
             selector: detail.markers.itemSelector
           })]),
@@ -65188,7 +66077,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       if (Sandboxing.isOpen(sandbox)) {
         Sandboxing.close(sandbox);
       } else {
-        Sandboxing.open(sandbox, externals['overflow']());
+        Sandboxing.open(sandbox, externals.overflow());
       }
     };
     var isOpen$1 = function (over) {
@@ -65473,7 +66362,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         height: [
           output('property', 'height'),
           output('getDimension', function (elem) {
-            return get$8(elem) + 'px';
+            return get$6(elem) + 'px';
           })
         ]
       }))
@@ -65737,7 +66626,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             icon: Option.some('more-drawer'),
             disabled: false,
             tooltip: Option.some('More...'),
-            primary: false
+            primary: false,
+            borderless: false
           }, Option.none(), toolbarSpec.backstage.shared.providers)
         },
         splitToolbarBehaviours: getToolbarbehaviours(toolbarSpec, modeName, getOverflow)
@@ -65826,16 +66716,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return asRaw('toolbarbutton', toolbarButtonSchema, spec);
     };
 
-    var MenuButtonSchema = objOf([
-      strictString('type'),
+    var baseMenuButtonFields = [
+      optionString('text'),
       optionString('tooltip'),
       optionString('icon'),
-      optionString('text'),
       strictFunction('fetch'),
       defaultedFunction('onSetup', function () {
         return noop;
       })
-    ]);
+    ];
+
+    var MenuButtonSchema = objOf([strictString('type')].concat(baseMenuButtonFields));
     var createMenuButton = function (spec) {
       return asRaw('menubutton', MenuButtonSchema, spec);
     };
@@ -65927,24 +66818,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return asRaw('ContextForm', contextFormSchema, spec);
     };
 
-    var internalToolbarButtonExecute = generate$1('toolbar.button.execute');
-    var onToolbarButtonExecute = function (info) {
-      return runOnExecute(function (comp, simulatedEvent) {
-        runWithApi(info, comp)(function (itemApi) {
-          emitWith(comp, internalToolbarButtonExecute, { buttonApi: itemApi });
-          info.onAction(itemApi);
-        });
-      });
-    };
-    var toolbarButtonEventOrder = {
-      'alloy.execute': [
-        'disabling',
-        'alloy.base.behaviour',
-        'toggling',
-        'toolbar-button-events'
-      ]
-    };
-
     var getState$2 = function (component, replaceConfig, reflectState) {
       return reflectState;
     };
@@ -65998,7 +66871,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return cell.get();
       };
       var readState = function () {
-        return cell.get().getOr('none');
+        return cell.get().fold(function () {
+          return 'none';
+        }, function (x) {
+          return x;
+        });
       };
       return {
         readState: readState,
@@ -66216,113 +67093,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       factory: factory$d
     });
 
-    var updateMenuText = generate$1('update-menu-text');
-    var updateMenuIcon = generate$1('update-menu-icon');
-    var renderCommonDropdown = function (spec, prefix, sharedBackstage) {
-      var editorOffCell = Cell(noop);
-      var optMemDisplayText = spec.text.map(function (text) {
-        return record(renderLabel$1(text, prefix, sharedBackstage.providers));
-      });
-      var optMemDisplayIcon = spec.icon.map(function (iconName) {
-        return record(renderReplacableIconFromPack(iconName, sharedBackstage.providers.icons));
-      });
-      var onLeftOrRightInMenu = function (comp, se) {
-        var dropdown = Representing.getValue(comp);
-        Focusing.focus(dropdown);
-        emitWith(dropdown, 'keydown', { raw: se.event().raw() });
-        Dropdown.close(dropdown);
-        return Option.some(true);
-      };
-      var role = spec.role.fold(function () {
-        return {};
-      }, function (role) {
-        return { role: role };
-      });
-      var tooltipAttributes = spec.tooltip.fold(function () {
-        return {};
-      }, function (tooltip) {
-        var translatedTooltip = sharedBackstage.providers.translate(tooltip);
-        return {
-          'title': translatedTooltip,
-          'aria-label': translatedTooltip
-        };
-      });
-      var memDropdown = record(Dropdown.sketch(__assign({}, role, {
-        dom: {
-          tag: 'button',
-          classes: [
-            prefix,
-            prefix + '--select'
-          ].concat(map(spec.classes, function (c) {
-            return prefix + '--' + c;
-          })),
-          attributes: __assign({}, tooltipAttributes)
-        },
-        components: componentRenderPipeline([
-          optMemDisplayIcon.map(function (mem) {
-            return mem.asSpec();
-          }),
-          optMemDisplayText.map(function (mem) {
-            return mem.asSpec();
-          }),
-          Option.some({
-            dom: {
-              tag: 'div',
-              classes: [prefix + '__select-chevron'],
-              innerHtml: get$c('chevron-down', sharedBackstage.providers.icons)
-            }
-          })
-        ]),
-        matchWidth: true,
-        useMinWidth: true,
-        dropdownBehaviours: derive$1(spec.dropdownBehaviours.concat([
-          DisablingConfigs.button(spec.disabled),
-          Unselecting.config({}),
-          Replacing.config({}),
-          config('dropdown-events', [
-            onControlAttached(spec, editorOffCell),
-            onControlDetached(spec, editorOffCell)
-          ]),
-          config('menubutton-update-display-text', [
-            run(updateMenuText, function (comp, se) {
-              optMemDisplayText.bind(function (mem) {
-                return mem.getOpt(comp);
-              }).each(function (displayText) {
-                Replacing.set(displayText, [text(sharedBackstage.providers.translate(se.event().text()))]);
-              });
-            }),
-            run(updateMenuIcon, function (comp, se) {
-              optMemDisplayIcon.bind(function (mem) {
-                return mem.getOpt(comp);
-              }).each(function (displayIcon) {
-                Replacing.set(displayIcon, [renderReplacableIconFromPack(se.event().icon(), sharedBackstage.providers.icons)]);
-              });
-            })
-          ])
-        ])),
-        eventOrder: deepMerge(toolbarButtonEventOrder, {
-          mousedown: [
-            'focusing',
-            'alloy.base.behaviour',
-            'item-type-events',
-            'normal-dropdown-events'
-          ]
-        }),
-        sandboxBehaviours: derive$1([Keying.config({
-            mode: 'special',
-            onLeft: onLeftOrRightInMenu,
-            onRight: onLeftOrRightInMenu
-          })]),
-        lazySink: sharedBackstage.getSink,
-        toggleClass: prefix + '--active',
-        parts: { menu: part(false, spec.columns, spec.presets) },
-        fetch: function () {
-          return Future.nu(spec.fetch);
-        }
-      })));
-      return memDropdown.asSpec();
-    };
-
     var getButtonApi = function (component) {
       return {
         isDisabled: function () {
@@ -66349,29 +67119,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
       };
     };
-    var getMenuButtonApi = function (component) {
-      return {
-        isDisabled: function () {
-          return Disabling.isDisabled(component);
-        },
-        setDisabled: function (state) {
-          return Disabling.set(component, state);
-        },
-        setActive: function (state) {
-          var elm = component.element();
-          if (state) {
-            add$2(elm, 'tox-tbtn--enabled');
-            set$1(elm, 'aria-pressed', true);
-          } else {
-            remove$4(elm, 'tox-tbtn--enabled');
-            remove$1(elm, 'aria-pressed');
-          }
-        },
-        isActive: function () {
-          return has$2(component.element(), 'tox-tbtn--enabled');
-        }
-      };
-    };
     var getTooltipAttributes = function (tooltip, providersBackstage) {
       return tooltip.map(function (tooltip) {
         return {
@@ -66395,9 +67142,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var renderCommonStructure = function (icon, text, tooltip, receiver, behaviours, providersBackstage) {
       var _a;
       var getIconName = function (iconName) {
-        return global$4.isRtl() && contains(rtlIcon$1, iconName) ? iconName + '-rtl' : iconName;
+        return global$5.isRtl() && contains(rtlIcon$1, iconName) ? iconName + '-rtl' : iconName;
       };
-      var needsRtlClass = global$4.isRtl() && icon.exists(function (name) {
+      var needsRtlClass = global$5.isRtl() && icon.exists(function (name) {
         return contains(rtlTransform$1, name);
       });
       return {
@@ -66459,7 +67206,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             onControlAttached(specialisation, editorOffCell),
             onControlDetached(specialisation, editorOffCell)
           ]),
-          DisablingConfigs.button(spec.disabled)
+          DisablingConfigs.toolbarButton(spec.disabled)
         ].concat(specialisation.toolbarButtonBehaviours))
       });
     };
@@ -66598,25 +67345,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         ]
       });
     };
-    var renderMenuButton = function (spec, prefix, backstage, role) {
-      return renderCommonDropdown({
-        text: spec.text,
-        icon: spec.icon,
-        tooltip: spec.tooltip,
-        role: role,
-        fetch: function (callback) {
-          spec.fetch(function (items) {
-            callback(build$2(items, ItemResponse$1.CLOSE_ON_EXECUTE, backstage));
-          });
-        },
-        onSetup: spec.onSetup,
-        getApi: getMenuButtonApi,
-        columns: 1,
-        presets: 'normal',
-        classes: [],
-        dropdownBehaviours: []
-      }, prefix, backstage.shared);
-    };
 
     var getFormApi = function (input) {
       return {
@@ -66637,7 +67365,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var renderContextButton = function (memInput, button, extras) {
       var _a = button.original, primary = _a.primary, rest = __rest(_a, ['primary']);
-      var bridged = getOrDie$1(createToolbarButton(__assign({}, rest, {
+      var bridged = getOrDie(createToolbarButton(__assign({}, rest, {
         type: 'button',
         onAction: function () {
         }
@@ -66646,7 +67374,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var renderContextToggleButton = function (memInput, button, extras) {
       var _a = button.original, primary = _a.primary, rest = __rest(_a, ['primary']);
-      var bridged = getOrDie$1(createToggleButton(__assign({}, rest, {
+      var bridged = getOrDie(createToggleButton(__assign({}, rest, {
         type: 'togglebutton',
         onAction: function () {
         }
@@ -66786,7 +67514,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
                   return active();
                 });
               });
-              global$1.setTimeout(function () {
+              global$2.setTimeout(function () {
                 set$2(comp.element(), 'width', newWidth + 'px');
               }, 0);
             }),
@@ -66828,6 +67556,45 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           return Result.value(spec.sink);
         }
       });
+    };
+
+    var getHorizontalBounds = function (editor, scroll, contentAreaBox) {
+      var x = Math.max(scroll.left(), contentAreaBox.x());
+      var contentBoxWidth = contentAreaBox.right() - x;
+      var maxViewportWidth = domGlobals.window.innerWidth - (x - scroll.left());
+      var width = Math.min(contentBoxWidth, maxViewportWidth);
+      return {
+        x: x,
+        width: width
+      };
+    };
+    var getIframeBounds = function (editor, scroll, contentAreaBox) {
+      var _a = getHorizontalBounds(editor, scroll, contentAreaBox), x = _a.x, width = _a.width;
+      var containerBox = box(Element.fromDom(editor.getContainer()));
+      var y = Math.max(scroll.top(), contentAreaBox.y());
+      var contentBoxHeight = containerBox.bottom() - y;
+      var maxViewportHeight = domGlobals.window.innerHeight - (y - scroll.top());
+      var height = Math.min(contentBoxHeight, maxViewportHeight);
+      return bounds(x, y, width, height);
+    };
+    var getInlineBounds = function (editor, scroll, contentAreaBox) {
+      var _a = getHorizontalBounds(editor, scroll, contentAreaBox), x = _a.x, width = _a.width;
+      var containerBox = box(Element.fromDom(editor.getContainer()));
+      var windowHeight = domGlobals.window.innerHeight;
+      var scrollTop = scroll.top();
+      if (containerBox.y() >= contentAreaBox.bottom()) {
+        var bottom = Math.min(windowHeight + scrollTop, containerBox.y());
+        var height = bottom - scrollTop;
+        return bounds(x, scrollTop, width, height);
+      } else {
+        var y = Math.max(scrollTop, containerBox.bottom());
+        var height = windowHeight - (y - scrollTop);
+        return bounds(x, y, width, height);
+      }
+    };
+    var getDistractionFreeBounds = function (editor, scroll, contentAreaBox) {
+      var _a = getHorizontalBounds(editor, scroll, contentAreaBox), x = _a.x, width = _a.width;
+      return bounds(x, scroll.top(), width, domGlobals.window.innerHeight);
     };
 
     var ancestor$2 = function (scope, transform, isRoot) {
@@ -66876,7 +67643,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var formNavigators = {};
       var lookupTable = {};
       var registerForm = function (key, toolbarApi) {
-        var contextForm = getOrDie$1(createContextForm(toolbarApi));
+        var contextForm = getOrDie(createContextForm(toolbarApi));
         forms[key] = contextForm;
         contextForm.launch.map(function (launch) {
           formNavigators['form:' + key + ''] = __assign({}, toolbarApi.launch, {
@@ -67778,29 +68545,51 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           return Option.some(true);
         }
       }));
-      var getBoxElement = function () {
-        return Option.some(Element.fromDom(editor.contentAreaContainer));
+      var toolbarOrMenubarEnabled = isMenubarEnabled(editor) || isToolbarEnabled(editor) || isMultipleToolbars(editor);
+      var getBounds = function () {
+        var scroll = get$8();
+        var contentAreaBox = box(Element.fromDom(editor.getContentAreaContainer()));
+        if (editor.inline && !toolbarOrMenubarEnabled) {
+          return Option.some(getDistractionFreeBounds(editor, scroll, contentAreaBox));
+        } else if (editor.inline) {
+          return Option.some(getInlineBounds(editor, scroll, contentAreaBox));
+        } else {
+          return Option.some(getIframeBounds(editor, scroll, contentAreaBox));
+        }
+      };
+      var getViewportTop = function () {
+        var isToolbarDocked = get$4(Element.fromDom(editor.getContainer()), 'position') === 'fixed';
+        return editor.inline && toolbarOrMenubarEnabled && isToolbarDocked ? editor.getContainer().getBoundingClientRect().bottom : 0;
+      };
+      var shouldContextToolbarHide = function () {
+        var nodeBounds = lastElement.get().map(function (ele) {
+          return ele.getBoundingClientRect();
+        }).getOr(editor.selection.getRng().getBoundingClientRect());
+        var viewportHeight = defaultView(Element.fromDom(editor.getBody())).dom().innerHeight;
+        var aboveViewport = nodeBounds.bottom < getViewportTop();
+        var belowViewport = nodeBounds.top > viewportHeight;
+        return aboveViewport || belowViewport;
+      };
+      var hideOrRepositionIfNecessary = function () {
+        lastAnchor.get().each(function (anchor) {
+          var contextBarEle = contextbar.element();
+          remove$6(contextBarEle, 'display');
+          if (shouldContextToolbarHide()) {
+            set$2(contextBarEle, 'display', 'none');
+          } else {
+            Positioning.positionWithinBounds(sink, anchor, contextbar, getBounds());
+          }
+        });
       };
       editor.on('init', function () {
-        var scroller = editor.getBody().ownerDocument.defaultView;
-        var onScroll = bind$3(Element.fromDom(scroller), 'scroll', function () {
-          lastAnchor.get().each(function (anchor) {
-            var elem = lastElement.get().getOr(editor.selection.getNode());
-            var nodeBounds = elem.getBoundingClientRect();
-            var contentAreaBounds = editor.contentAreaContainer.getBoundingClientRect();
-            var aboveEditor = nodeBounds.bottom < 0;
-            var belowEditor = nodeBounds.top > contentAreaBounds.height;
-            if (aboveEditor || belowEditor) {
-              set$2(contextbar.element(), 'display', 'none');
-            } else {
-              remove$6(contextbar.element(), 'display');
-              Positioning.positionWithin(sink, anchor, contextbar, getBoxElement());
-            }
+        editor.on('ScrollWindow', hideOrRepositionIfNecessary);
+        if (!editor.inline) {
+          var scroller = defaultView(Element.fromDom(editor.getBody()));
+          var onScroll_1 = bind$3(scroller, 'scroll', hideOrRepositionIfNecessary);
+          editor.on('remove', function () {
+            onScroll_1.unbind();
           });
-        });
-        editor.on('remove', function () {
-          onScroll.unbind();
-        });
+        }
       });
       var lastAnchor = Cell(Option.none());
       var lastElement = Cell(Option.none());
@@ -67863,6 +68652,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           InlineView.getContent(contextbar).each(Keying.focusIn);
         });
       });
+      var bubbleSize = 12;
       var bubbleAlignments = {
         valignCentre: [],
         alignCentre: [],
@@ -67875,7 +68665,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       var anchorOverrides = { maxHeightFunction: expandable() };
       var lineAnchorSpec = {
-        bubble: nu$7(12, 0, bubbleAlignments),
+        bubble: nu$7(bubbleSize, 0, bubbleAlignments),
         layouts: {
           onLtr: function () {
             return [east$1];
@@ -67887,7 +68677,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         overrides: anchorOverrides
       };
       var anchorSpec = {
-        bubble: nu$7(0, 12, bubbleAlignments),
+        bubble: nu$7(0, bubbleSize, bubbleAlignments),
         layouts: {
           onLtr: function () {
             return [
@@ -67896,7 +68686,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               northeast$1,
               southeast$1,
               northwest$1,
-              southwest$1
+              southwest$1,
+              north$3,
+              south$3,
+              northeast$3,
+              southeast$3,
+              northwest$3,
+              southwest$3
             ];
           },
           onRtl: function () {
@@ -67906,7 +68702,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               northwest$1,
               southwest$1,
               northeast$1,
-              southeast$1
+              southeast$1,
+              north$3,
+              south$3,
+              northwest$3,
+              southwest$3,
+              northeast$3,
+              southeast$3
             ];
           }
         },
@@ -67924,8 +68726,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         var anchor = getAnchor(toolbarApi.position, sElem);
         lastAnchor.set(Option.some(anchor));
         lastElement.set(elem);
-        InlineView.showWithin(contextbar, anchor, wrapInPopDialog(toolbarSpec), getBoxElement());
-        remove$6(contextbar.element(), 'display');
+        var contextBarEle = contextbar.element();
+        remove$6(contextBarEle, 'display');
+        InlineView.showWithinBounds(contextbar, anchor, wrapInPopDialog(toolbarSpec), getBounds());
+        if (shouldContextToolbarHide()) {
+          set$2(contextBarEle, 'display', 'none');
+        }
       };
       var launchContextToolbar = function () {
         var scopes = getScopes();
@@ -67939,7 +68745,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var clearTimer = function () {
         var current = timer.get();
         if (current !== null) {
-          global$1.clearTimeout(current);
+          global$2.clearTimeout(current);
           timer.set(null);
         }
       };
@@ -67949,10 +68755,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       editor.on('init', function () {
         editor.on('click keyup SetContent ObjectResized ResizeEditor', function (e) {
-          resetTimer(global$1.setEditorTimeout(editor, launchContextToolbar, 0));
+          resetTimer(global$2.setEditorTimeout(editor, launchContextToolbar, 0));
         });
         editor.on('focusout', function (e) {
-          global$1.setEditorTimeout(editor, function () {
+          global$2.setEditorTimeout(editor, function () {
             if (search$1(sink.element()).isNone() && search$1(contextbar.element()).isNone()) {
               lastAnchor.set(Option.none());
               InlineView.hide(contextbar);
@@ -67967,7 +68773,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
         editor.on('NodeChange', function (e) {
           search$1(contextbar.element()).fold(function () {
-            resetTimer(global$1.setEditorTimeout(editor, launchContextToolbar, 0));
+            resetTimer(global$2.setEditorTimeout(editor, launchContextToolbar, 0));
           }, function (_) {
           });
         });
@@ -68256,9 +69062,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           pname: getPartName$1(n)
         });
       });
-      return composite(owner$4, schema$q, fieldParts, make$6, spec);
+      return composite(owner$4, schema$q, fieldParts, make$7, spec);
     };
-    var make$6 = function (detail, components, spec) {
+    var make$7 = function (detail, components, spec) {
       var getSlotNames = function (_) {
         return getAllPartNames(detail);
       };
@@ -68323,11 +69129,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         showSlot: showSlot
       };
       return {
-        'uid': detail.uid,
-        'dom': detail.dom,
-        'components': components,
-        'behaviours': get$b(detail.slotBehaviours),
-        'apis': apis
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: get$b(detail.slotBehaviours),
+        apis: apis
       };
     };
     var slotApis = map$1({
@@ -68401,7 +69207,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var makePanels = function (parts, panelConfigs) {
       var specs = map(keys(panelConfigs), function (name) {
         var spec = panelConfigs[name];
-        var bridged = getOrDie$1(createSidebar(spec));
+        var bridged = getOrDie(createSidebar(spec));
         return {
           name: name,
           getApi: getApi,
@@ -68610,9 +69416,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
       };
       editor.on('ProgressState', function (e) {
-        timer.get().each(global$1.clearTimeout);
+        timer.get().each(global$2.clearTimeout);
         if (isNumber(e.time)) {
-          var timerId = global$1.setEditorTimeout(editor, function () {
+          var timerId = global$2.setEditorTimeout(editor, function () {
             return toggle(e.state);
           }, e.time);
           timer.set(Option.some(timerId));
@@ -68887,7 +69693,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         items: 'help'
       }
     };
-    var make$7 = function (menu, registry, editor) {
+    var make$8 = function (menu, registry, editor) {
       var removedMenuItems = getRemovedMenuItems(editor).split(/[ ,]/);
       return {
         text: menu.title,
@@ -68926,7 +69732,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
       var menus = map(validMenus, function (menuName) {
         var menuData = rawMenuData[menuName];
-        return make$7({
+        return make$8({
           title: menuData.title,
           items: parseItemsString(menuData.items)
         }, registry, editor);
@@ -68962,7 +69768,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         editor.contentCSS.push(skinUrl + (isInline ? '/content.inline' : '/content') + '.min.css');
       }
       if (isSkinDisabled(editor) === false && skinUiCss) {
-        global$6.DOM.styleSheetLoader.load(skinUiCss, SkinLoaded.fireSkinLoaded(editor));
+        global$7.DOM.styleSheetLoader.load(skinUiCss, SkinLoaded.fireSkinLoaded(editor));
       } else {
         SkinLoaded.fireSkinLoaded(editor)();
       }
@@ -68988,7 +69794,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
 
-    var DOM = global$6.DOM;
+    var DOM = global$7.DOM;
+    var detection = PlatformDetection$1.detect();
+    var isTouch$4 = detection.deviceType.isTouch();
     var setupEvents = function (editor) {
       var contentWindow = editor.getWin();
       var initialDocEle = editor.getDoc().documentElement;
@@ -69026,6 +69834,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         setupEvents(editor);
       });
       var socket = OuterContainer.getSocket(uiComponents.outerContainer).getOrDie('Could not find expected socket element');
+      if (isTouch$4 === true) {
+        setAll$1(socket.element(), {
+          'overflow': 'scroll',
+          '-webkit-overflow-scrolling': 'touch'
+        });
+      }
       setupReadonlyModeSwitch(editor, uiComponents);
       editor.addCommand('ToggleSidebar', function (ui, value) {
         OuterContainer.toggleSidebar(uiComponents.outerContainer, value);
@@ -69198,7 +70012,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return getAttr(elem, dockInfo.leftAttr).bind(function (left) {
         return getAttr(elem, dockInfo.topAttr).map(function (top) {
           var w = get$7(component.element());
-          var h = get$8(component.element());
+          var h = get$6(component.element());
           return bounds(left, top, w, h);
         });
       });
@@ -69225,7 +70039,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var morphToFixed = function (component, dockInfo, viewport, scroll, origin) {
       var loc = absolute(component.element());
-      var box = bounds(loc.left(), loc.top(), get$7(component.element()), get$8(component.element()));
+      var box = bounds(loc.left(), loc.top(), get$7(component.element()), get$6(component.element()));
       if (!isCompletelyVisible(box, viewport)) {
         setPrior(component, dockInfo, loc.left(), loc.top());
         var coord = absolute$2(loc.left(), loc.top());
@@ -69254,7 +70068,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
       });
       var doc = owner(component.element());
-      var scroll = get$6(doc);
+      var scroll = get$8(doc);
       var origin = getOrigin(component.element(), scroll);
       getMorph(component, config, viewport, scroll, origin).each(function (morph) {
         var styles = toStyles(morph, scroll, origin);
@@ -69287,7 +70101,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     });
 
     var defaultLazyViewport = function (_component) {
-      var scroll = get$6();
+      var scroll = get$8();
       return bounds(scroll.left(), scroll.top(), domGlobals.window.innerWidth, domGlobals.window.innerHeight);
     };
     var DockingSchema = [
@@ -69311,7 +70125,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var render$1 = function (editor, uiComponents, rawUiConfig, backstage, args) {
       var floatContainer;
-      var DOM = global$6.DOM;
+      var DOM = global$7.DOM;
       var useFixedToolbarContainer = useFixedContainer(editor);
       var splitSetting = getToolbarDrawer(editor);
       var split = splitSetting === ToolbarDrawer.sliding || splitSetting === ToolbarDrawer.floating;
@@ -69322,7 +70136,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
         var location = absolute(Element.fromDom(editor.getBody()));
         return {
-          top: Math.round(location.top() - get$8(floatContainer.element())) + offset,
+          top: Math.round(location.top() - get$6(floatContainer.element())) + offset,
           left: Math.round(location.left())
         };
       };
@@ -69331,7 +70145,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         var offset = split ? toolbar.fold(function () {
           return 0;
         }, function (tbar) {
-          return tbar.components().length > 1 ? get$8(tbar.components()[1].element()) : 0;
+          return tbar.components().length > 1 ? get$6(tbar.components()[1].element()) : 0;
         }) : 0;
         var position = calcPosition(offset);
         if (isDocked) {
@@ -69452,7 +70266,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           icon: 'align-justify'
         }
       ];
-      global$c.each(alignToolbarButtons, function (item) {
+      global$e.each(alignToolbarButtons, function (item) {
         editor.ui.registry.addToggleButton(item.name, {
           tooltip: item.text,
           onAction: function () {
@@ -69484,7 +70298,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
     var registerFormatButtons = function (editor) {
-      global$c.each([
+      global$e.each([
         {
           name: 'bold',
           text: 'Bold',
@@ -69534,7 +70348,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
     var registerCommandButtons = function (editor) {
-      global$c.each([
+      global$e.each([
         {
           name: 'cut',
           text: 'Cut',
@@ -69594,7 +70408,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     };
     var registerCommandToggleButtons = function (editor) {
-      global$c.each([{
+      global$e.each([{
           name: 'blockquote',
           text: 'Blockquote',
           action: 'mceBlockQuote',
@@ -69616,7 +70430,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       registerCommandToggleButtons(editor);
     };
     var registerMenuItems = function (editor) {
-      global$c.each([
+      global$e.each([
         {
           name: 'bold',
           text: 'Bold',
@@ -69895,7 +70709,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return nu$d(e.clientX, e.clientY);
     };
     var transposeContentAreaContainer = function (element, pos) {
-      var containerPos = global$6.DOM.getPos(element);
+      var containerPos = global$7.DOM.getPos(element);
       return transpose$1(pos, containerPos.x, containerPos.y);
     };
     var getPointAnchor = function (editor, e) {
@@ -70077,7 +70891,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var initialAttribute = 'data-initial-z-index';
     var resetZIndex = function (blocker) {
-      parent(blocker.element()).each(function (root) {
+      parent(blocker.element()).filter(isElement).each(function (root) {
         var initZIndex = get$2(root, initialAttribute);
         if (has$1(root, initialAttribute)) {
           set$2(root, 'z-index', initZIndex);
@@ -70088,7 +70902,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       });
     };
     var changeZIndex = function (blocker) {
-      parent(blocker.element()).each(function (root) {
+      parent(blocker.element()).filter(isElement).each(function (root) {
         getRaw(root, 'z-index').each(function (zindex) {
           set$1(root, initialAttribute, zindex);
         });
@@ -70173,8 +70987,24 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return absolute$2(location.left(), location.top());
       });
     };
-    var calcNewCoord = function (component, optSnaps, currentCoord, scroll, origin, delta) {
-      return optSnaps.fold(function () {
+    var clampCoords = function (component, coords, scroll, origin, startData) {
+      var bounds = startData.bounds;
+      var absoluteCoord = asAbsolute(coords, scroll, origin);
+      var newX = cap(absoluteCoord.left(), bounds.x(), bounds.width() - startData.width);
+      var newY = cap(absoluteCoord.top(), bounds.y(), bounds.height() - startData.height);
+      var newCoords = absolute$2(newX, newY);
+      return coords.fold(function () {
+        var offset$1 = asOffset(newCoords, scroll, origin);
+        return offset(offset$1.left(), offset$1.top());
+      }, function () {
+        return newCoords;
+      }, function () {
+        var fixed = asFixed(newCoords, scroll, origin);
+        return fixed$1(fixed.left(), fixed.top());
+      });
+    };
+    var calcNewCoord = function (component, optSnaps, currentCoord, scroll, origin, delta, startData) {
+      var newCoord = optSnaps.fold(function () {
         var translated = translate$1(currentCoord, delta.left(), delta.top());
         var fixedCoord = asFixed(translated, scroll, origin);
         return fixed$1(fixedCoord.left(), fixedCoord.top());
@@ -70185,23 +71015,32 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
         return snapping.coord;
       });
+      return clampCoords(component, newCoord, scroll, origin, startData);
     };
-    var dragBy = function (component, dragConfig, delta) {
+    var dragBy = function (component, dragConfig, startData, delta) {
       var target = dragConfig.getTarget(component.element());
       if (dragConfig.repositionTarget) {
         var doc = owner(component.element());
-        var scroll = get$6(doc);
+        var scroll = get$8(doc);
         var origin = getOrigin(target, scroll);
         var currentCoord = getCurrentCoord(target);
-        var newCoord = calcNewCoord(component, dragConfig.snaps, currentCoord, scroll, origin, delta);
+        var newCoord = calcNewCoord(component, dragConfig.snaps, currentCoord, scroll, origin, delta, startData);
         var styles = toStyles(newCoord, scroll, origin);
         setAll$1(target, styles);
       }
       dragConfig.onDrag(component, target, delta);
     };
 
+    var calcStartData = function (dragConfig, comp) {
+      return {
+        bounds: dragConfig.getBounds(),
+        height: getOuter$1(comp.element()),
+        width: getOuter$2(comp.element())
+      };
+    };
+
     var defaultLazyViewport$1 = function () {
-      var scroll = get$6();
+      var scroll = get$8();
       return {
         x: scroll.left,
         y: scroll.top,
@@ -70243,7 +71082,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     });
 
     var handlers = function (dragConfig, dragState) {
-      return derive([run(mousedown(), function (component, simulatedEvent) {
+      var updateStartState = function (comp) {
+        dragState.setStartData(calcStartData(dragConfig, comp));
+      };
+      return derive([
+        run(windowScroll(), updateStartState),
+        run(mousedown(), function (component, simulatedEvent) {
           var raw = simulatedEvent.event().raw();
           if (raw.button !== 0) {
             return;
@@ -70262,8 +71106,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             move: function (event) {
               delayDrop.cancel();
               var delta = dragState.update(MouseData, event);
+              var dragStartData = dragState.getStartData().getOrThunk(function () {
+                return calcStartData(dragConfig, component);
+              });
               delta.each(function (dlt) {
-                dragBy(component, dragConfig, dlt);
+                dragBy(component, dragConfig, dragStartData, dlt);
               });
             }
           };
@@ -70287,15 +71134,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               stopDrag(component, snapInfo);
             });
             var target = dragConfig.getTarget(component.element());
+            dragState.reset();
             dragConfig.onDrop(component, target);
           };
           var delayDrop = DelayedFunction(stop, 200);
           var start = function () {
-            dragState.reset();
+            updateStartState(component);
             instigate(component, blocker);
           };
           start();
-        })]);
+        })
+      ]);
     };
     var schema$r = [
       defaulted$1('useFixed', false),
@@ -70304,6 +71153,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       defaulted$1('onDrag', noop),
       defaulted$1('repositionTarget', true),
       onHandler('onDrop'),
+      defaultedFunction('getBounds', win),
       SnapSchema,
       output('dragger', { handlers: handlers })
     ];
@@ -70327,13 +71177,23 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     });
 
     var handlers$1 = function (dragConfig, dragState) {
+      var updateStartState = function (comp) {
+        dragState.setStartData(calcStartData(dragConfig, comp));
+      };
       return derive([
-        stopper(touchstart()),
+        run(windowScroll(), updateStartState),
+        run(touchstart(), function (component, simulatedEvent) {
+          updateStartState(component);
+          simulatedEvent.stop();
+        }),
         run(touchmove(), function (component, simulatedEvent) {
           simulatedEvent.stop();
           var delta = dragState.update(TouchData, simulatedEvent.event());
+          var dragStartData = dragState.getStartData().getOrThunk(function () {
+            return calcStartData(dragConfig, component);
+          });
           delta.each(function (dlt) {
-            dragBy(component, dragConfig, dlt);
+            dragBy(component, dragConfig, dragStartData, dlt);
           });
         }),
         run(touchend(), function (component, simulatedEvent) {
@@ -70352,6 +71212,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       defaulted$1('onDrag', noop),
       defaulted$1('repositionTarget', true),
       defaulted$1('onDrop', noop),
+      defaultedFunction('getBounds', win),
       SnapSchema,
       output('dragger', { handlers: handlers$1 })
     ];
@@ -70366,8 +71227,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var init$c = function () {
       var previous = Option.none();
+      var startData = Option.none();
       var reset = function () {
         previous = Option.none();
+        startData = Option.none();
       };
       var calculateDelta = function (mode, nu) {
         var result = previous.map(function (old) {
@@ -70381,11 +71244,19 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           return calculateDelta(mode, nuData);
         });
       };
+      var setStartData = function (data) {
+        startData = Option.some(data);
+      };
+      var getStartData = function () {
+        return startData;
+      };
       var readState = constant({});
       return nu$5({
         readState: readState,
         reset: reset,
-        update: update
+        update: update,
+        getStartData: getStartData,
+        setStartData: setStartData
       });
     };
 
@@ -70439,7 +71310,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var resize$3 = function (editor, deltas, resizeType) {
       var container = Element.fromDom(editor.getContainer());
-      var dimensions = getDimensions(editor, deltas, resizeType, get$8(container), get$7(container));
+      var dimensions = getDimensions(editor, deltas, resizeType, get$6(container), get$7(container));
       each$1(dimensions, function (val, dim) {
         return set$2(container, dim, Utils.numToPx(val));
       });
@@ -70629,7 +71500,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         };
       };
       var renderBranding = function () {
-        var label = global$4.translate([
+        var label = global$5.translate([
           'Powered by {0}',
           'Tiny'
         ]);
@@ -70699,7 +71570,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var platform = PlatformDetection$1.detect();
       var isIE = platform.browser.isIE();
       var platformClasses = isIE ? ['tox-platform-ie'] : [];
-      var dirAttributes = global$4.isRtl() ? { attributes: { dir: 'rtl' } } : {};
+      var dirAttributes = global$5.isRtl() ? { attributes: { dir: 'rtl' } } : {};
       var sink = build$1({
         dom: __assign({
           tag: 'div',
@@ -70841,7 +71712,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         [partThrobber]
       ]);
       var isHidden = isInline && !hasMenubar && !hasToolbar && !hasMultipleToolbar;
-      var attributes = __assign({ role: 'application' }, global$4.isRtl() ? { dir: 'rtl' } : {}, isHidden ? { 'aria-hidden': 'true' } : {});
+      var attributes = __assign({ role: 'application' }, global$5.isRtl() ? { dir: 'rtl' } : {}, isHidden ? { 'aria-hidden': 'true' } : {});
       var outerContainer = build$1(OuterContainer.sketch({
         dom: {
           tag: 'div',
@@ -70881,7 +71752,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return { channels: channels };
       };
       var setEditorSize = function (elm) {
-        var DOM = global$6.DOM;
+        var DOM = global$7.DOM;
         var baseWidth = editor.getParam('width', DOM.getStyle(elm, 'width'));
         var baseHeight = getHeightSetting(editor);
         var minWidth = getMinWidthSetting(editor);
@@ -70953,6 +71824,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var Render = { setup: setup$8 };
 
+    var describedBy = function (describedElement, describeElement) {
+      var describeId = Option.from(get$2(describedElement, 'id')).fold(function () {
+        var id = generate$1('dialog-describe');
+        set$1(describeElement, 'id', id);
+        return id;
+      }, identity);
+      set$1(describedElement, 'aria-describedby', describeId);
+    };
+
     var AriaLabel = {
       labelledBy: function (labelledElement, labelElement) {
         var labelId = Option.from(get$2(labelledElement, 'id')).fold(function () {
@@ -70967,6 +71847,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var schema$t = constant([
       strict$1('lazySink'),
       option('dragBlockClass'),
+      defaultedFunction('getBounds', win),
       defaulted$1('useTabstopAt', constant(true)),
       defaulted$1('eventOrder', {}),
       field$1('modalBehaviours', [Keying]),
@@ -70984,7 +71865,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
                 getTarget: function (handle) {
                   return ancestor$1(handle, '[role="dialog"]').getOr(handle);
                 },
-                blockerClass: detail.dragBlockClass.getOrDie(new Error('The drag blocker class was not specified for a dialog with a drag handle: \n' + Json.stringify(spec, null, 2)).message)
+                blockerClass: detail.dragBlockClass.getOrDie(new Error('The drag blocker class was not specified for a dialog with a drag handle: \n' + JSON.stringify(spec, null, 2)).message),
+                getBounds: detail.getDragBounds
               })])
           };
         }
@@ -71033,15 +71915,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         name: 'blocker'
       })
     ]);
-
-    var describedBy = function (describedElement, describeElement) {
-      var describeId = Option.from(get$2(describedElement, 'id')).fold(function () {
-        var id = generate$1('dialog-describe');
-        set$1(describeElement, 'id', id);
-        return id;
-      }, identity);
-      set$1(describedElement, 'aria-describedby', describeId);
-    };
 
     var factory$h = function (detail, components, spec, externals) {
       var dialogBusyEvent = generate$1('alloy.dialog.busy');
@@ -71186,6 +72059,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       strictString('icon'),
       defaulted$1('url', '')
     ];
+    var alertBannerSchema = objOf(alertBannerFields);
 
     var createBarFields = function (itemsField) {
       return [
@@ -71202,14 +72076,18 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       field('name', 'name', defaultedThunk(function () {
         return generate$1('button-name');
       }), string),
-      optionString('icon')
+      optionString('icon'),
+      defaultedBoolean('borderless', false)
     ];
+    var buttonSchema = objOf(buttonFields);
 
     var checkboxFields = [
       strictString('type'),
       strictString('name'),
-      strictString('label')
+      strictString('label'),
+      defaultedBoolean('disabled', false)
     ];
+    var checkboxSchema = objOf(checkboxFields);
     var checkboxDataProcessor = boolean;
 
     var formComponentFields = [
@@ -71219,12 +72097,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var formComponentWithLabelFields = formComponentFields.concat([optionString('label')]);
 
     var colorInputFields = formComponentWithLabelFields;
+    var colorInputSchema = objOf(colorInputFields);
     var colorInputDataProcessor = string;
 
     var colorPickerFields = formComponentWithLabelFields;
+    var colorPickerSchema = objOf(colorPickerFields);
     var colorPickerDataProcessor = string;
 
     var dropZoneFields = formComponentWithLabelFields;
+    var dropZoneSchema = objOf(dropZoneFields);
     var dropZoneDataProcessor = arrOfVal();
 
     var createGridFields = function (itemsField) {
@@ -71236,9 +72117,15 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var iframeFields = formComponentWithLabelFields.concat([defaultedBoolean('sandboxed', true)]);
+    var iframeSchema = objOf(iframeFields);
     var iframeDataProcessor = string;
 
-    var inputFields = formComponentWithLabelFields.concat([optionString('placeholder')]);
+    var inputFields = formComponentWithLabelFields.concat([
+      optionString('placeholder'),
+      defaultedBoolean('maximized', false),
+      defaultedBoolean('disabled', false)
+    ]);
+    var inputSchema = objOf(inputFields);
     var inputDataProcessor = string;
 
     var selectBoxFields = formComponentWithLabelFields.concat([
@@ -71246,24 +72133,39 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         strictString('text'),
         strictString('value')
       ]),
-      defaultedNumber('size', 1)
+      defaultedNumber('size', 1),
+      defaultedBoolean('disabled', false)
     ]);
+    var selectBoxSchema = objOf(selectBoxFields);
     var selectBoxDataProcessor = string;
 
-    var sizeInputFields = formComponentWithLabelFields.concat([defaultedBoolean('constrain', true)]);
+    var sizeInputFields = formComponentWithLabelFields.concat([
+      defaultedBoolean('constrain', true),
+      defaultedBoolean('disabled', false)
+    ]);
+    var sizeInputSchema = objOf(sizeInputFields);
     var sizeInputDataProcessor = objOf([
       strictString('width'),
       strictString('height')
     ]);
 
-    var textAreaFields = formComponentWithLabelFields.concat([optionString('placeholder')]);
+    var textAreaFields = formComponentWithLabelFields.concat([
+      optionString('placeholder'),
+      defaultedBoolean('maximized', false),
+      defaultedBoolean('disabled', false)
+    ]);
+    var textAreaSchema = objOf(textAreaFields);
     var textAreaDataProcessor = string;
 
-    var urlInputFields = formComponentWithLabelFields.concat([defaultedStringEnum('filetype', 'file', [
+    var urlInputFields = formComponentWithLabelFields.concat([
+      defaultedStringEnum('filetype', 'file', [
         'image',
         'media',
         'file'
-      ])]);
+      ]),
+      defaulted$1('disabled', false)
+    ]);
+    var urlInputSchema = objOf(urlInputFields);
     var urlInputDataProcessor = objOf([
       strictString('value'),
       defaulted$1('meta', {})
@@ -71271,8 +72173,19 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var customEditorFields = formComponentFields.concat([
       defaultedString('tag', 'textarea'),
+      strictString('scriptId'),
+      strictString('scriptUrl'),
+      defaultedPostMsg('settings', undefined)
+    ]);
+    var customEditorFieldsOld = formComponentFields.concat([
+      defaultedString('tag', 'textarea'),
       strictFunction('init')
     ]);
+    var customEditorSchema = valueOf(function (v) {
+      return asRaw('customeditor.old', objOfOnly(customEditorFieldsOld), v).orThunk(function () {
+        return asRaw('customeditor.new', objOfOnly(customEditorFields), v);
+      });
+    });
     var customEditorDataProcessor = string;
 
     var htmlPanelFields = [
@@ -71283,13 +72196,16 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         'document'
       ])
     ];
+    var htmlPanelSchema = objOf(htmlPanelFields);
 
     var imageToolsFields = formComponentWithLabelFields.concat([strictOf('currentState', objOf([
         strict$1('blob'),
         strictString('url')
       ]))]);
+    var imageToolsSchema = objOf(imageToolsFields);
 
     var collectionFields = formComponentWithLabelFields.concat([defaulted$1('columns', 'auto')]);
+    var collectionSchema = objOf(collectionFields);
     var collectionDataProcessor = arrOfObj$1([
       strictString('value'),
       strictString('text'),
@@ -71309,6 +72225,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       strictArrayOf('header', string),
       strictArrayOf('cells', arrOf(string))
     ];
+    var tableSchema = objOf(tableFields);
 
     var createItemsField = function (name) {
       return field('items', 'items', strict(), arrOf(valueOf(function (v) {
@@ -71319,33 +72236,37 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
       })));
     };
-    var itemSchema$2 = choose$1('type', {
-      alertbanner: alertBannerFields,
-      bar: createBarFields(createItemsField('bar')),
-      button: buttonFields,
-      checkbox: checkboxFields,
-      colorinput: colorInputFields,
-      colorpicker: colorPickerFields,
-      dropzone: dropZoneFields,
-      grid: createGridFields(createItemsField('grid')),
-      iframe: iframeFields,
-      input: inputFields,
-      selectbox: selectBoxFields,
-      sizeinput: sizeInputFields,
-      textarea: textAreaFields,
-      urlinput: urlInputFields,
-      customeditor: customEditorFields,
-      htmlpanel: htmlPanelFields,
-      imagetools: imageToolsFields,
-      collection: collectionFields,
-      label: createLabelFields(createItemsField('label')),
-      table: tableFields
+    var itemSchema$2 = valueThunkOf(function () {
+      return chooseProcessor('type', {
+        alertbanner: alertBannerSchema,
+        bar: objOf(createBarFields(createItemsField('bar'))),
+        button: buttonSchema,
+        checkbox: checkboxSchema,
+        colorinput: colorInputSchema,
+        colorpicker: colorPickerSchema,
+        dropzone: dropZoneSchema,
+        grid: objOf(createGridFields(createItemsField('grid'))),
+        iframe: iframeSchema,
+        input: inputSchema,
+        selectbox: selectBoxSchema,
+        sizeinput: sizeInputSchema,
+        textarea: textAreaSchema,
+        urlinput: urlInputSchema,
+        customeditor: customEditorSchema,
+        htmlpanel: htmlPanelSchema,
+        imagetools: imageToolsSchema,
+        collection: collectionSchema,
+        label: objOf(createLabelFields(createItemsField('label'))),
+        table: tableSchema,
+        panel: panelSchema
+      });
     });
-
     var panelFields = [
       strictString('type'),
+      defaulted$1('classes', []),
       strictArrayOf('items', itemSchema$2)
     ];
+    var panelSchema = objOf(panelFields);
 
     var tabFields = [
       field('name', 'name', defaultedThunk(function () {
@@ -71358,12 +72279,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       strictString('type'),
       strictArrayOfObj('tabs', tabFields)
     ];
+    var tabPanelSchema = objOf(tabPanelFields);
 
-    var dialogButtonFields = [
+    var baseButtonFields = [
       field('name', 'name', defaultedThunk(function () {
         return generate$1('button-name');
       }), string),
-      strictString('text'),
       optionString('icon'),
       defaultedStringEnum('align', 'end', [
         'start',
@@ -71372,16 +72293,24 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       defaultedBoolean('primary', false),
       defaultedBoolean('disabled', false)
     ];
-    var dialogButtonSchema = objOf([strictStringEnum('type', [
+    var dialogButtonFields = baseButtonFields.concat([strictString('text')]);
+    var normalButtonFields = [strictStringEnum('type', [
         'submit',
         'cancel',
         'custom'
-      ])].concat(dialogButtonFields));
+      ])].concat(dialogButtonFields);
+    var menuButtonFields = [strictStringEnum('type', ['menu'])].concat(baseButtonFields, baseMenuButtonFields);
+    var dialogButtonSchema = choose$1('type', {
+      submit: normalButtonFields,
+      cancel: normalButtonFields,
+      custom: normalButtonFields,
+      menu: menuButtonFields
+    });
     var dialogSchema = objOf([
       strictString('title'),
-      strictOf('body', choose$1('type', {
-        panel: panelFields,
-        tabpanel: tabPanelFields
+      strictOf('body', chooseProcessor('type', {
+        panel: panelSchema,
+        tabpanel: tabPanelSchema
       })),
       defaultedString('size', 'normal'),
       strictArrayOf('buttons', dialogButtonSchema),
@@ -71463,7 +72392,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var extract$1 = function (structure) {
-      var internalDialog = getOrDie$1(createDialog(structure));
+      var internalDialog = getOrDie(createDialog(structure));
       var dataValidator = createDataValidator(structure);
       var initialData = structure.initialData;
       return {
@@ -71478,7 +72407,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return factory(extraction.internalDialog, extraction.initialData, extraction.dataValidator);
       },
       openUrl: function (factory, structure) {
-        var internalDialog = getOrDie$1(createUrlDialog(structure));
+        var internalDialog = getOrDie(createUrlDialog(structure));
         return factory(internalDialog);
       },
       redial: function (structure) {
@@ -71504,7 +72433,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return {
           dom: {
             tag: 'div',
-            classes: ['tox-form']
+            classes: ['tox-form'].concat(spec.classes)
           },
           components: map(spec.items, function (item) {
             return interpretInForm(parts, item, backstage);
@@ -71651,7 +72580,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         'dom': detail.dom,
         'components': components,
         'debug.sketcher': 'Tabbar',
-        domModification: { attributes: { role: 'tablist' } },
+        'domModification': { attributes: { role: 'tablist' } },
         'behaviours': augment(detail.tabbarBehaviours, [
           Highlighting.config({
             highlightClass: detail.markers.selectedClass,
@@ -71864,7 +72793,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               updateTabviewHeight(comp.element(), tabview, maxTabHeight);
               remove$6(tabview, 'visibility');
               showTab(allTabs, comp);
-              global$1.requestAnimationFrame(function () {
+              global$2.requestAnimationFrame(function () {
                 updateTabviewHeight(comp.element(), tabview, maxTabHeight);
               });
             });
@@ -72047,14 +72976,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var footerChannel = generate$1('update-footer');
     var bodySendMessageChannel = generate$1('body-send-message');
 
-    var renderBody = function (foo, id, backstage, ariaAttrs) {
+    var renderBody = function (spec, id, backstage, ariaAttrs) {
       var renderComponents = function (incoming) {
         switch (incoming.body.type) {
         case 'tabpanel': {
-            return [renderTabPanel({ tabs: incoming.body.tabs }, backstage)];
+            return [renderTabPanel(incoming.body, backstage)];
           }
         default: {
-            return [renderBodyPanel({ items: incoming.body.items }, backstage)];
+            return [renderBodyPanel(incoming.body, backstage)];
           }
         }
       };
@@ -72081,16 +73010,16 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             channel: bodyChannel,
             updateState: updateState,
             renderComponents: renderComponents,
-            initialData: foo
+            initialData: spec
           })
         ])
       };
     };
-    var renderInlineBody = function (foo, contentId, backstage, ariaAttrs) {
-      return renderBody(foo, Option.some(contentId), backstage, ariaAttrs);
+    var renderInlineBody = function (spec, contentId, backstage, ariaAttrs) {
+      return renderBody(spec, Option.some(contentId), backstage, ariaAttrs);
     };
-    var renderModalBody = function (foo, backstage) {
-      var bodySpec = renderBody(foo, Option.none(), backstage, false);
+    var renderModalBody = function (spec, backstage) {
+      var bodySpec = renderBody(spec, Option.none(), backstage, false);
       return ModalDialog.parts().body(bodySpec);
     };
     var renderIframeBody = function (spec) {
@@ -72179,10 +73108,23 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         fireApiEvent(formChangeEvent, function (api, spec, event) {
           spec.onChange(api, { name: event.name() });
         }),
-        fireApiEvent(formActionEvent, function (api, spec, event) {
+        fireApiEvent(formActionEvent, function (api, spec, event, component) {
+          var focusIn = function () {
+            return Keying.focusIn(component);
+          };
+          var current = active();
           spec.onAction(api, {
             name: event.name(),
             value: event.value()
+          });
+          active().fold(function () {
+            focusIn();
+          }, function (focused) {
+            if (!contains$2(component.element(), focused) || has$1(focused, 'disabled')) {
+              focusIn();
+            } else if (contains$2(focused, current.getOrNull()) && has$1(current.getOrDie(), 'disabled')) {
+              focusIn();
+            }
           });
         }),
         fireApiEvent(formTabChangeEvent, function (api, spec, event) {
@@ -72202,8 +73144,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       initDialog: initDialog
     };
 
-    var makeButton = function (button, providersBackstage) {
-      return renderFooterButton(button, button.type, providersBackstage);
+    var makeButton = function (button, backstage) {
+      return renderFooterButton(button, button.type, backstage);
     };
     var lookup$2 = function (compInSystem, footerButtons, buttonName) {
       return find(footerButtons, function (button) {
@@ -72237,10 +73179,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         endButtons
       ];
     };
-    var renderFooter = function (initFoo, providersBackstage) {
+    var renderFooter = function (initSpec, backstage) {
       var updateState = function (_comp, data) {
         var footerButtons = map(data.buttons, function (button) {
-          var memButton = record(makeButton(button, providersBackstage));
+          var memButton = record(makeButton(button, backstage));
           return {
             name: button.name,
             align: button.align,
@@ -72260,17 +73202,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         components: [],
         behaviours: derive$1([Reflecting.config({
             channel: footerChannel,
-            initialData: initFoo,
+            initialData: initSpec,
             updateState: updateState,
             renderComponents: renderComponents
           })])
       };
     };
-    var renderInlineFooter = function (initFoo, providersBackstage) {
-      return renderFooter(initFoo, providersBackstage);
+    var renderInlineFooter = function (initSpec, backstage) {
+      return renderFooter(initSpec, backstage);
     };
-    var renderModalFooter = function (initFoo, providersBackstage) {
-      return ModalDialog.parts().footer(renderFooter(initFoo, providersBackstage));
+    var renderModalFooter = function (initSpec, backstage) {
+      return ModalDialog.parts().footer(renderFooter(initSpec, backstage));
     };
 
     var getCompByName = function (access, name) {
@@ -72293,7 +73235,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var validateData = function (access, data) {
       var root = access.getRoot();
       return Reflecting.getState(root).get().map(function (dialogState) {
-        return getOrDie$1(asRaw('data', dialogState.dataValidator, data));
+        return getOrDie(asRaw('data', dialogState.dataValidator, data));
       }).getOr(data);
     };
     var getDialogApi = function (access, doRedial) {
@@ -72409,7 +73351,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
       });
     };
-    var renderTitle = function (foo, id, providersBackstage) {
+    var renderTitle = function (spec, id, providersBackstage) {
       var renderComponents = function (data) {
         return [text(providersBackstage.translate(data.title))];
       };
@@ -72421,18 +73363,22 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             return { id: x };
           }).getOr({}))
         },
-        components: renderComponents(foo),
+        components: renderComponents(spec),
         behaviours: derive$1([Reflecting.config({
             channel: titleChannel,
             renderComponents: renderComponents
           })])
       };
     };
-    var renderInlineHeader = function (foo, titleId, providersBackstage) {
+    var renderDragHandle = function () {
+      return { dom: fromHtml$2('<div class="tox-dialog__draghandle"></div>') };
+    };
+    var renderInlineHeader = function (spec, titleId, providersBackstage) {
       return Container.sketch({
         dom: fromHtml$2('<div class="tox-dialog__header"></div>'),
         components: [
-          renderTitle(foo, Option.some(titleId), providersBackstage),
+          renderTitle(spec, Option.some(titleId), providersBackstage),
+          renderDragHandle(),
           renderClose(providersBackstage)
         ],
         containerBehaviours: derive$1([Dragging.config({
@@ -72451,11 +73397,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           })])
       });
     };
-    var renderModalHeader = function (foo, providersBackstage) {
-      var pTitle = ModalDialog.parts().title(renderTitle(foo, Option.none(), providersBackstage));
-      var pHandle = ModalDialog.parts().draghandle({ dom: fromHtml$2('<div class="tox-dialog__draghandle"></div>') });
+    var renderModalHeader = function (spec, providersBackstage) {
+      var pTitle = ModalDialog.parts().title(renderTitle(spec, Option.none(), providersBackstage));
+      var pHandle = ModalDialog.parts().draghandle(renderDragHandle());
       var pClose = ModalDialog.parts().close(renderClose(providersBackstage));
-      var components = [pTitle].concat(foo.draggable ? [pHandle] : []).concat([pClose]);
+      var components = [pTitle].concat(spec.draggable ? [pHandle] : []).concat([pClose]);
       return Container.sketch({
         dom: fromHtml$2('<div class="tox-dialog__header"></div>'),
         components: components
@@ -72465,7 +73411,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var getHeader = function (title, backstage) {
       return renderModalHeader({
         title: backstage.shared.providers.translate(title),
-        draggable: true
+        draggable: backstage.dialog.isDraggableModal()
       }, backstage.shared.providers);
     };
     var getEventExtras = function (lazyDialog, extra) {
@@ -72510,7 +73456,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           return Option.some(true);
         },
         useTabstopAt: function (elem) {
-          return !NavigableObject.isPseudoStop(elem) && (name(elem) !== 'button' || get$2(elem, 'disabled') !== 'disabled');
+          return !NavigableObject.isPseudoStop(elem);
         },
         modalBehaviours: derive$1([
           Reflecting.config({
@@ -72575,7 +73521,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var renderDialog = function (dialogInit, extra, backstage) {
       var header = getHeader(dialogInit.internalDialog.title, backstage);
       var body = renderModalBody({ body: dialogInit.internalDialog.body }, backstage);
-      var footer = renderModalFooter({ buttons: dialogInit.internalDialog.buttons }, backstage.shared.providers);
+      var footer = renderModalFooter({ buttons: dialogInit.internalDialog.buttons }, backstage);
       var dialogEvents = SilverDialogEvents.initDialog(function () {
         return instanceApi;
       }, getEventExtras(function () {
@@ -72616,7 +73562,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var global$e = tinymce.util.Tools.resolve('tinymce.util.URI');
+    var global$g = tinymce.util.Tools.resolve('tinymce.util.URI');
 
     var getUrlDialogApi = function (root) {
       var withRoot = function (f) {
@@ -72700,7 +73646,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         if (buttons.length === 0) {
           return Option.none();
         } else {
-          return Option.some(renderModalFooter({ buttons: buttons }, backstage.shared.providers));
+          return Option.some(renderModalFooter({ buttons: buttons }, backstage));
         }
       });
       var dialogEvents = SilverDialogEvents.initUrlDialog(function () {
@@ -72724,14 +73670,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         };
       }));
       var classes = internalDialog.width.isNone() && internalDialog.height.isNone() ? ['tox-dialog--width-lg'] : [];
-      var iframeUri = new global$e(internalDialog.url, { base_uri: new global$e(domGlobals.window.location.href) });
+      var iframeUri = new global$g(internalDialog.url, { base_uri: new global$g(domGlobals.window.location.href) });
       var iframeDomain = iframeUri.protocol + '://' + iframeUri.host + (iframeUri.port ? ':' + iframeUri.port : '');
       var messageHandlerUnbinder = Cell(Option.none());
       var extraBehaviours = [
         config('messages', [
           runOnAttached(function () {
             var unbind = bind$3(Element.fromDom(domGlobals.window), 'message', function (e) {
-              if (iframeUri.isSameOrigin(new global$e(e.raw().origin))) {
+              if (iframeUri.isSameOrigin(new global$g(e.raw().origin))) {
                 var data = e.raw().data;
                 if (isSupportedMessage(data)) {
                   handleMessage(editor, instanceApi, data);
@@ -72787,7 +73733,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         draggable: true
       }, dialogLabelId, backstage.shared.providers));
       var memBody = record(renderInlineBody({ body: dialogInit.internalDialog.body }, dialogContentId, backstage, ariaAttrs));
-      var memFooter = record(renderInlineFooter({ buttons: dialogInit.internalDialog.buttons }, backstage.shared.providers));
+      var memFooter = record(renderInlineFooter({ buttons: dialogInit.internalDialog.buttons }, backstage));
       var dialogEvents = SilverDialogEvents.initDialog(function () {
         return instanceApi;
       }, {
@@ -72802,7 +73748,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var dialog = build$1({
         dom: {
           tag: 'div',
-          classes: ['tox-dialog'],
+          classes: [
+            'tox-dialog',
+            'tox-dialog-inline'
+          ],
           attributes: (_a = { role: 'dialog' }, _a['aria-labelledby'] = dialogLabelId, _a['aria-describedby'] = '' + dialogContentId, _a)
         },
         eventOrder: (_b = {}, _b[receive()] = [
@@ -72828,7 +73777,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             updateState: updateState,
             initialData: dialogInit
           }),
-          config('execute-on-form', dialogEvents),
+          Focusing.config({}),
+          config('execute-on-form', dialogEvents.concat([runOnSource(focusin(), function (comp, se) {
+              Keying.focusIn(comp);
+            })])),
           RepresentingConfigs.memory({})
         ]),
         components: [
@@ -72998,7 +73950,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           align: 'end',
           disabled: false,
           icon: Option.none()
-        }, 'cancel', sharedBackstage.providers));
+        }, 'cancel', extras.backstage));
         var alertDialog = build$1(renderDialog$1({
           lazySink: function () {
             return sharedBackstage.getSink();
@@ -73039,7 +73991,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           align: 'end',
           disabled: false,
           icon: Option.none()
-        }, 'submit', sharedBackstage.providers));
+        }, 'submit', extras.backstage));
         var footerNo = renderFooterButton({
           name: 'no',
           text: 'No',
@@ -73047,7 +73999,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           align: 'end',
           disabled: false,
           icon: Option.none()
-        }, 'cancel', sharedBackstage.providers);
+        }, 'cancel', extras.backstage);
         var confirmDialog = build$1(renderDialog$1({
           lazySink: function () {
             return sharedBackstage.getSink();
@@ -73080,7 +74032,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var validateData$1 = function (data, validator) {
-      return getOrDie$1(asRaw('data', validator, data));
+      return getOrDie(asRaw('data', validator, data));
     };
     var setup$b = function (extras) {
       var alertDialog = setup$9(extras);
@@ -73188,7 +74140,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var WindowManager = { setup: setup$b };
 
     function Theme () {
-      global.add('silver', function (editor) {
+      global$1.add('silver', function (editor) {
         var _a = Render.setup(editor), uiMothership = _a.uiMothership, backstage = _a.backstage, renderUI = _a.renderUI, getUi = _a.getUi;
         Autocompleter.register(editor, backstage.shared);
         var windowMgr = WindowManager.setup({
@@ -73210,6 +74162,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
 }(window));
 
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -73220,13 +74173,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
+/* WEBPACK VAR INJECTION */(function(global) {/**
  * Copyright (c) Tiny Technologies, Inc. All rights reserved.
  * Licensed under the LGPL or a commercial license.
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.11 (2019-07-04)
+ * Version: 5.0.15 (2019-09-02)
  */
 (function (domGlobals) {
     'use strict';
@@ -73335,8 +74288,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -73411,13 +74365,16 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var typeOf = function (x) {
-      if (x === null)
+      if (x === null) {
         return 'null';
+      }
       var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array'))
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
         return 'array';
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String'))
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
         return 'string';
+      }
       return t;
     };
     var isType = function (type) {
@@ -73540,8 +74497,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
+        if (!isArray(xs[i])) {
           throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
+        }
         push.apply(r, xs[i]);
       }
       return r;
@@ -73617,44 +74575,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return t;
     }
 
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var path = function (parts, scope) {
-      var o = scope !== undefined && scope !== null ? scope : Global;
-      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i)
-        o = o[parts[i]];
-      return o;
-    };
-    var resolve = function (p, scope) {
-      var parts = p.split('.');
-      return path(parts, scope);
-    };
-
-    var unsafe = function (name, scope) {
-      return resolve(name, scope);
-    };
-    var getOrDie = function (name, scope) {
-      var actual = unsafe(name, scope);
-      if (actual === undefined || actual === null)
-        throw name + ' not available on this browser';
-      return actual;
-    };
-    var Global$1 = { getOrDie: getOrDie };
-
-    var url = function () {
-      return Global$1.getOrDie('URL');
-    };
-    var createObjectURL = function (blob) {
-      return url().createObjectURL(blob);
-    };
-    var revokeObjectURL = function (u) {
-      url().revokeObjectURL(u);
-    };
-    var URL = {
-      createObjectURL: createObjectURL,
-      revokeObjectURL: revokeObjectURL
-    };
-
     var nav = domGlobals.navigator, userAgent = nav.userAgent;
     var opera, webkit, ie, ie11, ie12, gecko, mac, iDevice, android, fileApi, phone, tablet, windowsPhone;
     var matchMediaQuery = function (query) {
@@ -73671,7 +74591,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     gecko = !webkit && !ie11 && /Gecko/.test(userAgent);
     mac = userAgent.indexOf('Mac') !== -1;
     iDevice = /(iPad|iPhone)/.test(userAgent);
-    fileApi = 'FormData' in domGlobals.window && 'FileReader' in domGlobals.window && 'URL' in domGlobals.window && !!URL.createObjectURL;
+    fileApi = 'FormData' in domGlobals.window && 'FileReader' in domGlobals.window && 'URL' in domGlobals.window && !!domGlobals.URL.createObjectURL;
     phone = matchMediaQuery('only screen and (max-device-width: 480px)') && (android || iDevice);
     tablet = matchMediaQuery('only screen and (min-width: 800px)') && (android || iDevice);
     windowsPhone = userAgent.indexOf('Windows Phone') !== -1;
@@ -73974,7 +74894,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       returnValue: 1,
       webkitMovementX: 1,
       webkitMovementY: 1,
-      keyIdentifier: 1
+      keyIdentifier: 1,
+      mozPressure: 1
     };
     var hasIsDefaultPrevented = function (event) {
       return event.isDefaultPrevented === returnTrue || event.isDefaultPrevented === returnFalse;
@@ -75584,7 +76505,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
       return o;
     };
-    var resolve$1 = function (n, o) {
+    var resolve = function (n, o) {
       var i, l;
       o = o || domGlobals.window;
       n = n.split('.');
@@ -75624,7 +76545,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       create: create,
       walk: walk,
       createNS: createNS,
-      resolve: resolve$1,
+      resolve: resolve,
       explode: explode,
       _addCacheSuffix: _addCacheSuffix
     };
@@ -76504,18 +77425,20 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var firstMatch = function (regexes, s) {
       for (var i = 0; i < regexes.length; i++) {
         var x = regexes[i];
-        if (x.test(s))
+        if (x.test(s)) {
           return x;
+        }
       }
       return undefined;
     };
     var find$2 = function (regexes, agent) {
       var r = firstMatch(regexes, agent);
-      if (!r)
+      if (!r) {
         return {
           major: 0,
           minor: 0
         };
+      }
       var group = function (i) {
         return Number(agent.replace(r, '$' + i));
       };
@@ -76523,8 +77446,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var detect = function (versionRegexes, agent) {
       var cleanedAgent = String(agent).toLowerCase();
-      if (versionRegexes.length === 0)
+      if (versionRegexes.length === 0) {
         return unknown();
+      }
       return find$2(versionRegexes, cleanedAgent);
     };
     var unknown = function () {
@@ -76680,10 +77604,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var checkRange = function (str, substr, start) {
-      if (substr === '')
+      if (substr === '') {
         return true;
-      if (str.length < substr.length)
+      }
+      if (str.length < substr.length) {
         return false;
+      }
       var x = str.substr(start, start + substr.length);
       return x === substr;
     };
@@ -76714,8 +77640,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         name: 'Edge',
         versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
         search: function (uastring) {
-          var monstrosity = contains$2(uastring, 'edge/') && contains$2(uastring, 'chrome') && contains$2(uastring, 'safari') && contains$2(uastring, 'applewebkit');
-          return monstrosity;
+          return contains$2(uastring, 'edge/') && contains$2(uastring, 'chrome') && contains$2(uastring, 'safari') && contains$2(uastring, 'applewebkit');
         }
       },
       {
@@ -76881,6 +77806,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var ENTITY = domGlobals.Node.ENTITY_NODE;
     var NOTATION = domGlobals.Node.NOTATION_NODE;
 
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
     var name = function (element) {
       var r = element.dom().nodeName;
       return r.toLowerCase();
@@ -76895,7 +77822,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var isElement = isType$1(ELEMENT);
     var isText = isType$1(TEXT);
-    var isDocument = isType$1(DOCUMENT);
 
     var keys = Object.keys;
     var hasOwnProperty$1 = Object.hasOwnProperty;
@@ -77036,18 +77962,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var Recurse = { toArray: toArray$1 };
 
-    var node = function () {
-      var f = Global$1.getOrDie('Node');
-      return f;
-    };
     var compareDocumentPosition = function (a, b, match) {
       return (a.compareDocumentPosition(b) & match) !== 0;
     };
     var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_PRECEDING);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
     };
     var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_CONTAINED_BY);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
     };
     var Node = {
       documentPositionPreceding: documentPositionPreceding,
@@ -77057,19 +77979,22 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var ELEMENT$1 = ELEMENT;
     var DOCUMENT$1 = DOCUMENT;
     var is$1 = function (element, selector) {
-      var elem = element.dom();
-      if (elem.nodeType !== ELEMENT$1) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT$1) {
         return false;
-      } else if (elem.matches !== undefined) {
-        return elem.matches(selector);
-      } else if (elem.msMatchesSelector !== undefined) {
-        return elem.msMatchesSelector(selector);
-      } else if (elem.webkitMatchesSelector !== undefined) {
-        return elem.webkitMatchesSelector(selector);
-      } else if (elem.mozMatchesSelector !== undefined) {
-        return elem.mozMatchesSelector(selector);
       } else {
-        throw new Error('Browser lacks native selectors');
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
       }
     };
     var bypassSelector = function (dom) {
@@ -77105,16 +78030,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return Element.fromDom(element.dom().ownerDocument.documentElement);
     };
     var defaultView = function (element) {
-      var el = element.dom();
-      var defView = el.ownerDocument.defaultView;
-      return Element.fromDom(defView);
+      return Element.fromDom(element.dom().ownerDocument.defaultView);
     };
     var parent = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.parentNode).map(Element.fromDom);
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
     };
     var parents = function (element, isRoot) {
-      var stop = isFunction(isRoot) ? isRoot : constant(false);
+      var stop = isFunction(isRoot) ? isRoot : never;
       var dom = element.dom();
       var ret = [];
       while (dom.parentNode !== null && dom.parentNode !== undefined) {
@@ -77130,12 +78052,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return ret;
     };
     var prevSibling = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.previousSibling).map(Element.fromDom);
+      return Option.from(element.dom().previousSibling).map(Element.fromDom);
     };
     var nextSibling = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.nextSibling).map(Element.fromDom);
+      return Option.from(element.dom().nextSibling).map(Element.fromDom);
     };
     var prevSiblings = function (element) {
       return reverse(Recurse.toArray(element, prevSibling));
@@ -77144,8 +78064,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return Recurse.toArray(element, nextSibling);
     };
     var children = function (element) {
-      var dom = element.dom();
-      return map(dom.childNodes, Element.fromDom);
+      return map(element.dom().childNodes, Element.fromDom);
     };
     var child = function (element, index) {
       var cs = element.dom().childNodes;
@@ -77221,6 +78140,503 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var Position = { getPos: getPos };
 
+    var exports$1 = {}, module$1 = { exports: exports$1 };
+    (function (define, exports, module, require) {
+      (function (f) {
+        if (typeof exports === 'object' && typeof module !== 'undefined') {
+          module.exports = f();
+        } else if (typeof define === 'function' && define.amd) {
+          define([], f);
+        } else {
+          var g;
+          if (typeof window !== 'undefined') {
+            g = window;
+          } else if (typeof global !== 'undefined') {
+            g = global;
+          } else if (typeof self !== 'undefined') {
+            g = self;
+          } else {
+            g = this;
+          }
+          g.EphoxContactWrapper = f();
+        }
+      }(function () {
+        return function () {
+          function r(e, n, t) {
+            function o(i, f) {
+              if (!n[i]) {
+                if (!e[i]) {
+                  var c = 'function' == typeof require && require;
+                  if (!f && c)
+                    return c(i, !0);
+                  if (u)
+                    return u(i, !0);
+                  var a = new Error('Cannot find module \'' + i + '\'');
+                  throw a.code = 'MODULE_NOT_FOUND', a;
+                }
+                var p = n[i] = { exports: {} };
+                e[i][0].call(p.exports, function (r) {
+                  var n = e[i][1][r];
+                  return o(n || r);
+                }, p, p.exports, r, e, n, t);
+              }
+              return n[i].exports;
+            }
+            for (var u = 'function' == typeof require && require, i = 0; i < t.length; i++)
+              o(t[i]);
+            return o;
+          }
+          return r;
+        }()({
+          1: [
+            function (require, module, exports) {
+              var process = module.exports = {};
+              var cachedSetTimeout;
+              var cachedClearTimeout;
+              function defaultSetTimout() {
+                throw new Error('setTimeout has not been defined');
+              }
+              function defaultClearTimeout() {
+                throw new Error('clearTimeout has not been defined');
+              }
+              (function () {
+                try {
+                  if (typeof setTimeout === 'function') {
+                    cachedSetTimeout = setTimeout;
+                  } else {
+                    cachedSetTimeout = defaultSetTimout;
+                  }
+                } catch (e) {
+                  cachedSetTimeout = defaultSetTimout;
+                }
+                try {
+                  if (typeof clearTimeout === 'function') {
+                    cachedClearTimeout = clearTimeout;
+                  } else {
+                    cachedClearTimeout = defaultClearTimeout;
+                  }
+                } catch (e) {
+                  cachedClearTimeout = defaultClearTimeout;
+                }
+              }());
+              function runTimeout(fun) {
+                if (cachedSetTimeout === setTimeout) {
+                  return setTimeout(fun, 0);
+                }
+                if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+                  cachedSetTimeout = setTimeout;
+                  return setTimeout(fun, 0);
+                }
+                try {
+                  return cachedSetTimeout(fun, 0);
+                } catch (e) {
+                  try {
+                    return cachedSetTimeout.call(null, fun, 0);
+                  } catch (e) {
+                    return cachedSetTimeout.call(this, fun, 0);
+                  }
+                }
+              }
+              function runClearTimeout(marker) {
+                if (cachedClearTimeout === clearTimeout) {
+                  return clearTimeout(marker);
+                }
+                if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+                  cachedClearTimeout = clearTimeout;
+                  return clearTimeout(marker);
+                }
+                try {
+                  return cachedClearTimeout(marker);
+                } catch (e) {
+                  try {
+                    return cachedClearTimeout.call(null, marker);
+                  } catch (e) {
+                    return cachedClearTimeout.call(this, marker);
+                  }
+                }
+              }
+              var queue = [];
+              var draining = false;
+              var currentQueue;
+              var queueIndex = -1;
+              function cleanUpNextTick() {
+                if (!draining || !currentQueue) {
+                  return;
+                }
+                draining = false;
+                if (currentQueue.length) {
+                  queue = currentQueue.concat(queue);
+                } else {
+                  queueIndex = -1;
+                }
+                if (queue.length) {
+                  drainQueue();
+                }
+              }
+              function drainQueue() {
+                if (draining) {
+                  return;
+                }
+                var timeout = runTimeout(cleanUpNextTick);
+                draining = true;
+                var len = queue.length;
+                while (len) {
+                  currentQueue = queue;
+                  queue = [];
+                  while (++queueIndex < len) {
+                    if (currentQueue) {
+                      currentQueue[queueIndex].run();
+                    }
+                  }
+                  queueIndex = -1;
+                  len = queue.length;
+                }
+                currentQueue = null;
+                draining = false;
+                runClearTimeout(timeout);
+              }
+              process.nextTick = function (fun) {
+                var args = new Array(arguments.length - 1);
+                if (arguments.length > 1) {
+                  for (var i = 1; i < arguments.length; i++) {
+                    args[i - 1] = arguments[i];
+                  }
+                }
+                queue.push(new Item(fun, args));
+                if (queue.length === 1 && !draining) {
+                  runTimeout(drainQueue);
+                }
+              };
+              function Item(fun, array) {
+                this.fun = fun;
+                this.array = array;
+              }
+              Item.prototype.run = function () {
+                this.fun.apply(null, this.array);
+              };
+              process.title = 'browser';
+              process.browser = true;
+              process.env = {};
+              process.argv = [];
+              process.version = '';
+              process.versions = {};
+              function noop() {
+              }
+              process.on = noop;
+              process.addListener = noop;
+              process.once = noop;
+              process.off = noop;
+              process.removeListener = noop;
+              process.removeAllListeners = noop;
+              process.emit = noop;
+              process.prependListener = noop;
+              process.prependOnceListener = noop;
+              process.listeners = function (name) {
+                return [];
+              };
+              process.binding = function (name) {
+                throw new Error('process.binding is not supported');
+              };
+              process.cwd = function () {
+                return '/';
+              };
+              process.chdir = function (dir) {
+                throw new Error('process.chdir is not supported');
+              };
+              process.umask = function () {
+                return 0;
+              };
+            },
+            {}
+          ],
+          2: [
+            function (require, module, exports) {
+              (function (setImmediate) {
+                (function (root) {
+                  var setTimeoutFunc = setTimeout;
+                  function noop() {
+                  }
+                  function bind(fn, thisArg) {
+                    return function () {
+                      fn.apply(thisArg, arguments);
+                    };
+                  }
+                  function Promise(fn) {
+                    if (typeof this !== 'object')
+                      throw new TypeError('Promises must be constructed via new');
+                    if (typeof fn !== 'function')
+                      throw new TypeError('not a function');
+                    this._state = 0;
+                    this._handled = false;
+                    this._value = undefined;
+                    this._deferreds = [];
+                    doResolve(fn, this);
+                  }
+                  function handle(self, deferred) {
+                    while (self._state === 3) {
+                      self = self._value;
+                    }
+                    if (self._state === 0) {
+                      self._deferreds.push(deferred);
+                      return;
+                    }
+                    self._handled = true;
+                    Promise._immediateFn(function () {
+                      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+                      if (cb === null) {
+                        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+                        return;
+                      }
+                      var ret;
+                      try {
+                        ret = cb(self._value);
+                      } catch (e) {
+                        reject(deferred.promise, e);
+                        return;
+                      }
+                      resolve(deferred.promise, ret);
+                    });
+                  }
+                  function resolve(self, newValue) {
+                    try {
+                      if (newValue === self)
+                        throw new TypeError('A promise cannot be resolved with itself.');
+                      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+                        var then = newValue.then;
+                        if (newValue instanceof Promise) {
+                          self._state = 3;
+                          self._value = newValue;
+                          finale(self);
+                          return;
+                        } else if (typeof then === 'function') {
+                          doResolve(bind(then, newValue), self);
+                          return;
+                        }
+                      }
+                      self._state = 1;
+                      self._value = newValue;
+                      finale(self);
+                    } catch (e) {
+                      reject(self, e);
+                    }
+                  }
+                  function reject(self, newValue) {
+                    self._state = 2;
+                    self._value = newValue;
+                    finale(self);
+                  }
+                  function finale(self) {
+                    if (self._state === 2 && self._deferreds.length === 0) {
+                      Promise._immediateFn(function () {
+                        if (!self._handled) {
+                          Promise._unhandledRejectionFn(self._value);
+                        }
+                      });
+                    }
+                    for (var i = 0, len = self._deferreds.length; i < len; i++) {
+                      handle(self, self._deferreds[i]);
+                    }
+                    self._deferreds = null;
+                  }
+                  function Handler(onFulfilled, onRejected, promise) {
+                    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+                    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+                    this.promise = promise;
+                  }
+                  function doResolve(fn, self) {
+                    var done = false;
+                    try {
+                      fn(function (value) {
+                        if (done)
+                          return;
+                        done = true;
+                        resolve(self, value);
+                      }, function (reason) {
+                        if (done)
+                          return;
+                        done = true;
+                        reject(self, reason);
+                      });
+                    } catch (ex) {
+                      if (done)
+                        return;
+                      done = true;
+                      reject(self, ex);
+                    }
+                  }
+                  Promise.prototype['catch'] = function (onRejected) {
+                    return this.then(null, onRejected);
+                  };
+                  Promise.prototype.then = function (onFulfilled, onRejected) {
+                    var prom = new this.constructor(noop);
+                    handle(this, new Handler(onFulfilled, onRejected, prom));
+                    return prom;
+                  };
+                  Promise.all = function (arr) {
+                    var args = Array.prototype.slice.call(arr);
+                    return new Promise(function (resolve, reject) {
+                      if (args.length === 0)
+                        return resolve([]);
+                      var remaining = args.length;
+                      function res(i, val) {
+                        try {
+                          if (val && (typeof val === 'object' || typeof val === 'function')) {
+                            var then = val.then;
+                            if (typeof then === 'function') {
+                              then.call(val, function (val) {
+                                res(i, val);
+                              }, reject);
+                              return;
+                            }
+                          }
+                          args[i] = val;
+                          if (--remaining === 0) {
+                            resolve(args);
+                          }
+                        } catch (ex) {
+                          reject(ex);
+                        }
+                      }
+                      for (var i = 0; i < args.length; i++) {
+                        res(i, args[i]);
+                      }
+                    });
+                  };
+                  Promise.resolve = function (value) {
+                    if (value && typeof value === 'object' && value.constructor === Promise) {
+                      return value;
+                    }
+                    return new Promise(function (resolve) {
+                      resolve(value);
+                    });
+                  };
+                  Promise.reject = function (value) {
+                    return new Promise(function (resolve, reject) {
+                      reject(value);
+                    });
+                  };
+                  Promise.race = function (values) {
+                    return new Promise(function (resolve, reject) {
+                      for (var i = 0, len = values.length; i < len; i++) {
+                        values[i].then(resolve, reject);
+                      }
+                    });
+                  };
+                  Promise._immediateFn = typeof setImmediate === 'function' ? function (fn) {
+                    setImmediate(fn);
+                  } : function (fn) {
+                    setTimeoutFunc(fn, 0);
+                  };
+                  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+                    if (typeof console !== 'undefined' && console) {
+                      console.warn('Possible Unhandled Promise Rejection:', err);
+                    }
+                  };
+                  Promise._setImmediateFn = function _setImmediateFn(fn) {
+                    Promise._immediateFn = fn;
+                  };
+                  Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
+                    Promise._unhandledRejectionFn = fn;
+                  };
+                  if (typeof module !== 'undefined' && module.exports) {
+                    module.exports = Promise;
+                  } else if (!root.Promise) {
+                    root.Promise = Promise;
+                  }
+                }(this));
+              }.call(this, require('timers').setImmediate));
+            },
+            { 'timers': 3 }
+          ],
+          3: [
+            function (require, module, exports) {
+              (function (setImmediate, clearImmediate) {
+                var nextTick = require('process/browser.js').nextTick;
+                var apply = Function.prototype.apply;
+                var slice = Array.prototype.slice;
+                var immediateIds = {};
+                var nextImmediateId = 0;
+                exports.setTimeout = function () {
+                  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+                };
+                exports.setInterval = function () {
+                  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+                };
+                exports.clearTimeout = exports.clearInterval = function (timeout) {
+                  timeout.close();
+                };
+                function Timeout(id, clearFn) {
+                  this._id = id;
+                  this._clearFn = clearFn;
+                }
+                Timeout.prototype.unref = Timeout.prototype.ref = function () {
+                };
+                Timeout.prototype.close = function () {
+                  this._clearFn.call(window, this._id);
+                };
+                exports.enroll = function (item, msecs) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = msecs;
+                };
+                exports.unenroll = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = -1;
+                };
+                exports._unrefActive = exports.active = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  var msecs = item._idleTimeout;
+                  if (msecs >= 0) {
+                    item._idleTimeoutId = setTimeout(function onTimeout() {
+                      if (item._onTimeout)
+                        item._onTimeout();
+                    }, msecs);
+                  }
+                };
+                exports.setImmediate = typeof setImmediate === 'function' ? setImmediate : function (fn) {
+                  var id = nextImmediateId++;
+                  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+                  immediateIds[id] = true;
+                  nextTick(function onNextTick() {
+                    if (immediateIds[id]) {
+                      if (args) {
+                        fn.apply(null, args);
+                      } else {
+                        fn.call(null);
+                      }
+                      exports.clearImmediate(id);
+                    }
+                  });
+                  return id;
+                };
+                exports.clearImmediate = typeof clearImmediate === 'function' ? clearImmediate : function (id) {
+                  delete immediateIds[id];
+                };
+              }.call(this, require('timers').setImmediate, require('timers').clearImmediate));
+            },
+            {
+              'process/browser.js': 1,
+              'timers': 3
+            }
+          ],
+          4: [
+            function (require, module, exports) {
+              var promisePolyfill = require('promise-polyfill');
+              var Global = function () {
+                if (typeof window !== 'undefined') {
+                  return window;
+                } else {
+                  return Function('return this;')();
+                }
+              }();
+              module.exports = { boltExport: Global.Promise || promisePolyfill };
+            },
+            { 'promise-polyfill': 2 }
+          ]
+        }, {}, [4])(4);
+      }));
+    }(undefined, exports$1, module$1, undefined));
+    var Promise = module$1.exports.boltExport;
+
     var nu$3 = function (baseFn) {
       var data = Option.none();
       var callbacks = [];
@@ -77232,10 +78648,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         });
       };
       var get = function (nCallback) {
-        if (isReady())
+        if (isReady()) {
           call(nCallback);
-        else
+        } else {
           callbacks.push(nCallback);
+        }
       };
       var set = function (x) {
         data = Option.some(x);
@@ -77272,42 +78689,31 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       pure: pure
     };
 
-    var bounce = function (f) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        var me = this;
-        domGlobals.setTimeout(function () {
-          f.apply(me, args);
-        }, 0);
-      };
+    var errorReporter = function (err) {
+      domGlobals.setTimeout(function () {
+        throw err;
+      }, 0);
     };
-
-    var nu$4 = function (baseFn) {
+    var make = function (run) {
       var get = function (callback) {
-        baseFn(bounce(callback));
+        run().then(callback, errorReporter);
       };
       var map = function (fab) {
-        return nu$4(function (callback) {
-          get(function (a) {
-            var value = fab(a);
-            callback(value);
-          });
+        return make(function () {
+          return run().then(fab);
         });
       };
       var bind = function (aFutureB) {
-        return nu$4(function (callback) {
-          get(function (a) {
-            aFutureB(a).get(callback);
+        return make(function () {
+          return run().then(function (v) {
+            return aFutureB(v).toPromise();
           });
         });
       };
       var anonBind = function (futureB) {
-        return nu$4(function (callback) {
-          get(function (a) {
-            futureB.get(callback);
+        return make(function () {
+          return run().then(function () {
+            return futureB.toPromise();
           });
         });
       };
@@ -77316,25 +78722,32 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       var toCached = function () {
         var cache = null;
-        return nu$4(function (callback) {
+        return make(function () {
           if (cache === null) {
-            cache = toLazy();
+            cache = run();
           }
-          cache.get(callback);
+          return cache;
         });
       };
+      var toPromise = run;
       return {
         map: map,
         bind: bind,
         anonBind: anonBind,
         toLazy: toLazy,
         toCached: toCached,
+        toPromise: toPromise,
         get: get
       };
     };
+    var nu$4 = function (baseFn) {
+      return make(function () {
+        return new Promise(baseFn);
+      });
+    };
     var pure$1 = function (a) {
-      return nu$4(function (callback) {
-        callback(a);
+      return make(function () {
+        return Promise.resolve(a);
       });
     };
     var Future = {
@@ -77713,7 +79126,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     ]);
     var isText$1 = isNodeType(3);
     var isComment = isNodeType(8);
-    var isDocument$1 = isNodeType(9);
+    var isDocument = isNodeType(9);
     var isDocumentFragment = isNodeType(11);
     var isBr = matchNodeNames(['br']);
     var isContentEditableTrue = hasContentEditableState('true');
@@ -77722,7 +79135,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       isText: isText$1,
       isElement: isElement$1,
       isComment: isComment,
-      isDocument: isDocument$1,
+      isDocument: isDocument,
       isDocumentFragment: isDocumentFragment,
       isBr: isBr,
       isContentEditableTrue: isContentEditableTrue,
@@ -80392,8 +81805,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
-        if (timer !== null)
+        if (timer !== null) {
           domGlobals.clearTimeout(timer);
+        }
         timer = domGlobals.setTimeout(function () {
           fn.apply(null, args);
           timer = null;
@@ -80500,8 +81914,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return Option.none();
     };
     var closest = function (scope, predicate, isRoot) {
-      var is = function (s) {
-        return predicate(s);
+      var is = function (s, test) {
+        return test(s);
       };
       return ClosestOrAncestor(is, ancestor, scope, predicate, isRoot);
     };
@@ -81437,7 +82851,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
       return CaretPosition$1(container, offset);
     };
-    var resolve$2 = function (root, path) {
+    var resolve$1 = function (root, path) {
       var parts, container, offset;
       if (!path) {
         return null;
@@ -82417,9 +83831,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var resolveCaretPositionBookmark = function (dom, bookmark) {
       var rng, pos;
       rng = dom.createRng();
-      pos = resolve$2(dom.getRoot(), bookmark.start);
+      pos = resolve$1(dom.getRoot(), bookmark.start);
       rng.setStart(pos.container(), pos.offset());
-      pos = resolve$2(dom.getRoot(), bookmark.end);
+      pos = resolve$1(dom.getRoot(), bookmark.end);
       rng.setEnd(pos.container(), pos.offset());
       return rng;
     };
@@ -82589,7 +84003,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return rng;
       });
     };
-    var resolve$3 = function (selection, bookmark) {
+    var resolve$2 = function (selection, bookmark) {
       var dom = selection.dom;
       if (bookmark) {
         if (isPathBookmark(bookmark)) {
@@ -82606,7 +84020,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
       return Option.none();
     };
-    var ResolveBookmark = { resolve: resolve$3 };
+    var ResolveBookmark = { resolve: resolve$2 };
 
     var getBookmark$1 = function (selection, type, normalized) {
       return GetBookmark.getBookmark(selection, type, normalized);
@@ -83125,18 +84539,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
         return getOption(element).getOr('');
       };
-      var getOptionIE10 = function (element) {
-        try {
-          return getOptionSafe(element);
-        } catch (e) {
-          return Option.none();
-        }
-      };
-      var getOptionSafe = function (element) {
+      var getOption = function (element) {
         return is(element) ? Option.from(element.dom().nodeValue) : Option.none();
       };
-      var browser = PlatformDetection$1.detect().browser;
-      var getOption = browser.isIE() && browser.version.major === 10 ? getOptionIE10 : getOptionSafe;
       var set = function (element, value) {
         if (!is(element)) {
           throw new Error('Can only set raw ' + name + ' value of a ' + name + ' node');
@@ -83307,19 +84712,17 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       '#document-fragment': 11
     };
     var walk$2 = function (node, root, prev) {
-      var sibling;
-      var parent;
       var startName = prev ? 'lastChild' : 'firstChild';
       var siblingName = prev ? 'prev' : 'next';
       if (node[startName]) {
         return node[startName];
       }
       if (node !== root) {
-        sibling = node[siblingName];
+        var sibling = node[siblingName];
         if (sibling) {
           return sibling;
         }
-        for (parent = node.parent; parent && parent !== root; parent = parent.parent) {
+        for (var parent = node.parent; parent && parent !== root; parent = parent.parent) {
           sibling = parent[siblingName];
           if (sibling) {
             return sibling;
@@ -83337,10 +84740,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
       }
       Node.create = function (name, attrs) {
-        var node, attrName;
-        node = new Node(name, typeLookup[name] || 1);
+        var node = new Node(name, typeLookup[name] || 1);
         if (attrs) {
-          for (attrName in attrs) {
+          for (var attrName in attrs) {
             node.attr(attrName, attrs[attrName]);
           }
         }
@@ -83357,10 +84759,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       Node.prototype.attr = function (name, value) {
         var self = this;
-        var attrs, i;
+        var attrs;
         if (typeof name !== 'string') {
-          for (i in name) {
-            self.attr(i, name[i]);
+          for (var key in name) {
+            self.attr(key, name[key]);
           }
           return self;
         }
@@ -83369,10 +84771,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             if (value === null) {
               if (name in attrs.map) {
                 delete attrs.map[name];
-                i = attrs.length;
+                var i = attrs.length;
                 while (i--) {
                   if (attrs[i].name === name) {
-                    attrs = attrs.splice(i, 1);
+                    attrs.splice(i, 1);
                     return self;
                   }
                 }
@@ -83380,7 +84782,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               return self;
             }
             if (name in attrs.map) {
-              i = attrs.length;
+              var i = attrs.length;
               while (i--) {
                 if (attrs[i].name === name) {
                   attrs[i].value = value;
@@ -83402,12 +84804,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       Node.prototype.clone = function () {
         var self = this;
         var clone = new Node(self.name, self.type);
-        var i, l, selfAttrs, selfAttr, cloneAttrs;
+        var selfAttrs;
         if (selfAttrs = self.attributes) {
-          cloneAttrs = [];
+          var cloneAttrs = [];
           cloneAttrs.map = {};
-          for (i = 0, l = selfAttrs.length; i < l; i++) {
-            selfAttr = selfAttrs[i];
+          for (var i = 0, l = selfAttrs.length; i < l; i++) {
+            var selfAttr = selfAttrs[i];
             if (selfAttr.name !== 'id') {
               cloneAttrs[cloneAttrs.length] = {
                 name: selfAttr.name,
@@ -83430,9 +84832,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       Node.prototype.unwrap = function () {
         var self = this;
-        var node, next;
-        for (node = self.firstChild; node;) {
-          next = node.next;
+        for (var node = self.firstChild; node;) {
+          var next = node.next;
           self.insert(node, self, true);
           node = next;
         }
@@ -83463,11 +84864,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       Node.prototype.append = function (node) {
         var self = this;
-        var last;
         if (node.parent) {
           node.remove();
         }
-        last = self.lastChild;
+        var last = self.lastChild;
         if (last) {
           last.next = node;
           node.prev = last;
@@ -83479,11 +84879,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return node;
       };
       Node.prototype.insert = function (node, refNode, before) {
-        var parent;
         if (node.parent) {
           node.remove();
         }
-        parent = refNode.parent || this;
+        var parent = refNode.parent || this;
         if (before) {
           if (refNode === parent.firstChild) {
             parent.firstChild = node;
@@ -83508,9 +84907,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       Node.prototype.getAll = function (name) {
         var self = this;
-        var node;
         var collection = [];
-        for (node = self.firstChild; node; node = walk$2(node, self)) {
+        for (var node = self.firstChild; node; node = walk$2(node, self)) {
           if (node.name === name) {
             collection.push(node);
           }
@@ -83519,15 +84917,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       Node.prototype.empty = function () {
         var self = this;
-        var nodes, i, node;
         if (self.firstChild) {
-          nodes = [];
-          for (node = self.firstChild; node; node = walk$2(node, self)) {
+          var nodes = [];
+          for (var node = self.firstChild; node; node = walk$2(node, self)) {
             nodes.push(node);
           }
-          i = nodes.length;
+          var i = nodes.length;
           while (i--) {
-            node = nodes[i];
+            var node = nodes[i];
             node.parent = node.firstChild = node.lastChild = node.next = node.prev = null;
           }
         }
@@ -83535,9 +84932,11 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return self;
       };
       Node.prototype.isEmpty = function (elements, whitespace, predicate) {
+        if (whitespace === void 0) {
+          whitespace = {};
+        }
         var self = this;
-        var node = self.firstChild, i, name;
-        whitespace = whitespace || {};
+        var node = self.firstChild;
         if (node) {
           do {
             if (node.type === 1) {
@@ -83547,9 +84946,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
               if (elements[node.name]) {
                 return false;
               }
-              i = node.attributes.length;
+              var i = node.attributes.length;
               while (i--) {
-                name = node.attributes[i].name;
+                var name = node.attributes[i].name;
                 if (name === 'name' || name.indexOf('data-mce-bookmark') === 0) {
                   return false;
                 }
@@ -84389,8 +85788,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var doc = owner(element).dom();
       return element.dom() === doc.activeElement;
     };
-    var active = function (_DOC) {
-      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
+    var active = function (_doc) {
+      var doc = _doc !== undefined ? _doc.dom() : domGlobals.document;
       return Option.from(doc.activeElement).map(Element.fromDom);
     };
     var search = function (element) {
@@ -84429,8 +85828,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
           }
           var args = new Array(argLength);
-          for (var i = 0; i < args.length; i++)
+          for (var i = 0; i < args.length; i++) {
             args[i] = arguments[i];
+          }
           var match = function (branches) {
             var branchKeys = keys(branches);
             if (constructors.length !== branchKeys.length) {
@@ -84439,8 +85839,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             var allReqd = forall(constructors, function (reqKey) {
               return contains(branchKeys, reqKey);
             });
-            if (!allReqd)
+            if (!allReqd) {
               throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
+            }
             return branches[key].apply(null, args);
           };
           return {
@@ -84625,7 +86026,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
 
     var isEditorUIElement = function (elm) {
-      return elm.className.toString().indexOf('tox-') !== -1 || elm.className.toString().indexOf('mce-') !== -1;
+      var className = elm.className.toString();
+      return className.indexOf('tox-') !== -1 || className.indexOf('mce-') !== -1;
     };
     var FocusManager = { isEditorUIElement: isEditorUIElement };
 
@@ -84668,10 +86070,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var throttledStore = first(function () {
         SelectionBookmark.store(editor);
       }, 0);
-      if (editor.inline) {
-        registerPageMouseUp(editor, throttledStore);
-      }
       editor.on('init', function () {
+        if (editor.inline) {
+          registerPageMouseUp(editor, throttledStore);
+        }
         registerEditorEvents(editor, throttledStore);
       });
       editor.on('remove', function () {
@@ -84684,6 +86086,14 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var DOM$1 = DOMUtils$1.DOM;
     var isEditorUIElement$1 = function (elm) {
       return FocusManager.isEditorUIElement(elm);
+    };
+    var isEditorContentAreaElement = function (elm) {
+      var classList = elm.classList;
+      if (classList !== undefined) {
+        return classList.contains('tox-edit-area') || classList.contains('tox-edit-area__iframe') || classList.contains('mce-content-body');
+      } else {
+        return false;
+      }
     };
     var isUIElement = function (editor, elm) {
       var customSelector = editor ? editor.settings.custom_ui_selector : '';
@@ -84756,6 +86166,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var FocusController = {
       setup: setup$2,
       isEditorUIElement: isEditorUIElement$1,
+      isEditorContentAreaElement: isEditorContentAreaElement,
       isUIElement: isUIElement
     };
 
@@ -84810,8 +86221,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return rawBody && hasElementFocus(Element.fromDom(rawBody));
     };
     var hasUiFocus = function (editor) {
-      return hasElementFocus(Element.fromDom(editor.getContainer())) || active().filter(function (elem) {
-        return FocusController.isUIElement(editor, elem.dom());
+      return active().filter(function (elem) {
+        return !FocusController.isEditorContentAreaElement(elem.dom()) && FocusController.isUIElement(editor, elem.dom());
       }).isSome();
     };
     var hasFocus$1 = function (editor) {
@@ -84825,18 +86236,18 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var body = editor.getBody();
       var rng = selection.getRng();
       editor.quirks.refreshContentEditable();
+      if (editor.bookmark !== undefined && hasFocus$1(editor) === false) {
+        SelectionBookmark.getRng(editor).each(function (bookmarkRng) {
+          editor.selection.setRng(bookmarkRng);
+          rng = bookmarkRng;
+        });
+      }
       var contentEditableHost = getContentEditableHost(editor, selection.getNode());
       if (editor.$.contains(body, contentEditableHost)) {
         focusBody(contentEditableHost);
         normalizeSelection(editor, rng);
         activateEditor(editor);
         return;
-      }
-      if (editor.bookmark !== undefined && hasFocus$1(editor) === false) {
-        SelectionBookmark.getRng(editor).each(function (bookmarkRng) {
-          editor.selection.setRng(bookmarkRng);
-          rng = bookmarkRng;
-        });
       }
       if (!editor.inline) {
         if (!Env.opera) {
@@ -85054,6 +86465,38 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       editor.destroyed = true;
     };
 
+    var hasOwnProperty$2 = Object.prototype.hasOwnProperty;
+    var shallow$1 = function (old, nu) {
+      return nu;
+    };
+    var deep$1 = function (old, nu) {
+      var bothObjects = isObject(old) && isObject(nu);
+      return bothObjects ? deepMerge(old, nu) : nu;
+    };
+    var baseMerge = function (merger) {
+      return function () {
+        var objects = new Array(arguments.length);
+        for (var i = 0; i < objects.length; i++) {
+          objects[i] = arguments[i];
+        }
+        if (objects.length === 0) {
+          throw new Error('Can\'t merge zero objects');
+        }
+        var ret = {};
+        for (var j = 0; j < objects.length; j++) {
+          var curObject = objects[j];
+          for (var key in curObject) {
+            if (hasOwnProperty$2.call(curObject, key)) {
+              ret[key] = merger(ret[key], curObject[key]);
+            }
+          }
+        }
+        return ret;
+      };
+    };
+    var deepMerge = baseMerge(deep$1);
+    var merge = baseMerge(shallow$1);
+
     var sectionResult = Immutable('sections', 'settings');
     var detection = PlatformDetection$1.detect();
     var isTouch = detection.deviceType.isTouch();
@@ -85063,7 +86506,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       'autolink',
       'autosave'
     ];
-    var defaultMobileSettings = isPhone ? { theme: 'mobile' } : {};
+    var defaultMobileSettings = { theme: 'mobile' };
     var normalizePlugins = function (plugins) {
       var pluginNames = isArray(plugins) ? plugins.join(' ') : plugins;
       var trimmedPlugins = map(isString(pluginNames) ? pluginNames.split(' ') : [], trim$2);
@@ -85081,12 +86524,22 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return sectionResult(result.t, result.f);
     };
     var getSection = function (sectionResult, name, defaults) {
+      if (defaults === void 0) {
+        defaults = {};
+      }
       var sections = sectionResult.sections();
       var sectionSettings = sections.hasOwnProperty(name) ? sections[name] : {};
       return Tools.extend({}, defaults, sectionSettings);
     };
     var hasSection = function (sectionResult, name) {
       return sectionResult.sections().hasOwnProperty(name);
+    };
+    var isSectionTheme = function (sectionResult, name, theme) {
+      var section = sectionResult.sections();
+      return hasSection(sectionResult, name) && section[name].theme === theme;
+    };
+    var getSectionConfig = function (sectionResult, name) {
+      return hasSection(sectionResult, name) ? sectionResult.sections()[name] : {};
     };
     var getDefaultSettings = function (id, documentBaseUrl, editor) {
       return {
@@ -85129,18 +86582,21 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var processPlugins = function (isTouchDevice, sectionResult, defaultOverrideSettings, settings) {
       var forcedPlugins = normalizePlugins(defaultOverrideSettings.forced_plugins);
-      var plugins = normalizePlugins(settings.plugins);
-      var platformPlugins = isTouchDevice && hasSection(sectionResult, 'mobile') ? filterMobilePlugins(plugins) : plugins;
+      var desktopPlugins = normalizePlugins(settings.plugins);
+      var mobileConfig = getSectionConfig(sectionResult, 'mobile');
+      var mobilePlugins = mobileConfig.plugins ? normalizePlugins(mobileConfig.plugins) : desktopPlugins;
+      var platformPlugins = isTouchDevice && isSectionTheme(sectionResult, 'mobile', 'mobile') ? filterMobilePlugins(mobilePlugins) : isTouchDevice && hasSection(sectionResult, 'mobile') ? mobilePlugins : desktopPlugins;
       var combinedPlugins = combinePlugins(forcedPlugins, platformPlugins);
       return Tools.extend(settings, { plugins: combinedPlugins.join(' ') });
     };
     var isOnMobile = function (isTouchDevice, sectionResult) {
       var isInline = sectionResult.settings().inline;
-      return isTouchDevice && !isInline;
+      return isTouchDevice && hasSection(sectionResult, 'mobile') && !isInline;
     };
-    var combineSettings = function (isTouchDevice, defaultSettings, defaultOverrideSettings, settings) {
-      var sectionResult = extractSections(['mobile'], settings);
-      var extendedSettings = Tools.extend(defaultSettings, defaultOverrideSettings, sectionResult.settings(), isOnMobile(isTouchDevice, sectionResult) ? getSection(sectionResult, 'mobile', defaultMobileSettings) : {}, {
+    var combineSettings = function (isTouchDevice, isPhone, defaultSettings, defaultOverrideSettings, settings) {
+      var defaultDeviceSettings = isPhone ? { mobile: defaultMobileSettings } : {};
+      var sectionResult = extractSections(['mobile'], deepMerge(defaultDeviceSettings, settings));
+      var extendedSettings = Tools.extend(defaultSettings, defaultOverrideSettings, sectionResult.settings(), isOnMobile(isTouchDevice, sectionResult) ? getSection(sectionResult, 'mobile') : {}, {
         validate: true,
         external_plugins: getExternalPlugins(defaultOverrideSettings, sectionResult.settings())
       });
@@ -85148,7 +86604,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var getEditorSettings = function (editor, id, documentBaseUrl, defaultOverrideSettings, settings) {
       var defaultSettings = getDefaultSettings(id, documentBaseUrl, editor);
-      return combineSettings(isTouch, defaultSettings, defaultOverrideSettings, settings);
+      return combineSettings(isTouch, isPhone, defaultSettings, defaultOverrideSettings, settings);
     };
     var getFiltered = function (predicate, editor, name) {
       return Option.from(editor.settings[name]).filter(predicate);
@@ -85686,11 +87142,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var ThemeManager = AddOnManager$1.ThemeManager;
 
-    function XMLHttpRequest () {
-      var f = Global$1.getOrDie('XMLHttpRequest');
-      return new f();
-    }
-
     function Uploader(uploadStatus, settings) {
       var pendingPromises = {};
       var pathJoin = function (path1, path2) {
@@ -85701,7 +87152,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       var defaultHandler = function (blobInfo, success, failure, progress) {
         var xhr, formData;
-        xhr = XMLHttpRequest();
+        xhr = new domGlobals.XMLHttpRequest();
         xhr.open('POST', settings.url);
         xhr.withCredentials = settings.credentials;
         xhr.upload.onprogress = function (e) {
@@ -85820,36 +87271,13 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return { upload: upload };
     }
 
-    function FileReader () {
-      var f = Global$1.getOrDie('FileReader');
-      return new f();
-    }
-
-    function Uint8Array (arr) {
-      var f = Global$1.getOrDie('Uint8Array');
-      return new f(arr);
-    }
-
-    var requestAnimationFrame$1 = function (callback) {
-      var f = Global$1.getOrDie('requestAnimationFrame');
-      f(callback);
-    };
-    var atob = function (base64) {
-      var f = Global$1.getOrDie('atob');
-      return f(base64);
-    };
-    var Window = {
-      atob: atob,
-      requestAnimationFrame: requestAnimationFrame$1
-    };
-
     var blobUriToBlob = function (url) {
       return new promiseObj(function (resolve, reject) {
         var rejectWithError = function () {
           reject('Cannot convert ' + url + ' to Blob. Resource might not exist or is inaccessible.');
         };
         try {
-          var xhr = XMLHttpRequest();
+          var xhr = new domGlobals.XMLHttpRequest();
           xhr.open('GET', url, true);
           xhr.responseType = 'blob';
           xhr.onload = function () {
@@ -85883,12 +87311,12 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         var str, arr, i;
         var uriParts = parseDataUri(uri);
         try {
-          str = Window.atob(uriParts.data);
+          str = domGlobals.atob(uriParts.data);
         } catch (e) {
           resolve(new domGlobals.Blob([]));
           return;
         }
-        arr = Uint8Array(str.length);
+        arr = new Uint8Array(str.length);
         for (i = 0; i < arr.length; i++) {
           arr[i] = str.charCodeAt(i);
         }
@@ -85906,7 +87334,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     };
     var blobToDataUri = function (blob) {
       return new promiseObj(function (resolve) {
-        var reader = FileReader();
+        var reader = new domGlobals.FileReader();
         reader.onloadend = function () {
           resolve(reader.result);
         };
@@ -86086,7 +87514,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           filename: constant(name + '.' + mimeToExt(o.blob.type)),
           blob: constant(o.blob),
           base64: constant(o.base64),
-          blobUri: constant(o.blobUri || URL.createObjectURL(o.blob)),
+          blobUri: constant(o.blobUri || domGlobals.URL.createObjectURL(o.blob)),
           uri: constant(o.uri)
         };
       };
@@ -86111,7 +87539,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var removeByUri = function (blobUri) {
         cache = filter(cache, function (blobInfo) {
           if (blobInfo.blobUri() === blobUri) {
-            URL.revokeObjectURL(blobInfo.blobUri());
+            domGlobals.URL.revokeObjectURL(blobInfo.blobUri());
             return false;
           }
           return true;
@@ -86119,7 +87547,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
       var destroy = function () {
         each(cache, function (cachedBlobInfo) {
-          URL.revokeObjectURL(cachedBlobInfo.blobUri());
+          domGlobals.URL.revokeObjectURL(cachedBlobInfo.blobUri());
         });
         cache = [];
       };
@@ -88582,12 +90010,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
     var deleteNormalized = function (elm, afterDeletePosOpt, normalizeWhitespace) {
-      var prevTextOpt = prevSibling(elm).filter(function (e) {
-        return NodeType.isText(e.dom());
-      });
-      var nextTextOpt = nextSibling(elm).filter(function (e) {
-        return NodeType.isText(e.dom());
-      });
+      var prevTextOpt = prevSibling(elm).filter(isText);
+      var nextTextOpt = nextSibling(elm).filter(isText);
       remove$1(elm);
       return liftN([
         prevTextOpt,
@@ -90401,30 +91825,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
 
-    var hasOwnProperty$2 = Object.prototype.hasOwnProperty;
-    var shallow$1 = function (old, nu) {
-      return nu;
-    };
-    var baseMerge = function (merger) {
-      return function () {
-        var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
-          objects[i] = arguments[i];
-        if (objects.length === 0)
-          throw new Error('Can\'t merge zero objects');
-        var ret = {};
-        for (var j = 0; j < objects.length; j++) {
-          var curObject = objects[j];
-          for (var key in curObject)
-            if (hasOwnProperty$2.call(curObject, key)) {
-              ret[key] = merger(ret[key], curObject[key]);
-            }
-        }
-        return ret;
-      };
-    };
-    var merge = baseMerge(shallow$1);
-
     var register$1 = function (htmlParser, settings, dom) {
       htmlParser.addAttributeFilter('data-mce-tabindex', function (nodes, name) {
         var i = nodes.length, node;
@@ -91839,18 +93239,6 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return api$1.get(element);
     };
 
-    var attached = function (element, scope) {
-      var doc = scope || Element.fromDom(domGlobals.document.documentElement);
-      return ancestor(element, curry(eq, doc)).isSome();
-    };
-    var windowOf = function (element) {
-      var dom = element.dom();
-      if (dom === dom.window && element instanceof domGlobals.Window) {
-        return element;
-      }
-      return isDocument(element) ? dom.defaultView || dom.parentWindow : null;
-    };
-
     var r = function (left, top) {
       var translate = function (x, y) {
         return r(left + x, top + y);
@@ -91873,7 +93261,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     var absolute = function (element) {
       var doc = element.dom().ownerDocument;
       var body = doc.body;
-      var win = windowOf(Element.fromDom(doc));
+      var win = doc.defaultView;
       var html = doc.documentElement;
       var scrollTop = firstDefinedOrZero(win.pageYOffset, html.scrollTop);
       var scrollLeft = firstDefinedOrZero(win.pageXOffset, html.scrollLeft);
@@ -91885,11 +93273,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var dom = element.dom();
       var doc = dom.ownerDocument;
       var body = doc.body;
-      var html = Element.fromDom(doc.documentElement);
       if (body === dom) {
         return Position$1(body.offsetLeft, body.offsetTop);
       }
-      if (!attached(element, html)) {
+      if (!inBody(element)) {
         return Position$1(0, 0);
       }
       return boxPosition(dom);
@@ -92856,7 +94243,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
     function SelectorChanged (dom, editor) {
-      var selectorChangedData, currentSelectors;
+      var selectorChangedData;
+      var currentSelectors;
       return {
         selectorChangedWithUnbind: function (selector, callback) {
           if (!selectorChangedData) {
@@ -92926,8 +94314,10 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
     };
     var Selection$1 = function (dom, win, serializer, editor) {
-      var bookmarkManager, controlSelection;
-      var selectedRange, explicitRange;
+      var bookmarkManager;
+      var controlSelection;
+      var selectedRange;
+      var explicitRange;
       var selectorChangedWithUnbind = SelectorChanged(dom, editor).selectorChangedWithUnbind;
       var setCursorLocation = function (node, offset) {
         var rng = dom.createRng();
@@ -94689,25 +96079,37 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         return true;
       };
     };
+    var getAncestorCe = function (editor, node) {
+      return Option.from(getContentEditableRoot$2(editor.getBody(), node));
+    };
     var backspaceDeleteCaret = function (editor, forward) {
-      var result = read$4(editor.getBody(), forward, editor.selection.getRng()).map(function (deleteAction) {
-        return deleteAction.fold(deleteElement$1(editor, forward), moveToElement(editor, forward), moveToPosition(editor));
+      var selectedNode = editor.selection.getNode();
+      return getAncestorCe(editor, selectedNode).filter(NodeType.isContentEditableFalse).fold(function () {
+        var result = read$4(editor.getBody(), forward, editor.selection.getRng()).map(function (deleteAction) {
+          return deleteAction.fold(deleteElement$1(editor, forward), moveToElement(editor, forward), moveToPosition(editor));
+        });
+        return result.getOr(false);
+      }, function () {
+        return true;
       });
-      return result.getOr(false);
     };
     var deleteOffscreenSelection = function (rootElement) {
       each(descendants$1(rootElement, '.mce-offscreen-selection'), remove$1);
     };
     var backspaceDeleteRange = function (editor, forward) {
-      var selectedElement = editor.selection.getNode();
-      if (NodeType.isContentEditableFalse(selectedElement)) {
-        deleteOffscreenSelection(Element.fromDom(editor.getBody()));
-        DeleteElement.deleteElement(editor, forward, Element.fromDom(editor.selection.getNode()));
-        DeleteUtils.paddEmptyBody(editor);
-        return true;
-      } else {
-        return false;
+      var selectedNode = editor.selection.getNode();
+      if (NodeType.isContentEditableFalse(selectedNode)) {
+        var hasCefAncestor = getAncestorCe(editor, selectedNode.parentNode).filter(NodeType.isContentEditableFalse);
+        return hasCefAncestor.fold(function () {
+          deleteOffscreenSelection(Element.fromDom(editor.getBody()));
+          DeleteElement.deleteElement(editor, forward, Element.fromDom(editor.selection.getNode()));
+          DeleteUtils.paddEmptyBody(editor);
+          return true;
+        }, function () {
+          return true;
+        });
       }
+      return false;
     };
     var getContentEditableRoot$2 = function (root, node) {
       while (node && node !== root) {
@@ -97698,8 +99100,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
           try {
             api.deactivate();
           } catch (e) {
-            domGlobals.console.error('problem while deactivating editor mode ' + mode + ':');
-            domGlobals.console.error(e);
+            domGlobals.console.error('problem while deactivating editor mode ' + mode + ':', e);
           }
         }
       }), _a));
@@ -98743,7 +100144,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return EditorCommands;
     }();
 
-    var nativeEvents = Tools.makeMap('focus blur focusin focusout click dblclick mousedown mouseup mousemove mouseover beforepaste paste cut copy selectionchange ' + 'mouseout mouseenter mouseleave wheel keydown keypress keyup input contextmenu dragstart dragend dragover ' + 'draggesture dragdrop drop drag submit ' + 'compositionstart compositionend compositionupdate touchstart touchmove touchend', ' ');
+    var nativeEvents = Tools.makeMap('focus blur focusin focusout click dblclick mousedown mouseup mousemove mouseover beforepaste paste cut copy selectionchange ' + 'mouseout mouseenter mouseleave wheel keydown keypress keyup input beforeinput contextmenu dragstart dragend dragover ' + 'draggesture dragdrop drop drag submit ' + 'compositionstart compositionend compositionupdate touchstart touchmove touchend', ' ');
     var EventDispatcher = function () {
       function EventDispatcher(settings) {
         this.bindings = {};
@@ -99102,7 +100503,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
             self.editor.execCommand(cmd[0], cmd[1], cmd[2]);
           };
         }
-        each$h(explode$3(Tools.trim(pattern.toLowerCase())), function (pattern) {
+        each$h(explode$3(Tools.trim(pattern)), function (pattern) {
           var shortcut = self.createShortcut(pattern, desc, cmdFunc, scope);
           self.shortcuts[shortcut.id] = shortcut;
         });
@@ -99119,7 +100520,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       Shortcuts.prototype.parseShortcut = function (pattern) {
         var id, key;
         var shortcut = {};
-        each$h(explode$3(pattern, '+'), function (value) {
+        each$h(explode$3(pattern.toLowerCase(), '+'), function (value) {
           if (value in modifierNames) {
             shortcut[value] = true;
           } else {
@@ -99453,7 +100854,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       var sidebars = {};
       var add = function (collection, type) {
         return function (name, spec) {
-          return collection[name.toLowerCase()] = merge({ type: type }, spec);
+          return collection[name.toLowerCase()] = __assign({}, spec, { type: type });
         };
       };
       var addIcon = function (name, svgData) {
@@ -99509,7 +100910,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
     var DOM$8 = DOMUtils$1.DOM;
     var extend$3 = Tools.extend, each$j = Tools.each;
-    var resolve$4 = Tools.resolve;
+    var resolve$3 = Tools.resolve;
     var ie$2 = Env.ie;
     var Editor = function () {
       function Editor(id, settings, editorManager) {
@@ -99582,8 +100983,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         }
         if (typeof callback === 'string') {
           scope = callback.replace(/\.\w+$/, '');
-          scope = scope ? resolve$4(scope) : 0;
-          callback = resolve$4(callback);
+          scope = scope ? resolve$3(scope) : 0;
+          callback = resolve$3(callback);
           self.callbackLookup = self.callbackLookup || {};
           self.callbackLookup[name] = {
             func: callback,
@@ -99950,8 +101351,8 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '0.11',
-      releaseDate: '2019-07-04',
+      minorVersion: '0.15',
+      releaseDate: '2019-09-02',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
@@ -100324,6 +101725,83 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     }(RangeUtils || (RangeUtils = {})));
     var RangeUtils$1 = RangeUtils;
 
+    var awaiter = function (resolveCb, rejectCb, timeout) {
+      if (timeout === void 0) {
+        timeout = 1000;
+      }
+      var done = false;
+      var timer = null;
+      var complete = function (completer) {
+        return function () {
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+          }
+          if (!done) {
+            done = true;
+            if (timer !== null) {
+              domGlobals.clearTimeout(timer);
+              timer = null;
+            }
+            completer.apply(null, args);
+          }
+        };
+      };
+      var resolve = complete(resolveCb);
+      var reject = complete(rejectCb);
+      var start = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        if (!done && timer === null) {
+          timer = domGlobals.setTimeout(function () {
+            return reject.apply(null, args);
+          }, timeout);
+        }
+      };
+      return {
+        start: start,
+        resolve: resolve,
+        reject: reject
+      };
+    };
+    var create$6 = function () {
+      var tasks = {};
+      var resultFns = {};
+      var load = function (id, url) {
+        var loadErrMsg = 'Script at URL "' + url + '" failed to load';
+        var runErrMsg = 'Script at URL "' + url + '" did not call `tinymce.Resource.add(\'' + id + '\', data)` within 1 second';
+        if (tasks[id] !== undefined) {
+          return tasks[id];
+        } else {
+          var task = new promiseObj(function (resolve, reject) {
+            var waiter = awaiter(resolve, reject);
+            resultFns[id] = waiter.resolve;
+            ScriptLoader.ScriptLoader.loadScript(url, function () {
+              return waiter.start(runErrMsg);
+            }, function () {
+              return waiter.reject(loadErrMsg);
+            });
+          });
+          tasks[id] = task;
+          return task;
+        }
+      };
+      var add = function (id, data) {
+        if (resultFns[id] !== undefined) {
+          resultFns[id](data);
+          delete resultFns[id];
+        }
+        tasks[id] = promiseObj.resolve(data);
+      };
+      return {
+        load: load,
+        add: add
+      };
+    };
+    var Resource = create$6();
+
     var min = Math.min, max = Math.max, round$2 = Math.round;
     var relativePosition = function (rect, targetRect, rel) {
       var x, y, w, h, targetW, targetH;
@@ -100358,7 +101836,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       if (rel[4] === 'c') {
         x -= round$2(w / 2);
       }
-      return create$6(x, y, w, h);
+      return create$7(x, y, w, h);
     };
     var findBestRelativePosition = function (rect, targetRect, constrainRect, rels) {
       var pos, i;
@@ -100371,7 +101849,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return null;
     };
     var inflate = function (rect, w, h) {
-      return create$6(rect.x - w, rect.y - h, rect.w + w * 2, rect.h + h * 2);
+      return create$7(rect.x - w, rect.y - h, rect.w + w * 2, rect.h + h * 2);
     };
     var intersect = function (rect, cropRect) {
       var x1, y1, x2, y2;
@@ -100382,7 +101860,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       if (x2 - x1 < 0 || y2 - y1 < 0) {
         return null;
       }
-      return create$6(x1, y1, x2 - x1, y2 - y1);
+      return create$7(x1, y1, x2 - x1, y2 - y1);
     };
     var clamp$1 = function (rect, clampRect, fixedSize) {
       var underflowX1, underflowY1, overflowX2, overflowY2, x1, y1, x2, y2, cx2, cy2;
@@ -100406,9 +101884,9 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       }
       x2 -= overflowX2;
       y2 -= overflowY2;
-      return create$6(x1, y1, x2 - x1, y2 - y1);
+      return create$7(x1, y1, x2 - x1, y2 - y1);
     };
-    var create$6 = function (x, y, w, h) {
+    var create$7 = function (x, y, w, h) {
       return {
         x: x,
         y: y,
@@ -100417,7 +101895,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       };
     };
     var fromClientRect = function (clientRect) {
-      return create$6(clientRect.left, clientRect.top, clientRect.width, clientRect.height);
+      return create$7(clientRect.left, clientRect.top, clientRect.width, clientRect.height);
     };
     var Rect = {
       inflate: inflate,
@@ -100425,7 +101903,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       findBestRelativePosition: findBestRelativePosition,
       intersect: intersect,
       clamp: clamp$1,
-      create: create$6,
+      create: create$7,
       fromClientRect: fromClientRect
     };
 
@@ -100729,7 +102207,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
         settings.async = settings.async !== false;
         settings.data = settings.data || '';
         XHR.fire('beforeInitialize', { settings: settings });
-        xhr = XMLHttpRequest();
+        xhr = new domGlobals.XMLHttpRequest();
         if (xhr) {
           if (xhr.overrideMimeType) {
             xhr.overrideMimeType(settings.content_type);
@@ -100799,7 +102277,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       return JSONRequest;
     }();
 
-    var create$7 = function () {
+    var create$8 = function () {
       return function () {
         var data = {};
         var keys = [];
@@ -100842,7 +102320,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
     try {
       localStorage = domGlobals.window.localStorage;
     } catch (e) {
-      localStorage = create$7();
+      localStorage = create$8();
     }
     var LocalStorage = localStorage;
 
@@ -100907,6 +102385,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
       PluginManager: AddOnManager$1.PluginManager,
       ThemeManager: AddOnManager$1.ThemeManager,
       IconManager: IconManager,
+      Resource: Resource,
       trim: Tools.trim,
       isArray: Tools.isArray,
       is: Tools.is,
@@ -100948,6 +102427,7 @@ __webpack_require__(/*! ./theme.js */ "./node_modules/tinymce/themes/silver/them
 
 }(window));
 
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -113369,8 +114849,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/hidalgoponce/web/sites/admin-orion/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/hidalgoponce/web/sites/admin-orion/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/freddy/Homestead/codigo/orion-super/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/freddy/Homestead/codigo/orion-super/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
