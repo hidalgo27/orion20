@@ -47,6 +47,13 @@
       $anio=$fecha->format('Y');
   @endphp
 @endif
+@if (!isset($mes))
+  @php
+      $fecha=new Carbon();
+      $fecha->subHour(5);
+      $mes=$fecha->format('m');
+  @endphp
+@endif
 <div class="menu-list text-12">
 
   <ul id="menu-content" class="menu-content collapsed menu1 sidebar-nav">
@@ -98,19 +105,18 @@
       <a href="#" class="bg-danger text-white"><i class="fas fa-swatchbook"></i> VENTAS </a>
     </li>
         <ul class="sub-menu collapse menu2 @if(
-            (url()->current()==route('reserva.lista')||url()->current()==route('reserva.detalle',[$reserva_id]))||
-            (url()->current()==route('ordenes.lista',[$f1,$f2])||url()->current()==route('reserva.detalle',[$order_id]))||
-            (url()->current()==route('operaciones.lista',[$f1,$f2])||url()->current()==route('operaciones.post.lista'))||
-            (url()->current()==route('encuesta.lista')||url()->current()==route('encuesta.detalle',[$reserva_id]))
+            (url()->current()==route('ordenes.lista')||url()->current()==route('ordenes.detalle',[$order_id]))||
+            (url()->current()==route('ordenes.lista.report',[$f1,$f2])||url()->current()==route('ordenes.detalle',[$order_id]))||
+            (url()->current()==route('ordenes.lista.report.grafica',$anio)||url()->current()==route('ordenes.lista.report.grafica-post') ||url()->current()==route('ordenes.lista.report.grafica_',[$anio,$mes]))
             ) show @endif" id="reservas">
                 <li data-toggle="collapse" class="active1">
-                <a class="@if(url()->current()==route('ordenes.lista')||url()->current()==route('ordenes.post.lista')) active @endif" href="{{route('ordenes.lista')}}">ORDENES</a>
+                <a class="@if(url()->current()==route('ordenes.lista')||url()->current()==route('ordenes.detalle',[$order_id])) active @endif" href="{{route('ordenes.lista')}}">ORDENES</a>
                 </li>
                 <li data-toggle="collapse" class="active1">
-                    <a class="@if(url()->current()==route('ordenes.lista.report',[$f1,$f2])||url()->current()==route('ordenes.post.lista')) active @endif" href="{{route('ordenes.lista.report',[$f1,$f2])}}">REPORTE DE VENTAS</a>
+                    <a class="@if(url()->current()==route('ordenes.lista.report',[$f1,$f2])) active @endif" href="{{route('ordenes.lista.report',[$f1,$f2])}}">REPORTE DE VENTAS</a>
                 </li>
                 <li data-toggle="collapse" class="active1">
-                    <a class="@if(url()->current()==route('ordenes.lista.report.grafica',$anio)||url()->current()==route('ordenes.post.lista')) active @endif" href="{{route('ordenes.lista.report.grafica',$anio)}}">GRAFICA DE VENTAS</a>
+                    <a class="@if(url()->current()==route('ordenes.lista.report.grafica',$anio)||url()->current()==route('ordenes.lista.report.grafica-post')||url()->current()==route('ordenes.lista.report.grafica_',[$anio,$mes])) active @endif" href="{{route('ordenes.lista.report.grafica',$anio)}}">GRAFICA DE VENTAS</a>
                 </li>
         </ul>
   </ul>

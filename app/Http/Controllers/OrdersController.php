@@ -178,18 +178,19 @@ class OrdersController extends Controller
 
         $anios=Order::where('state','!=','0')->pluck('processed_date');
         $anio_=[];
-        foreach($anios as $anio){
-            if(!in_array( substr($anio,0,4),$anio_)){
-                $anio_[]=substr($anio,0,4);
+        foreach($anios as $anio_valor){
+            if(!in_array( substr($anio_valor,0,4),$anio_)){
+                $anio_[]=substr($anio_valor,0,4);
             }
         }
         $opcion='por-anio';
         return view('admin.order.lista-report-grafica-google',compact('arreglo','anio_','opcion','anio'));
     }
     public function lista_report_grafica_google_($anio,$mes){
-        $orders=Order::where('processed_date',$anio.'-'.$mes.'-11')
-                            ->where('state','3')->get();
-        dd($orders);
+        // $orders=Order::whereBetween('processed_date',[$anio.'-'.$mes.'-11 00:00.00.000',$anio.'-'.$mes.'-11 23:59.59.999'])
+        //                         ->get();
+        // dd($orders);
+        // dd($anio.'-'.$mes.'-11');
         $arreglo=[];
         // for($i=1;$i<=12;$i++){
         //     $mes=$i;
@@ -217,9 +218,9 @@ class OrdersController extends Controller
             if($dia<10){
                 $dia='0'.$dia;
             }
-            $orders=Order::whereIn('processed_date',[$anio.'-'.$mes.'-'.$dia,$anio.'-'.$mes.'-'.$dia])
+            $orders=Order::whereBetween('processed_date',[$anio.'-'.$mes.'-'.$dia.' 00:00.00.000',$anio.'-'.$mes.'-'.$dia.' 23:59.59.999'])
                             ->where('state','3')->get();
-            $orders_pedidos=Order::whereIn('processed_date',[$anio.'-'.$mes.'-'.$dia,$anio.'-'.$mes.'-'.$dia])
+            $orders_pedidos=Order::whereBetween('processed_date',[$anio.'-'.$mes.'-'.$dia.' 00:00.00.000',$anio.'-'.$mes.'-'.$dia.' 23:59.59.999'])
                             ->whereIn('state',['1','2','3','0'])->get();
             $ventas=0;
             foreach($orders as $items){
@@ -245,13 +246,13 @@ class OrdersController extends Controller
 
         $anios=Order::where('state','!=','0')->pluck('processed_date');
         $anio_=[];
-        foreach($anios as $anio){
-            if(!in_array( substr($anio,0,4),$anio_)){
-                $anio_[]=substr($anio,0,4);
+        foreach($anios as $anio_valor){
+            if(!in_array( substr($anio_valor,0,4),$anio_)){
+                $anio_[]=substr($anio_valor,0,4);
             }
         }
         $opcion='por-mes';
-        dd($arreglo);
+        // dd($arreglo);
         return view('admin.order.lista-report-grafica-google',compact('arreglo','anio_','opcion','anio','mes'));
     }
     public function lista_report_grafica_google_post(Request $request){
