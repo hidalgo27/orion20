@@ -88,7 +88,7 @@ class ProductController extends Controller
             // }
             if(!empty($fotos)){
                 foreach($fotos as $foto){
-                    $productfoto = new ProductFoto();
+                    $productfoto = new ProductPhoto();
                     $productfoto->comunidad_id=$product->id;
                     $productfoto->save();
 
