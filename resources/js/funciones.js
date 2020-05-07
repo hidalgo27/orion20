@@ -1667,6 +1667,57 @@ function eliminar_marca(id){
         }
       })
 }
+function eliminar_unidad(id){
+
+    Swal.fire({
+        title: 'MENSAJE DEL SISTEMA',
+        text: "¿Estas seguro de borrar la unidad de medida?",
+        type: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, borrar!',
+        cancelButtonText:'No, cancelar'
+      }).then((result) => {
+        if (result.value) {
+            $.ajaxSetup({
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type:'get',
+                url:'/admin/unidad/delete/'+id,
+                // data:{id:id},
+                success:function(data){
+                    console.log('data:'+data);
+                    if(data==1){
+                        Swal.fire(
+                            'Borrado!',
+                            'La unidad ha sido borrada.',
+                            'success'
+                        );
+                        $('#row_lista_unidad_'+id).remove();
+                    }
+                    else if(data==2){
+                        Swal.fire(
+                            'Avertencia!',
+                            'La unidad tiene productos relacionados, modifique o borre los productos que tengan esta marca.',
+                            'danger'
+                        )
+                    }
+                    else if(data==0){
+                        Swal.fire(
+                            'Error!',
+                            'Hubo un error al borrar la unidad.',
+                            'danger'
+                        )
+                    }
+                }
+             });
+        }
+      })
+}
 function buscar_reserva_encuesta(valorcito){
 console.log(valorcito);
     $.ajaxSetup({

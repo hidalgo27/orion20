@@ -10,7 +10,7 @@ use Carbon\Carbon;
 @endphp
 <div class="row">
     <div class="col">
-        <form action="{{ route('ordenes.lista.post.report') }}" method="post">
+        <form action="{{ route('productos.lista.report.post') }}" method="post">
             <div class="row">
                 <div class="col">
                     <label class="sr-only" for="fecha_ini">Desde</label>
@@ -45,49 +45,26 @@ use Carbon\Carbon;
                 <tr>
                     <th>#</th>
                     <th>CODIGO</th>
-                    <th>CLIENTE</th>
-                    <th>ORDENADO</th>
-                    <th>PROCESADO</th>
-                    <th>MONTO</th>
+                    <th>PRODUCTO</th>
+                    <th>CANTIDAD</th>
                 </tr>
             </thead>
             <tbody>
                 @php
-                    $total=0;
                     $i=0;
                 @endphp
-                    @foreach ($orders->sortBy('processed_date') as $item)
+                    @foreach ($array as $item)
                     @php
-                        $fecha_actual=new Carbon();
-                        $fecha_actual->subHour(5);
-                        $fecha_procesado = Carbon::parse($item->processed_date);
-                        $fecha_ordenado = Carbon::parse($item->pending_date);
-                        $nroDias=$fecha_actual->diffInDays($fecha_procesado,true);
-                        $nroDiasOrdenado=$fecha_actual->diffInDays($fecha_ordenado,true);
-                        $total_soles=0;
-                        $i++;
-                    @endphp
-                    @foreach ($item->order_products as $product)
-                        @php
-                            $total_soles+=$product->quality*$product->pu;
-                        @endphp
-                    @endforeach
+                    $i++;
+                @endphp
                     <tr>
                         <td>{{ $i }}</td>
-                        <td>{{ $item->code }}</td>
-                        <td><a href="{{ route('ordenes.detalle',$item->id) }}"><b>{{ $item->full_name }} <i class="fas fa-eye"></i> </b> </a></td>
-                        <td>{{ $fecha_ordenado->format('d-m-Y H:i:s') }}</td>
-                        <td>{{ $fecha_procesado->format('d-m-Y H:i:s') }}</td>
-                        <td><sup>S/.</sup>{{ number_format($total_soles+$item->tax,2) }}</td>
+                        <td>{{ $item['codigo'] }}</td>
+                        <td>{{ $item['producto'] }}</td>
+                        <td>{{ $item['cantidad'] }}</td>
                     </tr>
-                    @php
-                        $total+=$total_soles+$item->tax;
-                    @endphp
                 @endforeach
-                <tr>
-                    <td colspan="5"><b>TOTAL</b></td>
-                    <td><b><sup>S/.</sup>{{ number_format($total,2) }}</b></td>
-                </tr>
+
             </tbody>
         </table>
     </div>

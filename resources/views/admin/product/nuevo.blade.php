@@ -28,14 +28,6 @@
                                 @endif
                                 <div class="row">
                                     <div class="form-group col-6">
-                                        <label for="marca">Marca</label>
-                                        <select class="form-control" id="marca" name="marca">
-                                            @foreach ($brands->sortBy('state','1')->sortBy('name') as $item)
-                                                <option value="{{ $item->id }}" @if(old('marca')== $item->name){{ 'selected' }}@endif >{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-6">
                                         <label for="categoria">Categoria</label>
                                         <select class="form-control" id="categoria" name="categoria">
                                             @foreach ($categories->sortBy('state','1')->sortBy('name') as $item)
@@ -44,6 +36,22 @@
                                         </select>
                                     </div>
                                     <div class="form-group col-6">
+                                        <label for="marca">Marca</label>
+                                        <select class="form-control" id="marca" name="marca">
+                                            @foreach ($brands->sortBy('state','1')->sortBy('name') as $item)
+                                                <option value="{{ $item->id }}" @if(old('marca')== $item->name){{ 'selected' }}@endif >{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="unidad">Unidad</label>
+                                        <select class="form-control" id="unidad" name="unidad">
+                                            @foreach ($unidades->sortBy('state','1')->sortBy('name') as $item)
+                                                <option value="{{ $item->id }}" @if(old('unidad')== $item->name){{ 'selected' }}@endif >{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-3">
                                         <label for="codigo">Codigo</label>
                                         <input type="text" class="form-control" id="codigo" name="codigo" value="{{ old('codigo') }}" aria-describedby="codigo" placeholder="Codigo" required>
                                     </div>
@@ -53,11 +61,11 @@
                                     </div>
                                     <div class="form-group col-12">
                                         <label for="descripcion">Descripcion</label>
-                                        <textarea  id="basic-example" class="form-control descripcion" name="descripcion" id="descripcion" cols="30" rows="10">{{ old('descripcion') }}</textarea>
+                                        <textarea  id="basic-example" class="form-control descripcion" name="descripcion" id="descripcion" cols="30" rows="10" required>{{ old('descripcion') }}</textarea>
                                     </div>
                                     <div class="form-group col-12">
                                         <label for="detalle">Detalle</label>
-                                        <textarea class="form-control descripcion" name="detalle" id="detalle" cols="30" rows="10">{{ old('detalle') }}</textarea>
+                                        <textarea class="form-control descripcion" name="detalle" id="detalle" cols="30" rows="10" required>{{ old('detalle') }}</textarea>
                                     </div>
                                     <div class="form-group col-6">
                                         <label for="precio">Precio regular</label>

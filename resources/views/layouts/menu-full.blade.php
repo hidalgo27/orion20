@@ -80,10 +80,12 @@
       (url()->current()==route('administrador_lista_path')||url()->current()==route('administrador_nuevo_path'))||
       (url()->current()==route('categoria_lista_path')||url()->current()==route('categoria_nuevo_path'))||
       (url()->current()==route('marca_lista_path')||url()->current()==route('marca_nuevo_path'))||
-      (url()->current()==route('product_lista_path')||url()->current()==route('product_nuevo_path'))
+      (url()->current()==route('unidad_lista_path')||url()->current()==route('unidad_nuevo_path'))||
+      (url()->current()==route('product_lista_path')||url()->current()==route('product_nuevo_path'))||
+      url()->current()==route('product_buscar_path')
       ) show @endif" id="operaciones">
       <li data-toggle="collapse" class="active1">
-          <a class="@if(url()->current()==route('administrador_lista_path')||url()->current()==route('administrador_nuevo_path')) active @endif" href="{{route('administrador_lista_path')}}">ADMINISTRADORES</a>
+          <a class="@if(url()->current()==route('administrador_lista_path')||url()->current()==route('administrador_nuevo_path')) active @endif" href="{{route('administrador_lista_path')}}">USUARIOS</a>
         </li>
       <hr>
       <li data-toggle="collapse" class="active1">
@@ -93,7 +95,10 @@
         <a class="@if(url()->current()==route('marca_lista_path')||url()->current()==route('marca_nuevo_path')) active @endif" href="{{route('marca_lista_path')}}">MARCAS</a>
       </li>
       <li data-toggle="collapse" class="active1">
-        <a class="@if(url()->current()==route('product_lista_path')||url()->current()==route('product_nuevo_path')) active @endif" href="{{route('product_lista_path')}}">PRODUCTOS</a>
+        <a class="@if(url()->current()==route('unidad_lista_path')||url()->current()==route('unidad_nuevo_path')) active @endif" href="{{route('unidad_lista_path')}}">UNIDADES</a>
+      </li>
+      <li data-toggle="collapse" class="active1">
+        <a class="@if(url()->current()==route('product_lista_path')||url()->current()==route('product_nuevo_path')||url()->current()==route('product_buscar_path')) active @endif" href="{{route('product_lista_path')}}">PRODUCTOS</a>
       </li>
 
     </ul>
@@ -107,7 +112,10 @@
         <ul class="sub-menu collapse menu2 @if(
             (url()->current()==route('ordenes.lista')||url()->current()==route('ordenes.detalle',[$order_id]))||
             (url()->current()==route('ordenes.lista.report',[$f1,$f2])||url()->current()==route('ordenes.detalle',[$order_id]))||
-            (url()->current()==route('ordenes.lista.report.grafica',$anio)||url()->current()==route('ordenes.lista.report.grafica-post') ||url()->current()==route('ordenes.lista.report.grafica_',[$anio,$mes]))
+            (url()->current()==route('ordenes.lista.report.grafica',$anio)||url()->current()==route('ordenes.lista.report.grafica-post') ||url()->current()==route('ordenes.lista.report.grafica_',[$anio,$mes]))||
+            (url()->current()==route('productos.lista.report',[$f1,$f2])||
+            (url()->current()==route('productos.lista.report.post'))
+            )
             ) show @endif" id="reservas">
                 <li data-toggle="collapse" class="active1">
                 <a class="@if(url()->current()==route('ordenes.lista')||url()->current()==route('ordenes.detalle',[$order_id])) active @endif" href="{{route('ordenes.lista')}}">ORDENES</a>
@@ -117,6 +125,9 @@
                 </li>
                 <li data-toggle="collapse" class="active1">
                     <a class="@if(url()->current()==route('ordenes.lista.report.grafica',$anio)||url()->current()==route('ordenes.lista.report.grafica-post')||url()->current()==route('ordenes.lista.report.grafica_',[$anio,$mes])) active @endif" href="{{route('ordenes.lista.report.grafica',$anio)}}">GRAFICA DE VENTAS</a>
+                </li>
+                <li data-toggle="collapse" class="active1">
+                    <a class="@if(url()->current()==route('productos.lista.report',[$f1,$f2])||(url()->current()==route('productos.lista.report.post'))) active @endif" href="{{route('productos.lista.report',[$f1,$f2])}}">RODUCTOS MAS VENDIDOS</a>
                 </li>
         </ul>
   </ul>

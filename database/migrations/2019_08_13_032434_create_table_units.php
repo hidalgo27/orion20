@@ -17,7 +17,6 @@ class CreateTableUnits extends Migration
             $table->bigIncrements('id');
             $table->string('name')->comment('nombre de la unidad');
             $table->integer('state')->comment('estado de la unidad, 0:ocultar,1:mostrar');
-            $table->integer('category_id')->unsigned()->comment('categoria a la que pertenece el producto');
             $table->timestamps();
             // $table->primary('id')->comment('asignamos atributo de calve primaria al producto');
             // $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');

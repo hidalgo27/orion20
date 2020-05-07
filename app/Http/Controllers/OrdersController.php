@@ -29,7 +29,7 @@ class OrdersController extends Controller
         }
     }
     public function lista_report($f1,$f2){
-        $orders=Order::whereBetween('processed_date',[$f1,$f2])->where('state','3')->get();
+        $orders=Order::whereBetween('processed_date',[$f1.' 00:00:00',$f2.' 23:59:59'])->where('state','3')->get();
         return view('admin.order.lista-report',compact('orders','f1','f2'));
     }
     public function lista_report_post(Request $request){

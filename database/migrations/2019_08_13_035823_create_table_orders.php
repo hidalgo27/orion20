@@ -22,6 +22,7 @@ class CreateTableOrders extends Migration
             $table->string('province',40)->comment('provincia cliente');
             $table->string('distrite',40)->comment('distrito del cliente');
             $table->integer('state')->default('0')->comment('0:cancelled,1:pending,2:dispatched,3:processed');
+            $table->decimal('total',8,2)->comment('total de la orden');
             $table->integer('user_id')->unsigned()->comment('cliente que utilizo');
             $table->timestamps();
             // $table->primary('id')->comment('asignamos atributo de clave primaria');

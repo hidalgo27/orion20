@@ -20,12 +20,38 @@
                         </div>
                     </div>
                     <div class="col-12 mt-2">
+                        <div class="row">
+                            <div class="form-group col-3">
+                                <label for="categoria">Categoria</label>
+                                <select class="form-control" name="category_id" id="categoria" form="form_buscar_producto">
+                                    <option value="0">Ingrese una categoria</option>
+                                    @foreach ($categories as $categoria)
+                                        <option value="{{ $categoria->id }}" @if($category_id==$categoria->id) selected @endif>{{ $categoria->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="marca">Marca</label>
+                                <select class="form-control" name="brands_id" id="marca" form="form_buscar_producto">
+                                    <option value="0">Ingrese una marca</option>
+                                    @foreach ($brands as $marca)
+                                        <option value="{{ $marca->id }}" @if($brands_id==$marca->id) selected @endif>{{ $marca->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-3 mt-4">
+                                <form id="form_buscar_producto" action="{{ route('product_buscar_path') }}" method="post">
+                                    @csrf
+                                    <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Buscar</button>
+                                </form>
+                            </div>
+                        </div>
                         <table class="table table-bordered table-hover table-striped table-sm text-12">
                             <thead >
                                 <tr>
                                     <th>#</th>
-                                    <th>MARCA</th>
                                     <th>CATEGORIA</th>
+                                    <th>MARCA</th>
                                     <th>CODIGO</th>
                                     <th>NOMBRE</th>
                                     <th>PRECIO REGULAR</th>
@@ -41,8 +67,8 @@
                                 @foreach ($products as $item)
                                     <tr id="row_lista_productos_{{ $item->id }}">
                                         <td>{{ $i }}</td>
-                                        <td>{{ $item->brand->name }}</td>
                                         <td>{{ $item->category->name }}</td>
+                                        <td>{{ $item->brand->name }}</td>
                                         <td>{{ $item->code }}</td>
                                         <td>{{ $item->name }}</td>
                                         <td class="text-right"><sup>S/.</sup>{{ $item->price }}</td>
@@ -75,22 +101,30 @@
                                                         <div class="modal-body">
                                                             <div class="row">
                                                                 <div class="form-group col-6">
+                                                                    <label for="categoria">Categoria</label>
+                                                                    <select class="form-control" id="categoria" name="categoria">
+                                                                        @foreach ($categories->sortBy('name')->sortBy('name') as $item_)
+                                                                            <option value="{{ $item_->id }}" @if($item->category_id== $item_->id ){{ 'selected' }}@endif >{{ $item_->name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group col-6">
                                                                     <label for="marca">Marca</label>
                                                                     <select class="form-control" id="marca" name="marca">
-                                                                        @foreach ($brands->sortBy('state','1')->sortBy('name') as $item_)
+                                                                        @foreach ($brands->sortBy('name')->sortBy('name') as $item_)
                                                                             <option value="{{ $item_->id }}" @if($item->brand_id== $item_->id){{ 'selected' }}@endif >{{ $item_->name }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
-                                                                <div class="form-group col-6">
-                                                                    <label for="categoria">Categoria</label>
-                                                                    <select class="form-control" id="categoria" name="categoria">
-                                                                        @foreach ($categories->sortBy('state','1')->sortBy('name') as $item_)
-                                                                            <option value="{{ $item_->id }}" @if($item->category_id== $item->name){{ 'selected' }}@endif >{{ $item_->name }}</option>
+                                                                <div class="form-group col-3">
+                                                                    <label for="unidad">Unidad</label>
+                                                                    <select class="form-control" id="unidad" name="unidad">
+                                                                        @foreach ($unidades->sortBy('name')->sortBy('name') as $item_)
+                                                                            <option value="{{ $item_->id }}" @if($item->unity_id== $item_->id){{ 'selected' }}@endif >{{ $item_->name }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
-                                                                <div class="form-group col-6">
+                                                                <div class="form-group col-3">
                                                                     <label for="codigo">Codigo</label>
                                                                     <input type="text" class="form-control" id="codigo" name="codigo" value="{{ $item->code }}" aria-describedby="codigo" placeholder="Codigo" required>
                                                                 </div>

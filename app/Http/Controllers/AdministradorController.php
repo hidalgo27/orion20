@@ -12,11 +12,16 @@ class AdministradorController extends Controller
 {
     //
     public function get(){
-        $administradores = User::get();
-        return view('admin.administrador.lista',compact(['administradores']));
+        $administradores = User::with(['roles'],function($query){
+            $query->whereIn('name',['admin','ventas','repartidor']);
+        })->get();
+        // dd($administradores);
+        $roles=Role::whereIn('name',['admin','ventas','repartidor'])->get();
+        return view('admin.administrador.lista',compact(['administradores','roles']));
     }
     public function nuevo(){
-        return view('admin.administrador.nuevo');
+        $roles=Role::whereIn('name',['admin','ventas','repartidor'])->get();
+        return view('admin.administrador.nuevo',compact('roles'));
     }
     public function editar(Request $request){
         $nombre=$request->input('nombre');
@@ -46,6 +51,7 @@ class AdministradorController extends Controller
         return redirect()->route('administrador_lista_path')->with('success','Datos editados');
     }
     public function store(Request $request){
+        $rol_id=$request->input('rol');
         $nombre=$request->input('nombre');
         $celular=$request->input('celular');
         $email=$request->input('email');
@@ -70,7 +76,7 @@ class AdministradorController extends Controller
             $user->state=$estado;
             $user->save();
             //le asignamos un rol "asociacion"
-            $user_role = Role::where('name', 'admin')->first();
+            $user_role = Role::findOrfail($rol_id);
             $user->roles()->attach($user_role);
             return redirect()->route('administrador_nuevo_path')->with('success','Datos guardados');
 

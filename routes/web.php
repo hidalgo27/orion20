@@ -169,10 +169,36 @@ Route::get('/admin/marca/delete/{id}', [
     'uses' => 'BrandController@getDelete',
     'as' => 'marca.lista.delete',
 ]);
+// rutas para inidades
+Route::get('/admin/unidad/lista', [
+    'uses' => 'UnitController@getunidad',
+    'as' => 'unidad_lista_path',
+]);
+Route::get('/admin/unidad/nuevo', [
+    'uses' => 'UnitController@nuevo',
+    'as' => 'unidad_nuevo_path',
+]);
+Route::post('/admin/unidad/nuevo', [
+    'uses' => 'UnitController@store',
+    'as' => 'unidad_store_path',
+]);
+Route::post('/admin/unidad/editar', [
+    'uses' => 'UnitController@editar',
+    'as' => 'unidad_editar_path',
+]);
+Route::get('/admin/unidad/delete/{id}', [
+    'uses' => 'UnitController@getDelete',
+    'as' => 'unidad.lista.delete',
+]);
+
 // rutas para productos
 Route::get('/admin/producto/lista', [
     'uses' => 'ProductController@getProduct',
     'as' => 'product_lista_path',
+]);
+Route::post('/admin/producto/buscar', [
+    'uses' => 'ProductController@getProduct_buscar',
+    'as' => 'product_buscar_path',
 ]);
 Route::get('/admin/producto/nuevo', [
     'uses' => 'ProductController@nuevo',
@@ -206,6 +232,14 @@ Route::get('/admin/producto/delete/{id}', [
 Route::get('/admin/producto/mostrar-pagina/{grupo_id}/{estado}', [
     'uses' => 'ProductController@mostrar_pagina',
     'as' => 'product.mostrar.pagina',
+]);
+Route::get('/admin/productos/report/{f1}/{f2}', [
+    'uses' => 'ProductController@lista_report',
+    'as' => 'productos.lista.report',
+]);
+Route::post('/admin/productos/report', [
+    'uses' => 'ProductController@lista_report_post',
+    'as' => 'productos.lista.report.post',
 ]);
 // rutas poara ordenes
 Route::get('/admin/ordenes', [

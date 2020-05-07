@@ -1,7 +1,7 @@
 @extends('layouts.app-admin')
 @section('breadcrumb')
 <li class="breadcrumb-item"><a href="#">BASE DE DATOS</a></li>
-<li class="breadcrumb-item active" aria-current="page">ADMINISTRADORES</li>
+<li class="breadcrumb-item active" aria-current="page">USUARIOS</li>
 @endsection
 @section('content')
 <div class="row">
@@ -12,7 +12,7 @@
                     <div class="col-12">
                         <div class="row">
                             <div class="col-9">
-                                <b class="text-danger text-15">LISTA DE ADMINISTRADORES</b>
+                                <b class="text-danger text-15">LISTA DE USUARIOS</b>
                             </div>
                             <div class="col-3 text-right">
                                 <a href="{{ route('administrador_nuevo_path') }}" class="btn btn-info text-white"><i class="fas fa-plus-circle"></i> AGREGAR</a>
@@ -35,10 +35,10 @@
                                 @php
                                     $i=1;
                                 @endphp
-                                @foreach ($administradores as $item)
+                                @foreach ($administradores->sortBy('name') as $item)
                                     <tr id="row_lista_comunidades_{{ $item->id }}">
                                         <td>{{ $i }}</td>
-                                        <td>{{ $item->name }}</td>
+                                        <td>{{ $item->name }} <sup class="badge badge-secondary">{{ $item->roles->first()->name }}</sup></td>
                                         <td>{{ $item->celular }}</td>
                                         <td>{{ $item->email }}</td>
                                         <td>
@@ -66,6 +66,14 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <div class="row">
+                                                                <div class="form-group col-sm-12  col-6">
+                                                                    <label for="rol">Rol</label>
+                                                                    <select class="form-control" name="rol" id="rol">
+                                                                        @foreach ($roles as $rol)
+                                                                            <option value="{{ $rol->id }}" @if($rol->id==$item->roles->first()->id) selected @endif>{{ $rol->name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
                                                                 <div class="form-group col-12">
                                                                     <label for="nombre">Nombre</label>
                                                                     <input type="text" class="form-control" id="nombre" name="nombre" aria-describedby="nombre" placeholder="Nombre de la comunidad" value="{{ $item->name }}">
