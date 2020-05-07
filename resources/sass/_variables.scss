@@ -1,0 +1,35 @@
+// Body
+//$body-bg: #f8fafc;
+$body-bg: white;
+// Typography
+$font-family-sans-serif: 'Hind', sans-serif;
+$font-size-base: 0.9rem;
+$line-height-base: 1.6;
+
+// Colors
+$blue: #3490dc;
+$indigo: #6574cd;
+$purple: #9561e2;
+$pink: #f66d9b;
+$red: #e3342f;
+$orange: #f6993f;
+$yellow: #ffed4a;
+$green: #38c172;
+$teal: #4dc0b5;
+$cyan: #6cb2eb;
+$primary: #007bff;
+$info: #00b4e9;
+
+//fontawesome
+$fa-font-path:        "../webfonts";
+
+
+
+$o-dark:   #4c4c4c !default;
+$o-dark-light: #969696 !default;
+
+$theme-colors: () !default;
+$theme-colors: map-merge((
+    "o-dark": $o-dark,
+    "o-dark-light": $o-dark-light,
+), $theme-colors);
