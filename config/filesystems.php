@@ -54,7 +54,60 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],
-
+        'categorias' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/categorias'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'product' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/product'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'comunidades' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/comunidades'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'asociaciones' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/asociaciones'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'actividades' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/actividades'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'comidas' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/comidas'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'hospedajes' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/hospedajes'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'transportes' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/transportes'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+        'servicios' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/servicios'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

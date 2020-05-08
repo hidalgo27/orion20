@@ -9,11 +9,21 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-//font
+
+// summernote
+// @import '~summernote/dist/summernote-bs4.css';
+
+// tinymce
+@import '~tinymce/skins/ui/oxide/skin.min.css';
+@import '~tinymce/skins/content/default/content.css';
+@import '~tinymce/skins/ui/oxide/content.min.css';
+@import '~tinymce/skins/ui/oxide/skin.min.css';
+
 @import "~@fortawesome/fontawesome-free/scss/fontawesome";
 @import "~@fortawesome/fontawesome-free/scss/solid";
 @import "~@fortawesome/fontawesome-free/scss/brands";
 @import "~@fortawesome/fontawesome-free/scss/regular";
+
 
 //slick carousel
 //@import "~slick-carousel/slick/slick";
@@ -21,3 +31,16 @@
 
 //swipper
 @import "~swiper/dist/css/swiper.min.css";
+
+//query
+@import '~jquery-ui/themes/base/all.css';
+//calendar
+@import "~air-datepicker/dist/css/datepicker.css";
+//slick carousel
+@import "~slick-carousel/slick/slick";
+@import "~slick-carousel/slick/slick-theme";
+
+.navbar-laravel {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
