@@ -22,12 +22,19 @@
 //     'as' => 'logout_path',
 // ]);
 // Route::get('/home', 'HomeController@index')->name('home');
-
+Route::get('/admin', [
+    'uses' => 'adminController@login_user',
+    'as' => 'login_user_path',
+]);
+Route::post('/admin', [
+    'uses' => 'adminController@login_user_post',
+    'as' => 'login_user_post_path',
+]);
 Route::get('/crear-usuario', [
     'uses' => 'adminController@crear_usuario',
     'as' => 'crear_usuario_path',
 ]);
-Route::get('/admin', [
+Route::get('/administrador', [
     'uses' => 'adminController@index',
     'as' => 'admin_index_path',
 ]);
@@ -43,7 +50,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::post('/product_store', [
     'uses' => 'ProductController@store',
-
+    ]);
 
 
 Route::post('/product_store', [
@@ -52,27 +59,27 @@ Route::post('/product_store', [
 ]);
 
 Route::get('/category/{category}', [
-    'uses' => 'ProductController@category',
+    'uses' => 'Page\ProductController@category',
     'as' => 'category_index_path',
 ]);
 Route::get('/cart/{id}', [
-    'uses' => 'ProductController@cart',
+    'uses' => 'Page\ProductController@cart',
     'as' => 'cart_show_path',
 ]);
 Route::get('/checkout/{id}', [
-    'uses' => 'ProductController@checkout',
+    'uses' => 'Page\ProductController@checkout',
     'as' => 'checkout_path',
 ]);
 Route::get('/checkout/address/{id}', [
-    'uses' => 'ProductController@checkout_address',
+    'uses' => 'Page\ProductController@checkout_address',
     'as' => 'checkout_address_path',
 ]);
 Route::get('/checkout/payment/{id}', [
-    'uses' => 'ProductController@checkout_payment',
+    'uses' => 'Page\ProductController@checkout_payment',
     'as' => 'checkout_payment_path',
 ]);
 Route::get('/detail/{id}', [
-    'uses' => 'ProductController@detail',
+    'uses' => 'Page\ProductController@detail',
     'as' => 'detail_show_path',
 ]);
 

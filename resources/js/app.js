@@ -7,16 +7,16 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-// import Swal from 'sweetalert2';
-window.Swal = require('sweetalert2');
+//import Swal from 'sweetalert2';
+// window.Swal = require('sweetalert2');
 
 // window.grunt = require('grunt');
 
 import $ from 'jquery';
 window.$ = window.jQuery = $;
 
-import 'jquery-ui/ui/widgets/datepicker.js';
-import 'slick-carousel/slick/slick.min';
+// import 'jquery-ui/ui/widgets/datepicker.js';
+// import 'slick-carousel/slick/slick.min';
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -40,37 +40,37 @@ Vue.component('cart-products-add', require('./components/CartProductsAdd.vue').d
 const app = new Vue({
     el: '#app'
 });
-$('.datepicker').datepicker();
-$(document).ready(function (){
-    // $('.descripcion').summernote({
-    //     height: 150,   //set editable area's height
-    //     codemirror: { // codemirror options
-    //         theme: 'monokai'
-    //  }
-    // });
+// $('.datepicker').datepicker();
+// $(document).ready(function (){
+//     // $('.descripcion').summernote({
+//     //     height: 150,   //set editable area's height
+//     //     codemirror: { // codemirror options
+//     //         theme: 'monokai'
+//     //  }
+//     // });
 
-       tinymce.init({
-        selector: "textarea",
-        height: 300,
-        menubar: false,
-        plugins: [
-            'advlist lists'
-        //   'advlist autolink lists link image charmap print preview anchor textcolor',
-        //   'searchreplace visualblocks code fullscreen',
-        //   'insertdatetime media table paste code help wordcount'
-        ],
-        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-        content_css: [
-       '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-       '//www.tiny.cloud/css/codepen.min.css'
-        ],
-        setup: function (editor) {
-            editor.on('change', function () {
-                editor.save();
-            });
-        }
-      });
+//        tinymce.init({
+//         selector: "textarea",
+//         height: 300,
+//         menubar: false,
+//         plugins: [
+//             'advlist lists'
+//         //   'advlist autolink lists link image charmap print preview anchor textcolor',
+//         //   'searchreplace visualblocks code fullscreen',
+//         //   'insertdatetime media table paste code help wordcount'
+//         ],
+//         toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+//         content_css: [
+//        '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+//        '//www.tiny.cloud/css/codepen.min.css'
+//         ],
+//         setup: function (editor) {
+//             editor.on('change', function () {
+//                 editor.save();
+//             });
+//         }
+//       });
 
-    $('[data-tooltip="popover"]').popover({ trigger: "hover" });
-});
+//     $('[data-tooltip="popover"]').popover({ trigger: "hover" });
+// });
 

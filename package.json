@@ -13,19 +13,21 @@
         "@fortawesome/fontawesome-free": "^5.9.0",
         "axios": "^0.19",
         "bootstrap": "^4.3.1",
-        "cross-env": "^5.1",
         "jquery": "^3.2",
+        "jquery-ui": "^1.12.1",
         "laravel-mix": "^4.0.7",
         "lodash": "^4.17.5",
         "popper.js": "^1.12",
         "resolve-url-loader": "^2.3.1",
         "sass": "^1.15.2",
         "sass-loader": "^7.1.0",
+        "sweetalert2": "^8.13.1",
         "vue": "^2.5.17",
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
         "slick-carousel": "^1.8.1",
-        "swiper": "^4.5.1"
+        "swiper": "^4.5.1",
+        "tinymce": "^5.0.8"
     }
 }
